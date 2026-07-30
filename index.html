@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Hubby eSIM — Design System</title>
 <meta name="description" content="The Hubby app's living design system — tokens and components future designs build on.">
+<link rel="preload" href="fonts/GeneralSans-Semibold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/GeneralSans-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="tokens.css">
 <link rel="stylesheet" href="components.css">
 <style>
@@ -186,7 +188,7 @@
 <!-- 04 -->
 <section id="type">
   <h2><span class="num">04</span> Typography</h2>
-  <p class="intro">One family — <b>GeneralSans</b>, weights 400/500/600, no italic. Leading is a percentage tier chosen by size: 110 numerals · 125 display · 130 headings · 140 body · 150 small. (Specimens fall back to the system sans where GeneralSans isn't installed.)</p>
+  <p class="intro">One family — <b>GeneralSans</b>, weights 400/500/600, no italic. The real typeface is bundled (<code>fonts/*.woff2</code>) and loaded by <code>tokens.css</code>, so every specimen below renders true. Leading is a percentage tier chosen by size: 110 numerals · 125 display · 130 headings · 140 body · 150 small.</p>
 
   <h3>Headings</h3>
   <div class="plate"><span class="label"><b>title1</b>32 · 600 · 125%</span><span style="font:var(--title1)">Unlimited data</span></div>

@@ -10,6 +10,23 @@
    badges, progress fills and the nav bar to `--brand` — never to a painted hex.
    ============================================================================ */
 
+/* ---- GeneralSans — the shipping typeface --------------------------------
+   Three weights, no italic (the scale uses only 400/500/600). WOFF2 lives in
+   ./fonts, so paths resolve relative to this file. `swap` avoids invisible
+   text while the face loads; the fallback stack in --font matches metrics. */
+@font-face {
+  font-family:"GeneralSans"; font-style:normal; font-weight:400; font-display:swap;
+  src:url("fonts/GeneralSans-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family:"GeneralSans"; font-style:normal; font-weight:500; font-display:swap;
+  src:url("fonts/GeneralSans-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family:"GeneralSans"; font-style:normal; font-weight:600; font-display:swap;
+  src:url("fonts/GeneralSans-Semibold.woff2") format("woff2");
+}
+
 :root {
 
   /* ---- Brand (partner-overridable) ---------------------------------------

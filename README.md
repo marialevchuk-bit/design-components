@@ -12,6 +12,7 @@ theming all come for free.
 |------|------------|
 | [`tokens.css`](./tokens.css) | **The source of truth.** Every colour, type style, spacing step, radius, stroke and shadow as a CSS custom property. Token names match the shipping Flutter code verbatim. |
 | [`components.css`](./components.css) | **The component library.** Button, input, search, card, badge, status pill, bottom sheet, dialog, bottom nav, snackbar, skeleton, progress — built strictly from the tokens as `hy-*` classes. |
+| [`fonts/`](./fonts) | **GeneralSans** — the shipping typeface, weights 400/500/600 as WOFF2 (~24 KB each). Loaded by `tokens.css` via `@font-face`. |
 | [`index.html`](./index.html) | **The living styleguide.** Renders the real components (not mockups) and documents all conventions. Open it in a browser; switch partners live. |
 
 ## The five rules (do not break these)
@@ -80,8 +81,9 @@ so the tier rule holds. See section 09 of the styleguide.
 
 - Reconstructed from **Flutter build v2.12.0**. Where a specimen disagrees with a
   screenshot, the tokens are right.
-- **GeneralSans** is the real family; specimens fall back to the system sans
-  where it isn't installed. Drop in the licensed `@font-face` to render true.
+- **GeneralSans** is bundled in `fonts/` (weights 400/500/600, no italic — the
+  only weights the scale uses) and loaded by `tokens.css`. `--font` keeps a
+  system-sans fallback for the brief moment before it loads.
 - Icons here are inline placeholders for layout. New brandable icons must draw
   their adaptive shapes in `#23262f` (swapped for the partner colour at load);
   two-tone icons keep a fixed `#ededed` backing.
