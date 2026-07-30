@@ -1,0 +1,193 @@
+/* ============================================================================
+   Hubby eSIM — Component Library
+   Reusable components built strictly from the design tokens. Import after
+   tokens.css. Every value here traces back to the design-system overview;
+   change a convention in one place and every future design inherits it.
+
+   Conventions enforced here:
+   · Touch only — pressed / focused / disabled states, NO hover.
+   · Flat — only sheets and dialogs lift.
+   · Brand is bound to var(--brand), never a painted hex.
+   ============================================================================ */
+
+/* Base */
+.hy { font: var(--bodyS500); font-family: var(--font); color: var(--textPrimary); }
+.hy-page { background: var(--background); color: var(--textPrimary); }
+
+/* ---------------------------------------------------------------------------
+   BUTTON — one spec, three variants
+   52px tall · 10px radius · 16px side padding · 18/500 label · 18px icons ·
+   icon→label gap 8. Fills available width unless .hy-btn--wrap.
+   --------------------------------------------------------------------------- */
+.hy-btn {
+  display:flex; align-items:center; justify-content:center; gap:var(--space-8);
+  width:100%; height:var(--size-button); padding:0 var(--space-16);
+  border-radius:var(--radius-10); border:none; cursor:pointer;
+  font:var(--bodyM500); font-family:var(--font); text-align:center;
+  transition:background-color .12s ease, opacity .12s ease;
+}
+.hy-btn--wrap { width:auto; }
+.hy-btn svg, .hy-btn .hy-icon { width:18px; height:18px; }
+
+/* filled — partner fill, partner label colour */
+.hy-btn--filled   { background:var(--brand); color:var(--on-brand); }
+.hy-btn--filled:active,
+.hy-btn--filled.is-pressed { background:var(--brand-pressed); }
+
+/* outlined — white fill, border, dark label */
+.hy-btn--outlined { background:var(--surface); color:var(--textPrimary);
+                    box-shadow:inset 0 0 0 1px var(--border); }
+.hy-btn--outlined:active { background:var(--grayscale100); }
+
+/* soft — 12% partner tint, partner border + label */
+.hy-btn--soft { background:var(--brand-soft); color:var(--brand);
+                box-shadow:inset 0 0 0 1px var(--brand); }
+.hy-btn--soft:active { filter:brightness(.97); }
+
+/* destructive = filled with danger as the fill (no separate variant) */
+.hy-btn--danger { background:var(--danger); color:#fff; }
+
+/* States. Focused reuses the pressed overlay at 8% (no hover exists). */
+.hy-btn:focus-visible { outline:none; box-shadow:inset 0 0 0 99px rgba(15,15,17,.08); }
+.hy-btn--outlined:focus-visible { box-shadow:inset 0 0 0 1px var(--border), inset 0 0 0 99px rgba(15,15,17,.08); }
+.hy-btn:disabled, .hy-btn.is-disabled { opacity:.5; cursor:not-allowed; }
+.hy-btn__spinner {
+  width:20px; height:20px; border-radius:50%;
+  border:2px solid rgba(255,255,255,.35); border-top-color:#fff;
+  animation:hy-spin .7s linear infinite;
+}
+@keyframes hy-spin { to { transform:rotate(360deg); } }
+
+/* ---------------------------------------------------------------------------
+   INPUT — 16px radius · 16px padding · full outline in every state
+   --------------------------------------------------------------------------- */
+.hy-input {
+  width:100%; height:56px; padding:0 var(--space-16);
+  background:var(--surface); color:var(--textPrimary);
+  border:1px solid var(--skeleton); border-radius:var(--radius-16);
+  font:var(--bodyS500); font-family:var(--font);
+}
+.hy-input::placeholder { color:var(--textDisabled); }
+.hy-input:focus { outline:none; border-color:var(--grayscale700); }
+.hy-input.is-error { border-color:var(--danger); }
+.hy-input:read-only { color:var(--textDisabled); }   /* keeps the full outline */
+
+/* Search bar — deliberately different: 14px radius, 2px borderStrong, leading
+   icon + a vertical divider before the text. */
+.hy-search {
+  display:flex; align-items:center; gap:var(--space-12);
+  height:52px; padding:0 var(--space-16);
+  background:var(--surface); border:2px solid var(--borderStrong);
+  border-radius:var(--radius-14);
+}
+.hy-search__divider { width:1px; align-self:stretch; margin:14px 0; background:var(--border); }
+.hy-search input { flex:1; border:none; outline:none; background:none;
+                   font:var(--bodyS500); font-family:var(--font); color:var(--textPrimary); }
+
+/* ---------------------------------------------------------------------------
+   CARD — flat, no shadow
+   --------------------------------------------------------------------------- */
+.hy-card {                                   /* default — dominant pattern */
+  background:var(--surface); border:1.2px solid var(--border);
+  border-radius:var(--radius-14); padding:var(--space-16);
+}
+.hy-card--emphasised {                       /* eSIM frame, action cards */
+  border-width:1.5px; border-color:var(--borderStrong);
+  border-radius:var(--radius-16);
+}
+.hy-card.is-selected {                        /* selected bundle row */
+  background:var(--brand-selected); border-color:var(--brand);
+}
+
+/* ---------------------------------------------------------------------------
+   BADGE & STATUS PILL
+   --------------------------------------------------------------------------- */
+.hy-badge {                                  /* 12% partner tint, no border */
+  display:inline-flex; align-items:center; gap:var(--space-4);
+  padding:4px var(--space-10); border-radius:var(--radius-pill);
+  background:var(--brand-soft); color:var(--brand); font:var(--bodyXXS500);
+}
+.hy-status {                                 /* 12×4 padding · 6px dot + 6px gap */
+  display:inline-flex; align-items:center; gap:var(--space-6);
+  padding:4px var(--space-12); border-radius:var(--radius-pill);
+  font:var(--labelS); letter-spacing:var(--tracking-tight); border:1px solid;
+}
+.hy-status__dot { width:6px; height:6px; border-radius:50%; }
+.hy-status--warning { background:var(--statusWarningBg); border-color:var(--statusWarningBorder); color:var(--statusWarningText); }
+.hy-status--warning .hy-status__dot { background:var(--statusWarningDot); }
+.hy-status--success { background:var(--statusSuccessBg); border-color:var(--statusSuccessBorder); color:var(--statusSuccessText); }
+.hy-status--success .hy-status__dot { background:var(--statusSuccessDot); }
+.hy-status--danger  { background:var(--statusDangerBg);  border-color:var(--statusDangerBorder);  color:var(--statusDangerText); }
+.hy-status--danger .hy-status__dot { background:var(--statusDangerDot); }
+
+/* ---------------------------------------------------------------------------
+   BOTTOM SHEET — 24px top corners, upward shadow, full-bleed
+   --------------------------------------------------------------------------- */
+.hy-sheet {
+  background:var(--background); border-radius:var(--radius-24) var(--radius-24) 0 0;
+  box-shadow:var(--shadow-sheet); padding:var(--space-24);
+}
+.hy-sheet--card { background:var(--surface); }
+.hy-sheet__handle {                          /* 40×4 pill, 12px from top */
+  width:40px; height:4px; border-radius:var(--radius-pill);
+  background:var(--skeleton); margin:0 auto var(--space-16);
+}
+
+/* ---------------------------------------------------------------------------
+   DIALOG — 32 inset · 16 radius · background fill · actions stacked
+   --------------------------------------------------------------------------- */
+.hy-dialog {
+  background:var(--background); border-radius:var(--radius-16);
+  padding:var(--space-16); box-shadow:0 8px 28px rgba(15,15,17,.18);
+  text-align:center; max-width:340px;
+}
+.hy-dialog__title { font:var(--title2); }
+.hy-dialog__body  { font:var(--bodyS500); color:var(--grayscale800); margin-top:var(--space-16); }
+.hy-dialog__actions { display:grid; gap:var(--space-8); margin-top:var(--space-24); } /* confirm above cancel */
+
+/* ---------------------------------------------------------------------------
+   BOTTOM NAVIGATION — four items on the partner fill
+   --------------------------------------------------------------------------- */
+.hy-nav {
+  display:flex; background:var(--brand); padding:16px 16px 8px;
+}
+.hy-nav__item {
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:var(--space-4);
+  color:var(--grayscale300); font:var(--bodyS500); background:none; border:none; cursor:pointer;
+}
+.hy-nav__item.is-active { color:var(--on-brand); }         /* white icon + label, filled icon variant */
+
+/* ---------------------------------------------------------------------------
+   SNACKBAR — floating, no shadow, 14 radius, 32×16 padding
+   --------------------------------------------------------------------------- */
+.hy-snackbar {
+  display:flex; align-items:center; gap:var(--space-8);
+  padding:var(--space-16) var(--space-32); border-radius:var(--radius-14);
+  font:var(--bodyS500); color:var(--textPrimary); background:var(--surface);
+}
+.hy-snackbar--error   { background:var(--lightDanger);  border-left:2px solid var(--danger);  border-right:2px solid var(--danger); }
+.hy-snackbar--success { background:var(--lightSuccess); border-left:2px solid var(--success); border-right:2px solid var(--success); }
+.hy-snackbar--neutral { background:var(--surface); border:2px solid var(--border); }
+
+/* ---------------------------------------------------------------------------
+   LOADING — skeleton shimmer + progress bar
+   --------------------------------------------------------------------------- */
+.hy-skeleton {
+  background:var(--skeleton); border-radius:var(--radius-4);
+  position:relative; overflow:hidden;
+}
+.hy-skeleton::after {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+  animation:hy-shimmer 1.4s infinite;
+}
+@keyframes hy-shimmer { 100% { transform:translateX(100%); } }
+
+.hy-progress {                               /* 4px tall track */
+  height:4px; border-radius:var(--radius-4); background:var(--grayscale200); overflow:hidden;
+}
+.hy-progress__fill { height:100%; border-radius:var(--radius-4); background:var(--brand); } /* partner fill */
+
+@media (prefers-reduced-motion: reduce) {
+  .hy-btn__spinner, .hy-skeleton::after { animation:none; }
+}

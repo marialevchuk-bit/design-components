@@ -1,770 +1,403 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<title>Claude — Design System</title>
-<meta name="description" content="The Claude design language — colour, type, and component specimens for building the product and the Figma library.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Hubby eSIM — Design System</title>
+<meta name="description" content="The Hubby app's living design system — tokens and components future designs build on.">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
 <style>
-  /* ---- reset ---- */
+  /* Documentation chrome only — the components themselves live in components.css */
   *,*::before,*::after{box-sizing:border-box}
-  html{-webkit-text-size-adjust:100%}
-  body{margin:0}
-  h1,h2,h3,h4,h5,h6,p,figure,blockquote,dl,dd{margin:0}
-  ul,ol{margin:0;padding:0;list-style:none}
-  img,svg{display:block;max-width:100%}
-  table{border-collapse:collapse;width:100%}
-  code{font-family:var(--mono)}
+  body{margin:0;background:var(--background);color:var(--textPrimary);font:var(--bodyS500);font-family:var(--font);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+  ul{margin:0;padding:0;list-style:none}
+  code{font-family:var(--mono);font-size:.86em;background:var(--grayscale100);border:1px solid var(--border);border-radius:6px;padding:1px 6px}
 
-  /* ==========================================================================
-     DESIGN TOKENS  (inlined from tokens.css so this page stands alone)
-     ========================================================================== */
-  :root{
-    --serif:"Fraunces","Tiempos",Georgia,"Times New Roman",serif;
-    --sans:"Hanken Grotesk","Styrene B",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-    --mono:"JetBrains Mono","Fira Code",ui-monospace,"SF Mono",Menlo,monospace;
-    --space-2:2px;--space-4:4px;--space-8:8px;--space-12:12px;--space-16:16px;
-    --space-20:20px;--space-24:24px;--space-32:32px;--space-40:40px;--space-48:48px;--space-64:64px;
-    --radius-6:6px;--radius-8:8px;--radius-10:10px;--radius-12:12px;--radius-16:16px;
-    --radius-20:20px;--radius-24:24px;--radius-pill:999px;
-  }
-  :root,:root[data-theme="light"]{
-    color-scheme:light;
-    --bg:#FAF9F5;--bg-panel:#F0EEE6;--surface:#FFFFFF;--surface-sunken:#F5F4EE;
-    --border:#E6E3D8;--border-strong:#D4D0C3;
-    --text:#1F1E1D;--text-secondary:#4A4843;--text-muted:#75726A;--text-faint:#A8A498;
-    --clay:#D97757;--clay-hover:#C96442;--clay-active:#B4552F;--clay-soft:#FBEDE6;--clay-border:#E7B7A2;--on-clay:#FFFFFF;
-    --kraft:#C89A6B;--manilla:#EBDBBC;
-    --success:#3C8C5E;--success-soft:#E5F0E8;--success-border:#A9CDB4;
-    --danger:#C0503F;--danger-soft:#F7E6E2;--danger-border:#E3A99B;
-    --warning:#BC7C2C;--warning-soft:#F8EEDA;--warning-border:#E4C58C;
-    --info:#5B718C;--info-soft:#E8ECF2;--info-border:#B4C0D1;
-    --shadow-soft:0 1px 2px rgba(20,20,19,.05),0 2px 8px rgba(20,20,19,.06);
-    --shadow-raised:0 2px 6px rgba(20,20,19,.06),0 8px 24px rgba(20,20,19,.09);
-    --shadow-overlay:0 12px 40px rgba(20,20,19,.16);
-    --focus-ring:0 0 0 3px rgba(217,119,87,.32);--skeleton:#ECEAE1;
-  }
-  :root[data-theme="dark"]{
-    color-scheme:dark;
-    --bg:#1F1E1D;--bg-panel:#262624;--surface:#30302E;--surface-sunken:#262624;
-    --border:#3A3A36;--border-strong:#4B4A45;
-    --text:#F5F4EE;--text-secondary:#C8C4BA;--text-muted:#97938A;--text-faint:#6C695F;
-    --clay:#E08A6A;--clay-hover:#E89C7F;--clay-active:#F0AE94;--clay-soft:#3A2A22;--clay-border:#6E4838;--on-clay:#1F1E1D;
-    --kraft:#D4A27F;--manilla:#A99A78;
-    --success:#5FB081;--success-soft:#22322A;--success-border:#3C6650;
-    --danger:#E38071;--danger-soft:#392422;--danger-border:#6E4038;
-    --warning:#D9A45A;--warning-soft:#352B1A;--warning-border:#6B5730;
-    --info:#8FA3BF;--info-soft:#232833;--info-border:#42506A;
-    --shadow-soft:0 1px 2px rgba(0,0,0,.30),0 2px 8px rgba(0,0,0,.34);
-    --shadow-raised:0 2px 6px rgba(0,0,0,.34),0 8px 24px rgba(0,0,0,.42);
-    --shadow-overlay:0 12px 40px rgba(0,0,0,.55);
-    --focus-ring:0 0 0 3px rgba(224,138,106,.40);--skeleton:#35352F;
-  }
+  .mast{padding:72px 0 40px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--brand)}
+  .mast h1{font:var(--title1);font-size:clamp(32px,6vw,52px);line-height:1.1;margin:16px 0 0}
+  .lede{font:var(--bodyL500);font-weight:400;color:var(--textSecondary);max-width:40em;margin-top:20px;line-height:1.5}
+  .facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+  .facts span{font-family:var(--mono);font-size:12px;color:var(--textHint);border:1px solid var(--border);border-radius:var(--radius-pill);padding:6px 12px;background:var(--surface)}
 
-  /* ==========================================================================
-     PAGE CHROME
-     ========================================================================== */
-  body{
-    background:var(--bg);color:var(--text);
-    font:var(--body);font-family:var(--sans);
-    -webkit-font-smoothing:antialiased;
-    transition:background .3s ease,color .3s ease;
-  }
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-  ::selection{background:var(--clay);color:var(--on-clay)}
+  section{padding:48px 0;border-top:1px solid var(--border)}
+  h2{font:var(--title3);display:flex;align-items:baseline;gap:14px}
+  h2 .num{font-family:var(--mono);font-size:13px;font-weight:400;color:var(--brand)}
+  h3{font:var(--title6);margin:32px 0 14px}
+  h4{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--textHint);margin:26px 0 12px}
+  .intro{font:var(--bodyS400);color:var(--textSecondary);max-width:44em;margin-top:10px;line-height:1.6}
+  .note{font:var(--bodyXS400);color:var(--textHint);margin-top:16px;max-width:46em;line-height:1.6}
+  b{font-weight:600}
 
-  /* theme toggle */
-  .toolbar{position:fixed;top:16px;right:16px;z-index:50;display:flex;gap:8px}
-  .toggle{
-    display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;
-    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-pill);
-    color:var(--text);font:var(--caption);font-family:var(--sans);cursor:pointer;
-    box-shadow:var(--shadow-soft);transition:border-color .2s;
-  }
-  .toggle:hover{border-color:var(--border-strong)}
+  .keys{display:grid;gap:12px;margin-top:24px}
+  .keys li{display:flex;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-14);padding:16px 18px}
+  .keys .k{font-family:var(--mono);font-size:13px;color:var(--brand);flex:none;width:20px}
+  .keys li span:last-child{font:var(--bodyXS400);color:var(--textSecondary);line-height:1.55}
 
-  /* masthead */
-  .mast{padding:88px 0 40px}
-  .brandmark{display:flex;align-items:center;gap:14px;margin-bottom:36px}
-  .brandmark .mark{width:34px;height:34px}
-  .brandmark .wordmark{font-family:var(--serif);font-weight:600;font-size:22px;letter-spacing:-.01em}
-  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--clay);margin-bottom:20px}
-  .mast h1{font-family:var(--serif);font-weight:600;font-size:clamp(40px,7vw,64px);line-height:1.04;letter-spacing:-.02em}
-  .lede{font-family:var(--serif);font-weight:400;font-size:clamp(17px,2.4vw,21px);line-height:1.6;color:var(--text-secondary);max-width:36em;margin-top:24px}
-  .facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px}
-  .facts span{font-family:var(--mono);font-size:12px;color:var(--text-muted);border:1px solid var(--border);border-radius:var(--radius-pill);padding:7px 14px;background:var(--surface)}
+  .call{background:var(--accent-soft);border:1px solid var(--border);border-radius:var(--radius-14);padding:18px 20px;margin-top:24px}
+  .call .h{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--brand);display:block;margin-bottom:8px}
+  .call p{font:var(--bodyXS400);color:var(--textSecondary);line-height:1.6}
 
-  /* section scaffolding */
-  section{padding:56px 0;border-top:1px solid var(--border)}
-  h2{font-family:var(--serif);font-weight:600;font-size:30px;letter-spacing:-.01em;display:flex;align-items:baseline;gap:16px}
-  h2 .num{font-family:var(--mono);font-size:14px;font-weight:400;color:var(--clay)}
-  h3{font-family:var(--sans);font-weight:600;font-size:19px;margin:40px 0 16px}
-  h4{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin:32px 0 16px;font-weight:500}
-  .intro{font-family:var(--serif);font-size:18px;line-height:1.6;color:var(--text-secondary);max-width:40em;margin-top:14px}
-  p.note{color:var(--text-muted);font-size:14px;line-height:1.6;margin-top:18px;max-width:44em}
-  b{font-weight:600;color:var(--text)}
-  code{background:var(--surface-sunken);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-size:.86em;color:var(--text)}
+  .demo{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:18px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:18px}
+  .stack{display:grid;gap:10px;max-width:360px;margin-top:18px}
+  .cap{font-family:var(--mono);font-size:10px;color:var(--textHint);margin-top:8px}
 
-  /* "read this first" keys */
-  .keys{display:grid;gap:14px;margin-top:28px}
-  .keys li{display:flex;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-16);padding:18px 20px}
-  .keys .k{font-family:var(--mono);font-size:13px;color:var(--clay);flex:none;width:22px;padding-top:2px}
-  .keys li span:last-child{font-size:15px;line-height:1.55;color:var(--text-secondary)}
-
-  /* callout */
-  .call{background:var(--clay-soft);border:1px solid var(--clay-border);border-radius:var(--radius-16);padding:20px 22px;margin-top:28px}
-  .call .h{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--clay);display:block;margin-bottom:8px;font-weight:500}
-  .call p{font-size:14.5px;line-height:1.6;color:var(--text-secondary)}
-  .call p + p{margin-top:10px}
-
-  /* swatch grids */
-  .sw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:20px}
   .sw{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-12);padding:10px}
-  .sw .chip{width:48px;height:48px;border-radius:var(--radius-10);flex:none;box-shadow:inset 0 0 0 1px rgba(20,20,19,.06)}
-  .sw .meta b{display:block;font-size:14px;font-weight:600}
-  .sw .meta span{display:block;font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-top:2px}
+  .sw .chip{width:44px;height:44px;border-radius:var(--radius-10);flex:none;box-shadow:inset 0 0 0 1px rgba(15,15,17,.06)}
+  .sw b{display:block;font:var(--bodyXS500)}
+  .sw span{display:block;font-family:var(--mono);font-size:10px;color:var(--textHint);margin-top:2px}
 
-  /* grayscale ramp */
-  .ramp{display:flex;flex-wrap:wrap;border-radius:var(--radius-12);overflow:hidden;border:1px solid var(--border);margin-top:20px}
-  .ramp div{flex:1 1 90px;height:78px;display:flex;align-items:flex-end;padding:8px;font-family:var(--mono);font-size:10px}
+  .ramp{display:flex;flex-wrap:wrap;border-radius:var(--radius-12);overflow:hidden;border:1px solid var(--border);margin-top:18px}
+  .ramp div{flex:1 1 80px;height:70px;display:flex;align-items:flex-end;padding:8px;font-family:var(--mono);font-size:10px}
 
-  /* generic demo row */
-  .demo-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:20px}
-  .caption-m{font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-top:8px}
+  .plate{display:grid;grid-template-columns:140px 1fr;gap:20px;align-items:baseline;padding:14px 0;border-top:1px solid var(--border)}
+  .plate .label{font-family:var(--mono);font-size:11px;color:var(--textHint);line-height:1.7}
+  .plate .label b{display:block;color:var(--textPrimary);font-family:var(--font);font-size:12px}
 
-  /* type plate */
-  .plate{display:grid;grid-template-columns:150px 1fr;gap:24px;align-items:baseline;padding:16px 0;border-top:1px solid var(--border)}
-  .plate .label{font-family:var(--mono);font-size:11px;color:var(--text-muted);line-height:1.7}
-  .plate .label b{display:block;color:var(--text);font-size:13px;font-family:var(--sans)}
-  .plate .tier{font-family:var(--mono);font-size:10px;color:var(--text-faint);border:1px solid var(--border);border-radius:var(--radius-pill);padding:2px 8px;margin-left:12px;vertical-align:middle}
-
-  /* spacing bars */
   .sp{display:flex;align-items:center;gap:14px}
-  .sp .bar{height:16px;background:var(--clay);border-radius:3px;flex:none}
-  .sp .n{font-size:13px;color:var(--text-muted)}
+  .sp .bar{height:16px;background:var(--brand);border-radius:3px;flex:none}
+  .sp .n{font:var(--bodyXS400);color:var(--textHint)}
+  .rad{width:72px;height:52px;background:var(--surface);border:1.5px solid var(--borderStrong);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--textHint)}
+  .shbox{width:140px;height:88px;border-radius:var(--radius-16);background:var(--surface);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--textHint)}
 
-  /* radius + stroke demos */
-  .rad{width:76px;height:56px;background:var(--surface);border:1.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:var(--text-muted)}
-  .strokebox{width:80px;height:48px;background:var(--surface);border-radius:var(--radius-8)}
+  .scroll{overflow-x:auto;margin-top:18px;border:1px solid var(--border);border-radius:var(--radius-12)}
+  table{border-collapse:collapse;width:100%}
+  td,th{padding:10px 14px;text-align:left;font:var(--bodyXS400);border-bottom:1px solid var(--border);vertical-align:top}
+  th{font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--textHint);background:var(--grayscale100)}
+  tr:last-child td{border-bottom:none}
 
-  /* elevation */
-  .shbox{width:150px;height:96px;border-radius:var(--radius-16);background:var(--surface);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:var(--text-muted)}
+  /* partner preview switcher */
+  .partnerbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+  .pbtn{font-family:var(--mono);font-size:12px;padding:8px 14px;border-radius:var(--radius-pill);border:1px solid var(--border);background:var(--surface);cursor:pointer;color:var(--textSecondary)}
+  .pbtn.active{border-color:var(--brand);color:var(--brand);background:var(--brand-soft)}
+  .previewbox{margin-top:16px;padding:24px;border:1px solid var(--border);border-radius:var(--radius-16);background:var(--background)}
 
-  /* two-col */
-  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:20px}
-
-  /* ---- component specimens ---- */
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 20px;border-radius:var(--radius-10);
-       font:var(--body-strong);font-family:var(--sans);border:1px solid transparent;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s;white-space:nowrap}
-  .btn.lg{height:52px;padding:0 24px;font-size:16px}
-  .btn-primary{background:var(--clay);color:var(--on-clay)}
-  .btn-primary:hover{background:var(--clay-hover)}
-  .btn-primary:active{background:var(--clay-active)}
-  .btn-secondary{background:var(--surface);color:var(--text);border-color:var(--border-strong)}
-  .btn-secondary:hover{background:var(--surface-sunken)}
-  .btn-ghost{background:transparent;color:var(--text-secondary)}
-  .btn-ghost:hover{background:var(--surface-sunken);color:var(--text)}
-  .btn-danger{background:var(--danger);color:#fff}
-  .btn:focus-visible{outline:none;box-shadow:var(--focus-ring)}
-  .btn:disabled,.btn.is-disabled{opacity:.45;cursor:not-allowed}
-  .icon-btn{width:40px;height:40px;padding:0;border-radius:var(--radius-10);background:transparent;border:1px solid var(--border);color:var(--text-secondary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
-  .icon-btn:hover{background:var(--surface-sunken);color:var(--text)}
-  .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-
-  .field{width:100%;height:48px;padding:0 16px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-12);
-         color:var(--text);font:var(--body);font-family:var(--sans)}
-  .field::placeholder{color:var(--text-faint)}
-  .field:focus{outline:none;border-color:var(--clay);box-shadow:var(--focus-ring)}
-  .field.error{border-color:var(--danger)}
-
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-16);padding:20px}
-  .card.raised{box-shadow:var(--shadow-raised);border-color:transparent}
-
-  .badge{display:inline-flex;align-items:center;gap:6px;border-radius:var(--radius-pill);padding:3px 10px;font:var(--caption);font-family:var(--sans)}
-  .badge.clay{background:var(--clay-soft);color:var(--clay)}
-  .badge.neutral{background:var(--surface-sunken);color:var(--text-secondary);border:1px solid var(--border)}
-  .status{display:inline-flex;align-items:center;gap:7px;border-radius:var(--radius-pill);padding:5px 12px;font-size:13px;font-weight:500;letter-spacing:-.1px;border:1px solid}
-  .status .dot{width:6px;height:6px;border-radius:50%}
-  .status.ok{background:var(--success-soft);border-color:var(--success-border);color:var(--success)}
-  .status.ok .dot{background:var(--success)}
-  .status.warn{background:var(--warning-soft);border-color:var(--warning-border);color:var(--warning)}
-  .status.warn .dot{background:var(--warning)}
-  .status.err{background:var(--danger-soft);border-color:var(--danger-border);color:var(--danger)}
-  .status.err .dot{background:var(--danger)}
-
-  /* model selector */
-  .model-pill{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 8px 0 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-pill);font:var(--body-strong);font-family:var(--sans);color:var(--text);cursor:pointer}
-  .model-pill .chev{color:var(--text-muted)}
-
-  /* chat */
-  .chat{max-width:640px;display:grid;gap:20px;margin-top:20px}
-  .msg{display:flex;gap:14px}
-  .avatar{width:30px;height:30px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--clay-soft)}
-  .msg .body{padding-top:3px}
-  .msg .who{font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-bottom:5px;letter-spacing:.03em}
-  .msg.assistant .text{font:var(--body-l);font-family:var(--serif);color:var(--text)}
-  .msg.user{justify-content:flex-end}
-  .msg.user .bubble{background:var(--bg-panel);border:1px solid var(--border);border-radius:var(--radius-16);border-top-right-radius:6px;padding:12px 16px;font:var(--body);font-family:var(--sans);max-width:75%}
-
-  /* composer */
-  .composer{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-24);padding:14px 14px 10px;box-shadow:var(--shadow-soft);max-width:640px;margin-top:20px}
-  .composer:focus-within{border-color:var(--clay-border)}
-  .composer .input{min-height:26px;color:var(--text);font:var(--body);font-family:var(--sans)}
-  .composer .input.placeholder{color:var(--text-faint)}
-  .composer .row{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
-  .composer .send{width:34px;height:34px;border-radius:var(--radius-8);background:var(--clay);color:var(--on-clay);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer}
-
-  /* code block */
-  .codeblock{background:var(--surface-sunken);border:1px solid var(--border);border-radius:var(--radius-12);overflow:hidden;max-width:640px;margin-top:20px}
-  .codeblock .head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--text-muted)}
-  .codeblock pre{margin:0;padding:16px;overflow-x:auto;font:var(--code);color:var(--text)}
-  .codeblock .cp{background:none;border:none;color:var(--text-muted);font-family:var(--sans);font-size:11px;cursor:pointer;display:inline-flex;gap:5px;align-items:center}
-  .tok-key{color:var(--clay)}.tok-str{color:var(--success)}.tok-com{color:var(--text-faint)}
-
-  /* toast + tooltip */
-  .toast{display:inline-flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-12);padding:12px 16px;box-shadow:var(--shadow-overlay);font-size:14px}
-  .toast .ic{width:8px;height:8px;border-radius:50%}
-  .tooltip{display:inline-block;background:var(--text);color:var(--bg);font-size:12.5px;padding:6px 10px;border-radius:var(--radius-8);box-shadow:var(--shadow-overlay)}
-
-  /* toggle + checkbox */
-  .switch{width:44px;height:26px;border-radius:var(--radius-pill);background:var(--clay);position:relative;cursor:pointer;flex:none}
-  .switch.off{background:var(--border-strong)}
-  .switch i{position:absolute;top:3px;left:21px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .18s}
-  .switch.off i{left:3px}
-  .check{width:22px;height:22px;border-radius:6px;background:var(--clay);display:inline-flex;align-items:center;justify-content:center;color:var(--on-clay)}
-
-  /* skeleton */
-  .skel{background:var(--skeleton);border-radius:6px;position:relative;overflow:hidden}
-  .skel::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:shimmer 1.4s infinite}
-  :root[data-theme="dark"] .skel::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent)}
-  @keyframes shimmer{100%{transform:translateX(100%)}}
-
-  /* thinking dots */
-  .thinking{display:inline-flex;gap:5px;align-items:center}
-  .thinking i{width:7px;height:7px;border-radius:50%;background:var(--clay);animation:pulse 1.2s infinite}
-  .thinking i:nth-child(2){animation-delay:.2s}.thinking i:nth-child(3){animation-delay:.4s}
-  @keyframes pulse{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
-
-  /* tables */
-  .scroll{overflow-x:auto;margin-top:20px;border:1px solid var(--border);border-radius:var(--radius-12)}
-  table td,table th{padding:11px 14px;text-align:left;font-size:13.5px;border-bottom:1px solid var(--border);vertical-align:top}
-  table th{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-muted);font-weight:500;background:var(--surface-sunken)}
-  table tr:last-child td{border-bottom:none}
-
-  /* nav */
-  .toc{position:fixed;top:50%;left:16px;transform:translateY(-50%);display:none;flex-direction:column;gap:2px;z-index:40}
-  .toc a{font-family:var(--mono);font-size:10px;color:var(--text-faint);text-decoration:none;padding:3px 6px;border-radius:6px}
-  .toc a:hover{color:var(--clay);background:var(--surface)}
-  @media(min-width:1320px){.toc{display:flex}}
-
-  footer{border-top:1px solid var(--border);padding:40px 0 80px;color:var(--text-muted);font-size:13px;line-height:1.7}
-
-  @media(max-width:560px){
-    .plate{grid-template-columns:1fr;gap:8px}
-    h2{font-size:24px}
-  }
+  .phone{max-width:360px}
+  footer{border-top:1px solid var(--border);padding:36px 0 72px;color:var(--textHint);font:var(--bodyXS400);line-height:1.7}
 </style>
 </head>
-<body>
-
-<div class="toolbar">
-  <button class="toggle" id="themeToggle" aria-label="Toggle theme"><span id="themeIcon">◐</span> <span id="themeLabel">Dark</span></button>
-</div>
-
-<nav class="toc" aria-label="Sections">
-  <a href="#start">01</a><a href="#brand">02</a><a href="#colour">03</a><a href="#type">04</a>
-  <a href="#space">05</a><a href="#shape">06</a><a href="#elevation">07</a><a href="#components">08</a>
-  <a href="#icons">09</a><a href="#motion">10</a><a href="#figma">11</a>
-</nav>
-
+<body class="hy-page">
 <div class="wrap">
 
-<!-- ============================== MASTHEAD ============================== -->
 <header class="mast">
-  <div class="brandmark">
-    <svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
-      <g fill="var(--clay)">
-        <rect x="46" y="6"  width="8" height="88" rx="4"/>
-        <rect x="46" y="6"  width="8" height="88" rx="4" transform="rotate(45 50 50)"/>
-        <rect x="46" y="6"  width="8" height="88" rx="4" transform="rotate(90 50 50)"/>
-        <rect x="46" y="6"  width="8" height="88" rx="4" transform="rotate(135 50 50)"/>
-        <rect x="46" y="6"  width="8" height="88" rx="4" transform="rotate(22 50 50)"/>
-        <rect x="46" y="6"  width="8" height="88" rx="4" transform="rotate(67 50 50)"/>
-        <rect x="46" y="6"  width="8" height="88" rx="4" transform="rotate(112 50 50)"/>
-        <rect x="46" y="6"  width="8" height="88" rx="4" transform="rotate(157 50 50)"/>
-      </g>
-    </svg>
-    <span class="wordmark">Claude</span>
-  </div>
-  <p class="eyebrow">Design language · v1.0</p>
-  <h1>Claude<br>Design System</h1>
-  <p class="lede">The tokens and components behind Claude's calm, human, unhurried surface — a warm ivory canvas, one clay accent, answers set in serif, and a real dark mode. Build the product and the Figma library from this page.</p>
+  <p class="eyebrow">Source of truth · Flutter build v2.12.0</p>
+  <h1>Hubby eSIM<br>Design System</h1>
+  <p class="lede">Every token and component the app ships, encoded as reusable <code>tokens.css</code> + <code>components.css</code>. Build future designs from these files and they inherit the app's conventions by construction — the specimens below render the real components.</p>
   <div class="facts">
-    <span>1 accent · clay</span><span>2 themes · light + dark</span><span>Serif answers, sans UI</span><span>4-based spacing</span>
+    <span>Brand = 1 variable</span><span>No dark mode</span><span>Touch only · no hover</span><span>Flat + 2 exceptions</span><span>GeneralSans</span>
   </div>
 </header>
 
-<!-- ============================== 01 READ FIRST ============================== -->
+<!-- 01 -->
 <section id="start">
   <h2><span class="num">01</span> Read this first</h2>
-  <p class="intro">Five decisions shape everything below. If you only remember these, the rest follows.</p>
+  <p class="intro">Five decisions shape how everything is structured. The rest is detail.</p>
   <ul class="keys">
-    <li><span class="k">01</span><span><b>The canvas is warm, not white.</b> Every screen sits on ivory <code>#FAF9F5</code> with cream <code>#F0EEE6</code> panels. Pure white is reserved for raised cards and menus. Grey-white backgrounds read as "some other product."</span></li>
-    <li><span class="k">02</span><span><b>One accent: clay.</b> The coral <code>#D97757</code> is the only brand colour. It carries primary actions, the send button, focus rings, links and the logo — and nothing competes with it. Everything else is warm neutral or muted semantic.</span></li>
-    <li><span class="k">03</span><span><b>Claude speaks in serif, the UI speaks in sans.</b> Assistant reading copy is set in the serif at a generous 162% line-height; buttons, labels and chrome are sans. This split is the single most recognisable thing about the interface.</span></li>
-    <li><span class="k">04</span><span><b>There is a dark mode.</b> A warm charcoal — never pure black. Every token has a light and a dark value; design both, and let surfaces stay warm in both.</span></li>
-    <li><span class="k">05</span><span><b>Quiet by default, soft when it lifts.</b> Most surfaces are flat with a hairline border. Only menus, dialogs and toasts cast a shadow, and even then it's soft and warm — never a hard drop.</span></li>
+    <li><span class="k">01</span><span><b>The brand colour is a variable, not a value.</b> Orange <code>#FF8800</code> is only Hubby's own default — every partner overrides it at runtime. Buttons, pills, badges, progress fills and the nav bar all bind to <code>--brand</code>. Never paint a brand hex.</span></li>
+    <li><span class="k">02</span><span><b>There is no dark mode.</b> One light theme. A dark variant would be new design work, not a port — don't build one unless product asks.</span></li>
+    <li><span class="k">03</span><span><b>One button, three variants.</b> 52px tall, 10px radius, 18/500 label. Filled, outlined, soft. No other button spec exists.</span></li>
+    <li><span class="k">04</span><span><b>Flat, with one exception.</b> Pages, cards, bars and buttons cast no shadow. Only dialogs and bottom sheets lift.</span></li>
+    <li><span class="k">05</span><span><b>Touch only — no hover.</b> Design pressed, focused and disabled. Hover is deliberately switched off in code.</span></li>
   </ul>
 </section>
 
-<!-- ============================== 02 BRAND ============================== -->
-<section id="brand">
-  <h2><span class="num">02</span> Brand foundations</h2>
-  <p class="intro">Claude is one brand, not a white label. The personality is warm, human and unhurried — an assistant that feels like a thoughtful colleague, not a dashboard. Three qualities drive every visual choice.</p>
-  <div class="two">
-    <div class="card">
-      <div class="badge clay" style="margin-bottom:10px">Warm</div>
-      <p style="font-size:14.5px;line-height:1.55;color:var(--text-secondary)">Earthy ivory and clay over cold blue-grey. The palette borrows from paper, book cloth and kraft — materials, not screens.</p>
-    </div>
-    <div class="card">
-      <div class="badge clay" style="margin-bottom:10px">Calm</div>
-      <p style="font-size:14.5px;line-height:1.55;color:var(--text-secondary)">Generous whitespace, few borders, one accent. Nothing shouts. The reading experience is the interface.</p>
-    </div>
-    <div class="card">
-      <div class="badge clay" style="margin-bottom:10px">Human</div>
-      <p style="font-size:14.5px;line-height:1.55;color:var(--text-secondary)">A serif voice, soft corners and gentle motion. Precise without feeling clinical.</p>
+<!-- 02 -->
+<section id="partner">
+  <h2><span class="num">02</span> Partner theming</h2>
+  <p class="intro">Hubby ships white-labelled: the same screen renders in a partner's colour, fetched at runtime. In this system that's a single override — set the brand tokens on a wrapper class and the whole subtree re-skins. Try it:</p>
+  <div class="partnerbar" id="partnerbar">
+    <button class="pbtn active" data-cls="">Hubby · #FF8800</button>
+    <button class="pbtn" data-cls="partner-a">Partner A · #1F6FEB</button>
+    <button class="pbtn" data-cls="partner-b">Partner B · #0F9B6C</button>
+  </div>
+  <div class="previewbox" id="preview">
+    <div class="demo" style="margin-top:0">
+      <span class="hy-badge"><span style="width:6px;height:6px;border-radius:50%;background:var(--brand);display:block"></span>Popular</span>
+      <button class="hy-btn hy-btn--filled hy-btn--wrap">Buy now</button>
+      <button class="hy-btn hy-btn--soft hy-btn--wrap">View all bundles</button>
+      <div class="hy-progress" style="width:120px"><div class="hy-progress__fill" style="width:60%"></div></div>
     </div>
   </div>
-
-  <h3>The mark</h3>
-  <div class="demo-row">
-    <svg width="52" height="52" viewBox="0 0 100 100" aria-hidden="true">
-      <g fill="var(--clay)">
-        <rect x="46" y="6" width="8" height="88" rx="4"/><rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(45 50 50)"/>
-        <rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(90 50 50)"/><rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(135 50 50)"/>
-        <rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(22 50 50)"/><rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(67 50 50)"/>
-        <rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(112 50 50)"/><rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(157 50 50)"/>
-      </g>
-    </svg>
-    <div style="width:52px;height:52px;border-radius:12px;background:var(--clay);display:flex;align-items:center;justify-content:center">
-      <svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true"><g fill="var(--on-clay)">
-        <rect x="46" y="6" width="8" height="88" rx="4"/><rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(45 50 50)"/>
-        <rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(90 50 50)"/><rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(135 50 50)"/>
-        <rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(22 50 50)"/><rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(67 50 50)"/>
-        <rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(112 50 50)"/><rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(157 50 50)"/>
-      </g></svg>
-    </div>
-    <span class="wordmark" style="font-family:var(--serif);font-weight:600;font-size:26px">Claude</span>
-  </div>
-  <p class="note">The sunburst asterisk drawn here is a functional stand-in for layout and spacing — swap in the official trademarked artwork before anything ships. The mark appears in clay on ivory, or knocked out in <code>on-clay</code> on a clay tile. Wordmark is the serif at 600.</p>
-
   <div class="call">
     <span class="h">Design constraint</span>
-    <p>The accent is <b>one</b> colour. Resist adding a second brand hue for "variety" — kraft and manilla exist for illustration and decoration only, never for interactive elements. If two things both want the accent, one of them isn't primary.</p>
+    <p>Anything a partner can recolour must bind to <code>--brand</code> (or <code>--brand-soft</code> / <code>--brand-pressed</code>). Contrast limits between a partner colour and white labels are owned by product &amp; partnerships at onboarding — not the library.</p>
   </div>
 </section>
 
-<!-- ============================== 03 COLOUR ============================== -->
+<!-- 03 -->
 <section id="colour">
   <h2><span class="num">03</span> Colour</h2>
-  <p class="intro">One warm palette in two themes. The names below are the token names — reuse them verbatim as Figma variables so a developer maps them without a translation step. Toggle the theme (top-right) to preview every swatch in dark.</p>
+  <p class="intro">One palette, no dark variant. Names are the exact code tokens — reuse them verbatim.</p>
 
   <h3>Surfaces &amp; borders</h3>
-  <div class="sw-grid">
-    <div class="sw"><span class="chip" style="background:var(--bg)"></span><div class="meta"><b>bg</b><span>ivory canvas · every screen</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--bg-panel)"></span><div class="meta"><b>bg-panel</b><span>cream · sidebars, wells</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--surface)"></span><div class="meta"><b>surface</b><span>raised cards, menus</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--surface-sunken)"></span><div class="meta"><b>surface-sunken</b><span>code, inset fields</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--border)"></span><div class="meta"><b>border</b><span>default hairline</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--border-strong)"></span><div class="meta"><b>border-strong</b><span>emphasis outline</span></div></div>
+  <div class="grid">
+    <div class="sw"><span class="chip" style="background:var(--background)"></span><div><b>background</b><span>#FAF8F4 · every page</span></div></div>
+    <div class="sw"><span class="chip" style="background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)"></span><div><b>surface</b><span>#FFFFFF · cards, sheets</span></div></div>
+    <div class="sw"><span class="chip" style="background:var(--border)"></span><div><b>border</b><span>#E8E6E0</span></div></div>
+    <div class="sw"><span class="chip" style="background:var(--borderStrong)"></span><div><b>borderStrong</b><span>#D4D2CC</span></div></div>
+    <div class="sw"><span class="chip" style="background:var(--staticSecondaryColor)"></span><div><b>staticSecondaryColor</b><span>#FFF8EA · warm tint</span></div></div>
+    <div class="sw"><span class="chip" style="background:var(--skeleton)"></span><div><b>skeleton</b><span>#EBEBEB · loading</span></div></div>
   </div>
 
-  <h3>Ink — text &amp; neutrals</h3>
+  <h3>Grayscale — text &amp; neutrals</h3>
   <div class="ramp">
-    <div style="background:var(--text);color:var(--bg)">text</div>
-    <div style="background:var(--text-secondary);color:var(--bg)">secondary</div>
-    <div style="background:var(--text-muted);color:var(--bg)">muted</div>
-    <div style="background:var(--text-faint);color:var(--bg)">faint</div>
-    <div style="background:var(--border-strong);color:var(--text)">strong</div>
-    <div style="background:var(--border);color:var(--text)">border</div>
-    <div style="background:var(--surface-sunken);color:var(--text)">sunken</div>
+    <div style="background:var(--grayscale100);color:#666">100</div>
+    <div style="background:var(--grayscale200);color:#666">200</div>
+    <div style="background:var(--grayscale300);color:#666">300</div>
+    <div style="background:var(--grayscale400);color:#474747">400</div>
+    <div style="background:var(--grayscale500);color:#fff">500</div>
+    <div style="background:var(--grayscale600);color:#fff">600</div>
+    <div style="background:var(--grayscale700);color:#fff">700</div>
+    <div style="background:var(--grayscale800);color:#fff">800</div>
+    <div style="background:var(--grayscale900);color:#fff">900</div>
   </div>
-  <div class="scroll">
-    <table>
-      <tr><th>Token</th><th>Role</th></tr>
-      <tr><td><code>text</code></td><td>Primary copy, headings — warm near-black</td></tr>
-      <tr><td><code>text-secondary</code></td><td>Supporting paragraphs, active labels</td></tr>
-      <tr><td><code>text-muted</code></td><td>Metadata, captions, placeholder-adjacent</td></tr>
-      <tr><td><code>text-faint</code></td><td>Placeholders, disabled, timestamps</td></tr>
-    </table>
-  </div>
-
-  <h3>Primary — clay</h3>
-  <div class="sw-grid">
-    <div class="sw"><span class="chip" style="background:var(--clay)"></span><div class="meta"><b>clay</b><span>primary action, links, focus</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--clay-hover)"></span><div class="meta"><b>clay-hover</b><span>hover fill</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--clay-active)"></span><div class="meta"><b>clay-active</b><span>pressed fill</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--clay-soft)"></span><div class="meta"><b>clay-soft</b><span>tint · badges, selection</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--clay-border)"></span><div class="meta"><b>clay-border</b><span>tinted outline</span></div></div>
-  </div>
-
-  <h3>Accent — warm earth <span style="font-family:var(--mono);font-size:12px;color:var(--text-faint);font-weight:400">· decorative only</span></h3>
-  <div class="sw-grid">
-    <div class="sw"><span class="chip" style="background:var(--kraft)"></span><div class="meta"><b>kraft</b><span>illustration, empty states</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--manilla)"></span><div class="meta"><b>manilla</b><span>backing shapes, dividers</span></div></div>
-  </div>
+  <p class="note"><code>900</code> primary text (alias <code>textPrimary</code>) · <code>700</code> secondary · <code>600</code> hints/captions · <code>500</code> disabled · <code>300</code> hairlines on white.</p>
 
   <h3>Semantic</h3>
-  <div class="sw-grid">
-    <div class="sw"><span class="chip" style="background:var(--success)"></span><div class="meta"><b>success</b><span>done, connected</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--success-soft)"></span><div class="meta"><b>success-soft</b><span>pill fill</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--danger)"></span><div class="meta"><b>danger</b><span>errors, destructive</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--danger-soft)"></span><div class="meta"><b>danger-soft</b><span>pill fill</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--warning)"></span><div class="meta"><b>warning</b><span>limits, caution</span></div></div>
-    <div class="sw"><span class="chip" style="background:var(--info)"></span><div class="meta"><b>info</b><span>neutral notices</span></div></div>
+  <div class="grid">
+    <div class="sw"><span class="chip" style="background:var(--success)"></span><div><b>success</b><span>#1DB681</span></div></div>
+    <div class="sw"><span class="chip" style="background:var(--lightSuccess)"></span><div><b>lightSuccess</b><span>#DDF4EC</span></div></div>
+    <div class="sw"><span class="chip" style="background:var(--danger)"></span><div><b>danger</b><span>#FA3256</span></div></div>
+    <div class="sw"><span class="chip" style="background:var(--lightDanger)"></span><div><b>lightDanger</b><span>#FEE0E6</span></div></div>
+    <div class="sw"><span class="chip" style="background:var(--staticGreen)"></span><div><b>staticGreen</b><span>#03BF62 · install</span></div></div>
   </div>
-  <p class="note">Semantics are deliberately desaturated so they sit inside a warm palette without turning into traffic lights. Each has a <code>-soft</code> fill and a <code>-border</code> for pills. Never use clay for success or danger — the accent stays brand-only.</p>
+  <p class="note">No standalone warning colour — the <code>statusWarning</code> ramp is the only warning treatment.</p>
+
+  <h3>Status ramps — three complete sets</h3>
+  <p class="note" style="margin-top:6px">Each set is bg + border + dot + text, used together by the status pill. Never mix across sets.</p>
+  <div class="demo">
+    <span class="hy-status hy-status--warning"><span class="hy-status__dot"></span>Ready to install</span>
+    <span class="hy-status hy-status--success"><span class="hy-status__dot"></span>Connected</span>
+    <span class="hy-status hy-status--danger"><span class="hy-status__dot"></span>Not installed</span>
+  </div>
+
+  <h3>Region gradients</h3>
+  <div class="grid">
+    <div class="sw"><span class="chip" style="background:var(--gradEurope)"></span><div><b>Europe</b><span>#ACCBEE → #E7F0FD</span></div></div>
+    <div class="sw"><span class="chip" style="background:var(--gradAsia)"></span><div><b>Asia</b><span>#FCB69F → #FFECD2</span></div></div>
+    <div class="sw"><span class="chip" style="background:var(--gradNorthAmerica)"></span><div><b>North America</b><span>#D4CDE9 → #F3E7E9</span></div></div>
+    <div class="sw"><span class="chip" style="background:var(--gradOceania)"></span><div><b>Oceania</b><span>#ACE0F9 → #FFF1EB</span></div></div>
+  </div>
 </section>
 
-<!-- ============================== 04 TYPOGRAPHY ============================== -->
+<!-- 04 -->
 <section id="type">
   <h2><span class="num">04</span> Typography</h2>
-  <p class="intro">Two families. <b>A serif</b> for display and for Claude's own reading copy; <b>a grotesque sans</b> for every piece of UI chrome. Specimens render in <b>Fraunces</b> and <b>Hanken Grotesk</b> as open stand-ins for the licensed faces.</p>
+  <p class="intro">One family — <b>GeneralSans</b>, weights 400/500/600, no italic. Leading is a percentage tier chosen by size: 110 numerals · 125 display · 130 headings · 140 body · 150 small. (Specimens fall back to the system sans where GeneralSans isn't installed.)</p>
 
-  <div class="call">
-    <span class="h">The core split</span>
-    <p>Anything Claude "says" — answers, long-form reading — is <b>serif</b>. Anything the app "does" — buttons, menus, labels, inputs, metadata — is <b>sans</b>. Get this one rule right and the interface reads as Claude even before colour is applied.</p>
+  <h3>Headings</h3>
+  <div class="plate"><span class="label"><b>title1</b>32 · 600 · 125%</span><span style="font:var(--title1)">Unlimited data</span></div>
+  <div class="plate"><span class="label"><b>title3</b>24 · 600 · 130%</span><span style="font:var(--title3)">Your eSIMs</span></div>
+  <div class="plate"><span class="label"><b>title5</b>20 · 600 · 130%</span><span style="font:var(--title5);letter-spacing:var(--tracking-tight)">Section heading</span></div>
+  <div class="plate"><span class="label"><b>title7</b>16 · 600 · 140%</span><span style="font:var(--title7)">Field label</span></div>
+
+  <h3>Body</h3>
+  <div class="plate"><span class="label"><b>bodyL500</b>20 · 500 · 140%</span><span style="font:var(--bodyL500)">Prices, card names</span></div>
+  <div class="plate"><span class="label"><b>bodyS500</b>16 · 500 · 140%<br><span style="color:var(--brand)">★ workhorse</span></span><span style="font:var(--bodyS500)">The most-used style — body copy, list text, nav labels, snackbars.</span></div>
+  <div class="plate"><span class="label"><b>bodyXS400</b>14 · 400 · 150%</span><span style="font:var(--bodyXS400)">Per-day pricing, fine print</span></div>
+  <div class="plate"><span class="label"><b>bodyXXS400</b>12 · 400 · 150%</span><span style="font:var(--bodyXXS400)">Struck-through original price</span></div>
+
+  <h3>Labels &amp; numerals</h3>
+  <div class="plate"><span class="label"><b>labelS</b>13 · 500 · 150% · −0.2</span><span style="font:var(--labelS);letter-spacing:var(--tracking-tight)">Status pill text</span></div>
+  <div class="plate"><span class="label"><b>dataMeterText</b>42 · 600 · 125%</span><span style="font:var(--dataMeterText)">4.62 GB</span></div>
+
+  <div class="scroll">
+    <table>
+      <tr><th>Tracking token</th><th>Value</th><th>Used for</th></tr>
+      <tr><td><code>tight</code></td><td>−0.2px</td><td>20px headings, status pill text</td></tr>
+      <tr><td><code>label</code></td><td>0.6px</td><td>Instruction section headers</td></tr>
+      <tr><td><code>wide</code></td><td>1.2px</td><td>ICCID / activation codes</td></tr>
+      <tr><td><code>eyebrow</code></td><td>1.5px</td><td>Uppercase promo eyebrows</td></tr>
+      <tr><td><code>otp</code></td><td>4.0px</td><td>One-time-password digits</td></tr>
+    </table>
   </div>
-
-  <h3>Display &amp; titles — serif</h3>
-  <div class="plate"><span class="label"><b>display1</b>48 · 600 · 108%</span><span style="font:var(--display1)">Where should we begin?<span class="tier">serif</span></span></div>
-  <div class="plate"><span class="label"><b>display2</b>36 · 600 · 112%</span><span style="font:var(--display2)">Good afternoon<span class="tier">serif</span></span></div>
-  <div class="plate"><span class="label"><b>title1</b>28 · 600 · 120%</span><span style="font:var(--title1)">Your projects<span class="tier">serif</span></span></div>
-  <div class="plate"><span class="label"><b>title2</b>22 · 500 · 132%</span><span style="font:var(--title2)">Summarise this thread<span class="tier">serif</span></span></div>
-
-  <h3>UI headings — sans</h3>
-  <div class="plate"><span class="label"><b>heading1</b>20 · 600 · 130%</span><span style="font:var(--heading1)">Settings<span class="tier">sans</span></span></div>
-  <div class="plate"><span class="label"><b>heading2</b>17 · 600 · 140%</span><span style="font:var(--heading2)">Model &amp; behaviour<span class="tier">sans</span></span></div>
-  <div class="plate"><span class="label"><b>heading3</b>15 · 600 · 140%</span><span style="font:var(--heading3)">Custom instructions<span class="tier">sans</span></span></div>
-
-  <h3>Reading &amp; body</h3>
-  <div class="plate"><span class="label"><b>body-l</b>17 · 400 · 162%<br><span style="color:var(--clay)">★ answers</span></span><span style="font:var(--body-l)">Claude's reading copy sits in the serif at a generous line-height — the most-read style in the product, tuned for long answers.</span></div>
-  <div class="plate"><span class="label"><b>body</b>15 · 400 · 160%<br><span style="color:var(--clay)">★ workhorse</span></span><span style="font:var(--body)">The UI workhorse — menus, settings, form text, secondary copy. Sans, comfortable, everywhere.</span></div>
-  <div class="plate"><span class="label"><b>body-strong</b>15 · 500 · 150%</span><span style="font:var(--body-strong)">Button labels, active nav, emphasis inside body.</span></div>
-  <div class="plate"><span class="label"><b>small</b>13 · 400 · 150%</span><span style="font:var(--small)">Helper text, secondary descriptions, table cells.</span></div>
-  <div class="plate"><span class="label"><b>caption</b>12 · 500 · 140%</span><span style="font:var(--caption)">TIMESTAMPS · BADGES · META LABELS</span></div>
-
-  <h3>Code — mono</h3>
-  <div class="plate"><span class="label"><b>code</b>13.5 · 400 · 155%</span><span style="font:var(--code)">const model = "claude-opus";</span></div>
-
-  <h3>Letter-spacing</h3>
-  <p class="note">Tracking is near-zero everywhere. Display and titles take <code>-0.02em</code> to <code>-0.01em</code> to tighten the serif; caption/eyebrow labels take <code>+0.06em</code> with uppercase. Body and code are always <code>0</code>.</p>
 </section>
 
-<!-- ============================== 05 SPACING ============================== -->
+<!-- 05 -->
 <section id="space">
   <h2><span class="num">05</span> Spacing</h2>
-  <p class="intro">A single 4-based scale in pixels. Six steps carry the vast majority of layout — build those as spacing variables and treat the larger jumps as section rhythm.</p>
-
-  <h3>Core scale</h3>
-  <div class="plate"><span class="label"><b>4</b>tight</span><div class="sp"><span class="bar" style="width:4px"></span><span class="n">icon → label, chip padding</span></div></div>
-  <div class="plate"><span class="label"><b>8</b>standard gap</span><div class="sp"><span class="bar" style="width:8px"></span><span class="n">stacked rows, inline groups</span></div></div>
+  <p class="intro">One numeric scale in logical pixels. Six core steps carry ~85% of layout.</p>
+  <div class="plate"><span class="label"><b>4</b>tight gaps</span><div class="sp"><span class="bar" style="width:4px"></span><span class="n">icon → label, badge padding</span></div></div>
+  <div class="plate"><span class="label"><b>8</b>standard gap</span><div class="sp"><span class="bar" style="width:8px"></span><span class="n">stacked rows, button rows</span></div></div>
   <div class="plate"><span class="label"><b>12</b>inner padding</span><div class="sp"><span class="bar" style="width:12px"></span><span class="n">pill padding, compact rows</span></div></div>
-  <div class="plate"><span class="label"><b>16</b>the default</span><div class="sp"><span class="bar" style="width:16px"></span><span class="n">card padding, field padding</span></div></div>
-  <div class="plate"><span class="label"><b>24</b>block gap</span><div class="sp"><span class="bar" style="width:24px"></span><span class="n">between content blocks, message gap</span></div></div>
-  <div class="plate"><span class="label"><b>32</b>section</span><div class="sp"><span class="bar" style="width:32px"></span><span class="n">above a footer action, page gutters</span></div></div>
-
-  <h3>Also in use</h3>
-  <div class="demo-row" style="gap:10px 20px">
-    <div class="sp"><span class="bar" style="width:2px"></span><span class="n">2</span></div>
-    <div class="sp"><span class="bar" style="width:20px"></span><span class="n">20</span></div>
-    <div class="sp"><span class="bar" style="width:40px"></span><span class="n">40</span></div>
-    <div class="sp"><span class="bar" style="width:48px"></span><span class="n">48</span></div>
-    <div class="sp"><span class="bar" style="width:64px"></span><span class="n">64</span></div>
-  </div>
-  <p class="note">Fixed component sizes live outside the scale: control heights <code>36 / 44 / 48 / 52</code>, avatar <code>30</code>, max reading width <code>640–720</code>.</p>
+  <div class="plate"><span class="label"><b>16</b>the default</span><div class="sp"><span class="bar" style="width:16px"></span><span class="n">page &amp; card padding, button sides</span></div></div>
+  <div class="plate"><span class="label"><b>24</b>section gap</span><div class="sp"><span class="bar" style="width:24px"></span><span class="n">between content blocks, sheet padding</span></div></div>
+  <div class="plate"><span class="label"><b>32</b>major break</span><div class="sp"><span class="bar" style="width:32px"></span><span class="n">above a footer action, dialog inset</span></div></div>
+  <p class="note">Also in use: <code>2 6 10 14 15 18 20 22 26 28</code>. Fixed component sizes: <code>36 40 44 48 52 56 64 68 80 140</code>. <code>52</code> is the button height.</p>
 </section>
 
-<!-- ============================== 06 SHAPE ============================== -->
+<!-- 06 -->
 <section id="shape">
   <h2><span class="num">06</span> Shape</h2>
-  <p class="intro">Soft, generous corners — Claude rounds more than most product UIs. Eight radii and four stroke widths cover everything.</p>
-
-  <h3>Corner radii</h3>
-  <div class="demo-row">
-    <div class="rad" style="border-radius:6px">6</div>
+  <p class="intro">Eight corner radii and six stroke widths. Nothing else.</p>
+  <div class="demo">
+    <div class="rad" style="border-radius:4px">4</div>
     <div class="rad" style="border-radius:8px">8</div>
     <div class="rad" style="border-radius:10px">10</div>
     <div class="rad" style="border-radius:12px">12</div>
+    <div class="rad" style="border-radius:14px">14</div>
     <div class="rad" style="border-radius:16px">16</div>
-    <div class="rad" style="border-radius:20px">20</div>
     <div class="rad" style="border-radius:24px">24</div>
     <div class="rad" style="border-radius:999px">pill</div>
   </div>
   <div class="scroll">
     <table>
       <tr><th>Radius</th><th>Applied to</th></tr>
-      <tr><td><code>6 / 8</code></td><td>Inline code, avatars, small chips, skeleton blocks</td></tr>
-      <tr><td><code>10</code></td><td><b>Buttons</b>, icon buttons, send button</td></tr>
-      <tr><td><code>12</code></td><td>Fields, code blocks, toasts, list rows</td></tr>
-      <tr><td><code>16</code></td><td><b>Cards</b>, message bubbles, dialogs</td></tr>
-      <tr><td><code>20 / 24</code></td><td><b>The composer</b>, bottom sheets, large panels</td></tr>
-      <tr><td><code>pill</code></td><td>Badges, status pills, the model selector, switches</td></tr>
+      <tr><td><code>10</code></td><td><b>Buttons</b>, icon tiles</td></tr>
+      <tr><td><code>12</code></td><td>Bundle rows, note cards, tab indicator</td></tr>
+      <tr><td><code>14</code></td><td><b>Default card</b>, snackbars</td></tr>
+      <tr><td><code>16</code></td><td><b>Emphasised card</b>, inputs, dialogs, FAB</td></tr>
+      <tr><td><code>24</code></td><td><b>Bottom-sheet top corners</b></td></tr>
+      <tr><td><code>pill</code></td><td>Status pills, badges, drag handles</td></tr>
     </table>
   </div>
-
-  <h3>Stroke widths</h3>
-  <div class="demo-row" style="gap:24px">
-    <div style="text-align:center"><div class="strokebox" style="border:.5px solid var(--text)"></div><div class="caption-m">hairline 0.5</div></div>
-    <div style="text-align:center"><div class="strokebox" style="border:1px solid var(--text)"></div><div class="caption-m">thin 1</div></div>
-    <div style="text-align:center"><div class="strokebox" style="border:1.5px solid var(--text)"></div><div class="caption-m">regular 1.5</div></div>
-    <div style="text-align:center"><div class="strokebox" style="border:2px solid var(--text)"></div><div class="caption-m">thick 2</div></div>
-  </div>
-  <p class="note"><code>thin 1</code> is the default hairline on cards and dividers · <code>regular 1.5</code> outlines fields and the composer so focus is legible · <code>thick 2</code> is rare, reserved for selected states.</p>
+  <p class="note">Strokes: <code>hairline 0.5 · thin 1 · regular 1.2</code> (default card) <code>· strong 1.5</code> (emphasised card) <code>· thick 2</code> (search bar) <code>· heavy 3</code> (step indicators).</p>
 </section>
 
-<!-- ============================== 07 ELEVATION ============================== -->
+<!-- 07 -->
 <section id="elevation">
   <h2><span class="num">07</span> Elevation</h2>
-  <p class="intro">Flat by default. Only transient surfaces lift, and their shadows are soft and warm — tinted toward the ink, never a hard black drop.</p>
-  <div class="demo-row" style="gap:24px;padding:8px 0">
-    <div style="text-align:center"><div class="shbox" style="border:1px solid var(--border)">flat</div><div class="caption-m">cards · rows · bars</div></div>
-    <div style="text-align:center"><div class="shbox" style="box-shadow:var(--shadow-soft)">soft</div><div class="caption-m">composer · raised card</div></div>
-    <div style="text-align:center"><div class="shbox" style="box-shadow:var(--shadow-raised)">raised</div><div class="caption-m">menus · popovers</div></div>
-    <div style="text-align:center"><div class="shbox" style="box-shadow:var(--shadow-overlay)">overlay</div><div class="caption-m">dialogs · toasts</div></div>
-    <div style="text-align:center"><div class="shbox" style="box-shadow:var(--focus-ring)">ring</div><div class="caption-m">focus · 3px spread</div></div>
+  <p class="intro">Flat by default. Four shadow tokens; only two surface types lift.</p>
+  <div class="demo" style="gap:24px">
+    <div style="text-align:center"><div class="shbox" style="border:1px solid var(--border)">flat</div><div class="cap">pages · cards · bars · buttons</div></div>
+    <div style="text-align:center"><div class="shbox" style="box-shadow:var(--shadow-soft)">soft</div><div class="cap">avatar · raised card</div></div>
+    <div style="text-align:center"><div class="shbox" style="box-shadow:var(--shadow-sheet)">sheet</div><div class="cap">bottom sheets · casts up</div></div>
+    <div style="text-align:center"><div class="shbox" style="box-shadow:var(--ring)">ring</div><div class="cap">input halo · 0 blur, 3 spread</div></div>
   </div>
-  <div class="call">
-    <span class="h">Note</span>
-    <p><code>ring</code> is a <b>focus halo</b>, not a drop shadow — zero blur, 3px spread, clay at ~32%. Build it as a second stroke or box-shadow spread, not a blurred shadow. In dark mode shadows deepen (higher opacity) rather than lighten.</p>
-  </div>
+  <div class="call"><span class="h">Note</span><p><code>ring</code> is <b>not a drop shadow</b> — zero blur, 3px spread. Dialogs use their own ambient lift.</p></div>
 </section>
 
-<!-- ============================== 08 COMPONENTS ============================== -->
+<!-- 08 -->
 <section id="components">
   <h2><span class="num">08</span> Components</h2>
+  <p class="intro">Rendered live from <code>components.css</code>. Copy the markup and the conventions come with it.</p>
 
-  <h3>Buttons</h3>
-  <p class="note" style="margin-top:8px">44px default height · 10px radius · 15px/500 label · sans. Primary is the only filled variant; everything else recedes. Hover, active and focus states all exist (unlike touch-only apps).</p>
-  <div class="demo-row">
-    <button class="btn btn-primary">New chat</button>
-    <button class="btn btn-secondary">Cancel</button>
-    <button class="btn btn-ghost">Skip</button>
-    <button class="btn btn-danger">Delete</button>
-    <button class="icon-btn" aria-label="More">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-    </button>
+  <h3>Buttons — one spec, three variants</h3>
+  <div class="stack" style="max-width:420px">
+    <button class="hy-btn hy-btn--filled">Buy now <span class="cap" style="color:inherit;font-family:inherit;margin:0;opacity:.7"></span></button>
+    <button class="hy-btn hy-btn--outlined">Cancel</button>
+    <button class="hy-btn hy-btn--soft">View all bundles</button>
   </div>
-  <h4>States — primary</h4>
-  <div class="demo-row">
-    <button class="btn btn-primary">Rest</button>
-    <button class="btn btn-primary" style="background:var(--clay-hover)">Hover</button>
-    <button class="btn btn-primary" style="background:var(--clay-active)">Pressed</button>
-    <button class="btn btn-primary" style="box-shadow:var(--focus-ring)">Focus</button>
-    <button class="btn btn-primary is-disabled" disabled>Disabled</button>
-    <button class="btn btn-primary" style="width:120px"><span class="spinner"></span></button>
+  <h4>States</h4>
+  <div class="stack" style="max-width:420px">
+    <button class="hy-btn hy-btn--filled">Default</button>
+    <button class="hy-btn hy-btn--filled is-pressed">Pressed · 12% dark overlay</button>
+    <button class="hy-btn hy-btn--filled is-disabled" disabled>Disabled · 50% opacity</button>
+    <button class="hy-btn hy-btn--filled"><span class="hy-btn__spinner"></span></button>
   </div>
-  <p class="note">Focus uses the clay ring on every variant. A destructive action is the <code>danger</code> fill — there is no separate destructive shape. Ghost is for tertiary actions that must not compete.</p>
+  <p class="note"><b>No hover.</b> Focused reuses the pressed overlay at 8%. A destructive action is <code>hy-btn--danger</code> (filled with the danger colour).</p>
 
-  <h3>Inputs &amp; the composer</h3>
-  <div class="two" style="align-items:start">
-    <div>
-      <div style="display:grid;gap:10px;max-width:340px">
-        <input class="field" placeholder="Resting field">
-        <input class="field" value="Focused" style="border-color:var(--clay);box-shadow:var(--focus-ring)">
-        <input class="field error" value="Error — value invalid">
-      </div>
-      <p class="note">48px · 12px radius · 1.5px border. Focus swaps the border to clay and adds the ring. Error swaps to <code>danger</code>.</p>
-    </div>
-    <div>
-      <div class="composer">
-        <div class="input placeholder">Reply to Claude…</div>
-        <div class="row">
-          <button class="model-pill">Opus <span class="chev">▾</span></button>
-          <button class="send" aria-label="Send">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="6 11 12 5 18 11"/></svg>
-          </button>
-        </div>
-      </div>
-      <p class="note">The composer is the signature input: 24px radius, soft shadow, model selector inline, clay send button. Border warms to <code>clay-border</code> on focus.</p>
-    </div>
+  <h3>Inputs</h3>
+  <div class="stack">
+    <input class="hy-input" placeholder="Resting">
+    <input class="hy-input" value="Focused" style="border-color:var(--grayscale700)">
+    <input class="hy-input is-error" value="Error">
+    <input class="hy-input" value="Read-only" readonly>
+  </div>
+  <div class="hy-search" style="max-width:360px;margin-top:10px">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--textHint)" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+    <span class="hy-search__divider"></span>
+    <input placeholder="Search destinations">
   </div>
 
   <h3>Cards</h3>
-  <div class="two">
-    <div>
-      <div class="card"><b style="font-family:var(--heading2)">Default card</b><p style="font-size:14px;color:var(--text-muted);margin-top:6px">Surface fill · 1px border · radius 16 · flat</p></div>
-      <div class="caption-m">the dominant container</div>
-    </div>
-    <div>
-      <div class="card raised"><b style="font-family:var(--heading2)">Raised card</b><p style="font-size:14px;color:var(--text-muted);margin-top:6px">Surface fill · soft shadow · no border</p></div>
-      <div class="caption-m">popovers, floating panels</div>
-    </div>
+  <div class="demo" style="align-items:stretch">
+    <div class="hy-card" style="flex:1;min-width:200px"><b style="font:var(--title6)">Default card</b><div style="font:var(--bodyXS400);color:var(--textHint);margin-top:4px">1.2px border · radius 14 · flat</div></div>
+    <div class="hy-card hy-card--emphasised" style="flex:1;min-width:200px"><b style="font:var(--title6)">Emphasised card</b><div style="font:var(--bodyXS400);color:var(--textHint);margin-top:4px">1.5px border · radius 16</div></div>
+    <div class="hy-card is-selected" style="flex:1;min-width:200px"><b style="font:var(--title6)">Selected</b><div style="font:var(--bodyXS400);color:var(--textHint);margin-top:4px">7% brand tint + brand border</div></div>
   </div>
 
-  <h3>Chat — messages</h3>
-  <div class="chat">
-    <div class="msg user"><div class="bubble">Can you explain how a design system stays consistent across teams?</div></div>
-    <div class="msg assistant">
-      <div class="avatar">
-        <svg width="17" height="17" viewBox="0 0 100 100"><g fill="var(--clay)">
-          <rect x="46" y="6" width="8" height="88" rx="4"/><rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(45 50 50)"/>
-          <rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(90 50 50)"/><rect x="46" y="6" width="8" height="88" rx="4" transform="rotate(135 50 50)"/>
-        </g></svg>
+  <h3>Pills &amp; badges</h3>
+  <div class="demo">
+    <span class="hy-badge">Popular</span>
+    <span class="hy-status hy-status--success"><span class="hy-status__dot"></span>Connected</span>
+    <span class="hy-status hy-status--warning"><span class="hy-status__dot"></span>Ready to install</span>
+  </div>
+  <p class="note">Status copy varies by platform: "Ready to install" (Android) / "Ready to activate" (iOS); at destination "Ready to activate" (Android) / "Ready to connect" (iOS). Both strings ship per variant.</p>
+
+  <h3>Bottom sheet &amp; dialog</h3>
+  <div class="demo" style="align-items:flex-start;gap:24px">
+    <div class="hy-sheet phone">
+      <div class="hy-sheet__handle"></div>
+      <div style="font:var(--title4)">Top up your eSIM</div>
+      <div style="font:var(--bodyS500);color:var(--textHint);margin-top:4px">Pick a bundle to add.</div>
+      <div class="hy-card" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center"><b style="font:var(--bodyM500)">5 GB</b><span style="font:var(--bodyL500)">€12.50</span></div>
+      <button class="hy-btn hy-btn--filled" style="margin-top:16px">Continue</button>
+    </div>
+    <div class="hy-dialog">
+      <div class="hy-dialog__title">Delete account</div>
+      <div class="hy-dialog__body">This is permanent and all your purchases are lost.</div>
+      <div class="hy-dialog__actions">
+        <button class="hy-btn hy-btn--danger">Delete account</button>
+        <button class="hy-btn hy-btn--outlined">Cancel</button>
       </div>
-      <div class="body">
-        <div class="who">Claude</div>
-        <div class="text">A design system stays consistent when everyone draws from the same tokens rather than re-deciding values. The names become a shared vocabulary — <code>clay</code>, <code>surface</code>, <code>radius-16</code> — so a designer and an engineer are always talking about the same thing.</div>
-        <div class="thinking" style="margin-top:14px"><i></i><i></i><i></i></div>
-      </div>
     </div>
   </div>
-  <p class="note">User messages are a cream bubble, right-aligned, sans, with one clipped corner. Claude's messages are full-width, avatar-led, and set in the <b>serif</b> — no bubble. The pulsing dots are the "thinking" state; a streaming answer reveals text with a soft fade.</p>
 
-  <h3>Code block</h3>
-  <div class="codeblock">
-    <div class="head"><span>python</span><button class="cp"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copy</button></div>
-    <pre><span class="tok-com"># bind everything to the token</span>
-<span class="tok-key">def</span> button(label):
-    <span class="tok-key">return</span> Style(fill=<span class="tok-str">"clay"</span>, radius=<span class="tok-str">10</span>)</pre>
+  <h3>Bottom navigation</h3>
+  <div class="phone" style="border-radius:14px;overflow:hidden;border:1px solid var(--border);margin-top:18px">
+    <div class="hy-nav">
+      <button class="hy-nav__item is-active"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Shop</button>
+      <button class="hy-nav__item"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 18h6"/></svg>eSIM</button>
+      <button class="hy-nav__item"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Account</button>
+      <button class="hy-nav__item"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/></svg>Help</button>
+    </div>
   </div>
-  <p class="note">Sunken surface · 12px radius · header with language label + copy affordance · mono at 13.5. Syntax colours reuse semantic tokens (keywords in clay, strings in success) so the palette stays coherent.</p>
+  <p class="note">Four items on the brand fill. Selected = white icon + label (filled icon variant); unselected = <code>grayscale300</code>.</p>
 
-  <h3>Pills, badges &amp; status</h3>
-  <div class="demo-row">
-    <span class="badge clay">New</span>
-    <span class="badge neutral">Draft</span>
-    <span class="status ok"><span class="dot"></span>Connected</span>
-    <span class="status warn"><span class="dot"></span>Approaching limit</span>
-    <span class="status err"><span class="dot"></span>Failed</span>
+  <h3>Snackbars</h3>
+  <div class="stack">
+    <div class="hy-snackbar hy-snackbar--error">Something went wrong</div>
+    <div class="hy-snackbar hy-snackbar--success">Promo code applied</div>
+    <div class="hy-snackbar hy-snackbar--neutral">Copied to clipboard</div>
   </div>
-  <p class="note">Badges are 12/500 in a pill; the clay badge is the only branded one. Status pills add a 6px dot and pair a <code>-soft</code> fill with a <code>-border</code> and matching text — one semantic set, never mixed.</p>
-
-  <h3>Controls</h3>
-  <div class="demo-row" style="gap:28px">
-    <div style="display:flex;gap:10px;align-items:center"><span class="switch"><i></i></span><span class="small">On</span></div>
-    <div style="display:flex;gap:10px;align-items:center"><span class="switch off"><i></i></span><span class="small">Off</span></div>
-    <div style="display:flex;gap:10px;align-items:center"><span class="check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="small">Checked</span></div>
-    <button class="model-pill">Model: Sonnet <span class="chev">▾</span></button>
-  </div>
-
-  <h3>Overlays — toast &amp; tooltip</h3>
-  <div class="demo-row" style="gap:20px">
-    <div class="toast"><span class="ic" style="background:var(--success)"></span>Copied to clipboard</div>
-    <div class="toast"><span class="ic" style="background:var(--danger)"></span>Couldn't send — try again</div>
-    <div class="tooltip">Regenerate response</div>
-  </div>
-  <p class="note">Toasts float on the overlay shadow, 12px radius, a semantic dot + sans text. Tooltips invert — ink fill, canvas text — kept small and quiet.</p>
 
   <h3>Loading</h3>
-  <div style="display:grid;gap:8px;max-width:360px;margin-top:20px">
-    <div class="skel" style="height:20px;width:55%"></div>
-    <div class="skel" style="height:15px;width:90%"></div>
-    <div class="skel" style="height:15px;width:70%"></div>
+  <div class="stack">
+    <div class="hy-skeleton" style="height:22px;width:60%"></div>
+    <div class="hy-skeleton" style="height:16px;width:85%"></div>
+    <div class="hy-skeleton" style="height:16px;width:45%"></div>
+    <div class="hy-progress" style="margin-top:6px"><div class="hy-progress__fill" style="width:45%"></div></div>
   </div>
-  <p class="note">Skeletons are the <code>skeleton</code> token with a left-to-right shimmer; block heights track the type they replace. For Claude's own turn, the three pulsing clay dots stand in until the first token streams.</p>
+  <p class="note">Skeleton <code>#EBEBEB</code>, 4px radius, shimmer; heights track the text (12/16/22/28). Progress bar 4px tall, brand fill.</p>
 </section>
 
-<!-- ============================== 09 ICONOGRAPHY ============================== -->
-<section id="icons">
-  <h2><span class="num">09</span> Iconography</h2>
-  <p class="intro">A single line style: 1.5–2px stroke, rounded caps and joins, drawn on a 24px grid. Icons are quiet and monoline — they never carry the accent unless they <em>are</em> the action.</p>
-  <div class="demo-row" style="gap:22px;color:var(--text-secondary)">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l-7-7 7-7M5 12h14"/></svg>
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v6h6M20 20v-6h-6"/><path d="M20 9a8 8 0 0 0-14-3M4 15a8 8 0 0 0 14 3"/></svg>
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6-6-6M12 19h8"/></svg>
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
-  </div>
-  <div class="scroll">
-    <table>
-      <tr><th>Property</th><th>Value</th></tr>
-      <tr><td>Grid</td><td>24×24, drawn to a 20px live area</td></tr>
-      <tr><td>Stroke</td><td>1.8px default (1.5 at 20px, 2 at 28px) · round caps &amp; joins</td></tr>
-      <tr><td>Sizes</td><td><code>16 · 20 · 24 · 28</code> — buttons use 16–18 internally</td></tr>
-      <tr><td>Colour</td><td><code>currentColor</code> — inherits text colour; clay only when the icon is the primary action</td></tr>
-    </table>
-  </div>
-  <div class="call">
-    <span class="h">Rule</span>
-    <p>Icons stay monoline and inherit <code>currentColor</code> so they recolour correctly in dark mode and inside buttons for free. Don't hard-code a hex on an icon; let it take the ink of its context.</p>
-  </div>
-</section>
-
-<!-- ============================== 10 MOTION ============================== -->
-<section id="motion">
-  <h2><span class="num">10</span> Motion</h2>
-  <p class="intro">Motion is gentle and purposeful — it explains where things come from, it never performs. Three durations and one easing cover almost everything.</p>
-  <div class="scroll">
-    <table>
-      <tr><th>Token</th><th>Duration</th><th>Used for</th></tr>
-      <tr><td><code>motion-fast</code></td><td>150ms</td><td>Hovers, presses, toggles, focus rings</td></tr>
-      <tr><td><code>motion-base</code></td><td>250ms</td><td>Menus, toasts, message fade-in</td></tr>
-      <tr><td><code>motion-slow</code></td><td>400ms</td><td>Dialogs, sheets, theme cross-fade</td></tr>
-      <tr><td><code>ease</code></td><td>cubic-bezier(.2,.7,.2,1)</td><td>The default curve — soft in, soft out</td></tr>
-    </table>
-  </div>
-  <p class="note">Signature moments: the <b>streaming answer</b> reveals tokens with a short fade, the <b>thinking dots</b> pulse at 1.2s, and the <b>theme toggle</b> cross-fades surfaces at 300ms. Everything respects <code>prefers-reduced-motion</code> — when set, transitions collapse to a simple opacity change.</p>
-</section>
-
-<!-- ============================== 11 FIGMA / OPEN ============================== -->
+<!-- 09 -->
 <section id="figma">
-  <h2><span class="num">11</span> Building this in Figma</h2>
-  <p class="intro">How the tokens map onto Figma primitives. Keep the names identical to <code>tokens.css</code> so Code Connect wires up without a lookup table.</p>
+  <h2><span class="num">09</span> Using this system</h2>
   <div class="scroll">
     <table>
-      <tr><th>In Figma</th><th>From</th><th>Notes</th></tr>
-      <tr><td><b>Colour variables</b></td><td>Every colour token</td><td>Two modes — <code>light</code> and <code>dark</code> — on one collection. Names verbatim: <code>bg</code>, <code>clay</code>, <code>success-soft</code></td></tr>
-      <tr><td><b>Text styles</b></td><td>The 12 named styles</td><td>Set line-height as a <b>percentage</b>. Serif family on display + body-l; sans on the rest</td></tr>
-      <tr><td><b>Number variables</b></td><td>Spacing, radii, strokes</td><td>Spacing 4→64 · radii 6→24 + pill · strokes 0.5→2</td></tr>
-      <tr><td><b>Effect styles</b></td><td>soft · raised · overlay · ring</td><td><code>ring</code> is a spread, not a blur</td></tr>
-      <tr><td><b>Components</b></td><td>Button, field, composer, card, message, code block, badge, status, switch, toast, model pill</td><td>Button = variant × state; message = user / assistant; theme via variable mode</td></tr>
+      <tr><th>Surface</th><th>How to consume</th></tr>
+      <tr><td><b>Web / prototype</b></td><td>Import <code>tokens.css</code> then <code>components.css</code>; use the <code>hy-*</code> classes. Re-skin a partner with <code>class="partner-a"</code> on any wrapper.</td></tr>
+      <tr><td><b>Flutter app</b></td><td>Token names match the shipping code, so values map 1:1 — this file is the reference, not a second source.</td></tr>
+      <tr><td><b>Figma</b></td><td>Mirror token names as variables. One brand variable with modes per partner. Line-height as a percentage. Button = variant × state; status pill = 3 sets with per-platform copy.</td></tr>
     </table>
   </div>
   <div class="call">
-    <span class="h">One thing to get right</span>
-    <p>Model the theme as a <b>variable mode</b>, not two component sets. Every colour token resolves per mode, so a single component renders correctly in light and dark. Don't fork components per theme.</p>
+    <span class="h">Two things not to model</span>
+    <p><b>Dark mode</b> — the app has none. <b>Partner contrast limits</b> — owned by product &amp; partnerships at onboarding, not the library.</p>
   </div>
-
-  <h3 id="open">Still open</h3>
-  <ul class="keys">
-    <li><span class="k">?</span><span><b>Licensed faces.</b> Specimens use Fraunces + Hanken Grotesk as open stand-ins. Reconcile the scale against the real Styrene / Tiempos (or Copernicus) source before locking text styles.</span></li>
-    <li><span class="k">?</span><span><b>The official mark.</b> The sunburst asterisk here is a spacing stand-in. Swap in the trademarked artwork and confirm clear-space and minimum-size rules.</span></li>
-    <li><span class="k">?</span><span><b>Data-dense surfaces.</b> Tables, usage charts and dev-console screens aren't specimened yet — they'll need a denser type step and a tighter row rhythm than the conversational surface.</span></li>
-  </ul>
 </section>
 
-<footer class="wrap" style="border:none;padding-left:0;padding-right:0">
-  Claude Design System · v1.0 — tokens in <code>tokens.css</code>, specimens on this page.<br>
-  Structure adapted from the Hubby eSIM design-system format. Colours, type and components express Claude's own visual language; the mark and typefaces are open stand-ins pending the licensed originals.
+<footer>
+  Hubby eSIM Design System · reconstructed from Flutter build v2.12.0.<br>
+  Tokens in <code>tokens.css</code> · components in <code>components.css</code> · this page renders them. Where a specimen disagrees with a screenshot, the tokens are right.
 </footer>
 
 </div>
 
 <script>
+  // Partner preview switcher — swaps the wrapper class so --brand cascades.
   (function(){
-    var root=document.documentElement, btn=document.getElementById('themeToggle'),
-        label=document.getElementById('themeLabel'), icon=document.getElementById('themeIcon');
-    function apply(t){
-      root.setAttribute('data-theme',t);
-      label.textContent = t==='dark' ? 'Light' : 'Dark';
-      icon.textContent  = t==='dark' ? '☀' : '◐';
-    }
-    // respect saved / OS preference
-    var saved=null; try{saved=localStorage.getItem('claude-ds-theme');}catch(e){}
-    if(saved){apply(saved);}
-    else if(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches){apply('dark');}
-    btn.addEventListener('click',function(){
-      var next = root.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
-      apply(next); try{localStorage.setItem('claude-ds-theme',next);}catch(e){}
+    var bar=document.getElementById('partnerbar'), box=document.getElementById('preview');
+    bar.addEventListener('click',function(e){
+      var b=e.target.closest('.pbtn'); if(!b) return;
+      bar.querySelectorAll('.pbtn').forEach(function(x){x.classList.remove('active')});
+      b.classList.add('active');
+      box.className='previewbox'+(b.dataset.cls?' '+b.dataset.cls:'');
     });
   })();
 </script>

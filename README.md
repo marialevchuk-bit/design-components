@@ -1,71 +1,87 @@
-# Claude Design System
+# Hubby eSIM — Design System
 
-A design language for Claude — warm, calm and human. This repo is the source of
-truth for colour, type, spacing, shape, elevation, motion and components, built
-in the format of a single reference page plus reusable tokens.
+The Hubby app's visual conventions, translated out of the design-system overview
+into a **reusable, enforceable system**: design tokens plus a component library
+that future designs build on. Use these files and a new screen inherits Hubby's
+conventions by construction — spacing, colour, type, radii, states and partner
+theming all come for free.
 
 ## What's here
 
 | File | What it is |
 |------|------------|
-| [`index.html`](./index.html) | **The source-of-truth page.** A self-contained specimen document — open it in a browser. Covers all 11 sections (Read this first → Figma mapping) with live component demos and a light/dark toggle. |
-| [`tokens.css`](./tokens.css) | **The design tokens** as CSS custom properties, with full `light` and `dark` themes. Import this into any web surface and build against the variables. |
+| [`tokens.css`](./tokens.css) | **The source of truth.** Every colour, type style, spacing step, radius, stroke and shadow as a CSS custom property. Token names match the shipping Flutter code verbatim. |
+| [`components.css`](./components.css) | **The component library.** Button, input, search, card, badge, status pill, bottom sheet, dialog, bottom nav, snackbar, skeleton, progress — built strictly from the tokens as `hy-*` classes. |
+| [`index.html`](./index.html) | **The living styleguide.** Renders the real components (not mockups) and documents all conventions. Open it in a browser; switch partners live. |
 
-## The five decisions
+## The five rules (do not break these)
 
-1. **The canvas is warm, not white** — ivory `#FAF9F5` with cream `#F0EEE6` panels; pure white only for raised surfaces.
-2. **One accent: clay** — the coral `#D97757` carries every primary action, and nothing else competes with it.
-3. **Claude speaks in serif, the UI speaks in sans** — answers and reading copy are serif; all chrome is a grotesque sans.
-4. **There is a dark mode** — a warm charcoal, never pure black; every token has a light and a dark value.
-5. **Quiet by default, soft when it lifts** — flat surfaces with hairline borders; only menus, dialogs and toasts cast a soft, warm shadow.
+1. **Brand is a variable, not a value.** `--brand` defaults to Hubby orange `#FF8800`; every partner overrides it at runtime. Bind buttons, pills, badges, progress fills and the nav to `--brand` / `--brand-soft` / `--brand-pressed`. Never paint a brand hex.
+2. **No dark mode.** One light theme. A dark variant is new design work, not a port.
+3. **One button, three variants.** 52px · 10px radius · 18/500 label. Filled, outlined, soft — nothing else.
+4. **Flat, with one exception.** Only dialogs and bottom sheets cast a shadow.
+5. **Touch only — no hover.** States are pressed, focused, disabled. Hover is deliberately off.
 
-## Using the tokens
+## Using it
 
 ```html
 <link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+
+<!-- Components inherit every convention. -->
+<button class="hy-btn hy-btn--filled">Buy now</button>
+<span class="hy-status hy-status--success"><span class="hy-status__dot"></span>Connected</span>
 ```
+
+Building custom UI? Reach for the tokens rather than raw values:
 
 ```css
-.primary-button {
-  background: var(--clay);
-  color: var(--on-clay);
-  border-radius: var(--radius-10);
-  padding: 0 var(--space-20);
-  font: var(--body-strong);
+.my-thing {
+  background: var(--surface);
+  border: 1.2px solid var(--border);
+  border-radius: var(--radius-14);   /* default card */
+  padding: var(--space-16);
+  font: var(--bodyS500);             /* the workhorse text style */
 }
-.primary-button:hover { background: var(--clay-hover); }
 ```
 
-Theme is driven by a `data-theme` attribute on `:root` (`light` or `dark`); with
-no attribute set it follows the OS via `prefers-color-scheme`.
+## Partner theming (white-label)
+
+The whole point of `--brand` being a variable: re-skin any subtree by overriding
+the brand tokens on a wrapper. Nothing else changes.
 
 ```html
-<html data-theme="dark"> … </html>
+<div class="partner-a">     <!-- #1F6FEB -->
+  <button class="hy-btn hy-btn--filled">Buy now</button>  <!-- now blue -->
+</div>
 ```
+
+Add a partner by copying the `.partner-a` block in `tokens.css` and swapping the
+five brand values. The styleguide's partner switcher shows it live.
 
 ## Token groups
 
-- **Colour** — surfaces (`bg`, `bg-panel`, `surface`, `surface-sunken`), borders, ink (`text` → `text-faint`), primary (`clay` + states/tints), decorative earth (`kraft`, `manilla`), and muted semantics (`success` / `danger` / `warning` / `info`, each with `-soft` and `-border`).
-- **Type** — two families (`--serif`, `--sans`) plus `--mono`, and 12 composed styles (`--display1` … `--code`). Reading copy is serif; UI is sans.
-- **Spacing** — a 4-based scale, `--space-2` … `--space-64`.
-- **Shape** — `--radius-6` … `--radius-24` + `--radius-pill`, and four stroke widths.
-- **Elevation** — `--shadow-soft` / `-raised` / `-overlay` and the clay `--focus-ring`.
+- **Brand** — `--brand`, `--brand-pressed`, `--brand-soft`, `--brand-selected`, `--on-brand` (all overridable).
+- **Surfaces & borders** — `--background`, `--surface`, `--border`, `--borderStrong`, `--skeleton`, `--staticSecondaryColor`.
+- **Grayscale** — `--grayscale100…900` + role aliases (`--textPrimary`, `--textSecondary`, `--textHint`, `--textDisabled`, `--hairline`).
+- **Semantic** — `--success` / `--danger` / `--staticGreen` (+ `light*`), and three `--status*` ramps (bg / border / dot / text — never mixed).
+- **Type** — `--font` (GeneralSans), the named styles (`--title1…7`, `--bodyXL400…bodyXXS400`, `--labelM/S`, `--dataMeterText`, `--usageNumber`) and five tracking values.
+- **Spacing** — `--space-2…32` (core 4/8/12/16/24/32), plus `--size-button`.
+- **Shape** — `--radius-4…24` + `--radius-pill`, and six `--stroke-*` widths.
+- **Elevation** — `--shadow-soft` / `-sheet` / `-strong` and `--ring`.
 
-## Building it in Figma
+## Figma
 
-Mirror the token names one-to-one as Figma variables, and model the theme as a
-**variable mode** (light / dark) on a single collection — not two component
-sets. See section 11 of `index.html` for the full mapping.
+Mirror the token names one-to-one as Figma variables. Model the brand as **one
+variable with a mode per partner**; set line-height as a **percentage**, not px,
+so the tier rule holds. See section 09 of the styleguide.
 
-## Status & stand-ins
+## Notes & stand-ins
 
-This is `v1.0`. Two things are placeholders pending the real assets:
-
-- **Typefaces** — specimens render in **Fraunces** (serif) and **Hanken Grotesk**
-  (sans) as open stand-ins for the licensed Tiempos/Copernicus + Styrene faces.
-  The token names describe the intent; swap the font files when licensed.
-- **The mark** — the sunburst asterisk is a functional stand-in for layout and
-  spacing. Replace it with the official trademarked artwork before shipping.
-
-Adapted in structure from the Hubby eSIM design-system reference format; all
-colour, type and component values express Claude's own visual language.
+- Reconstructed from **Flutter build v2.12.0**. Where a specimen disagrees with a
+  screenshot, the tokens are right.
+- **GeneralSans** is the real family; specimens fall back to the system sans
+  where it isn't installed. Drop in the licensed `@font-face` to render true.
+- Icons here are inline placeholders for layout. New brandable icons must draw
+  their adaptive shapes in `#23262f` (swapped for the partner colour at load);
+  two-tone icons keep a fixed `#ededed` backing.
