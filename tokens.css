@@ -1,0 +1,149 @@
+/* ============================================================================
+   Claude Design System — Design Tokens
+   The single source of truth for colour, type, spacing, shape, elevation
+   and motion. Names are stable; bind everything to them.
+   ============================================================================ */
+
+:root {
+  /* ---- Type families ------------------------------------------------------
+     Display + reading copy are SERIF (Claude's answers are set in serif).
+     UI chrome is SANS. Code is MONO. The named faces are the intent; the
+     fallbacks keep the system legible when the licensed faces are absent. */
+  --serif: "Fraunces", "Tiempos", "Copernicus", Georgia, "Times New Roman", serif;
+  --sans:  "Hanken Grotesk", "Styrene B", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:  "JetBrains Mono", "Fira Code", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* ---- Type scale (size / weight / line-height) --------------------------- */
+  --display1: 600 48px/1.08 var(--serif);
+  --display2: 600 36px/1.12 var(--serif);
+  --title1:   600 28px/1.20 var(--serif);
+  --title2:   500 22px/1.32 var(--serif);
+  --heading1: 600 20px/1.30 var(--sans);
+  --heading2: 600 17px/1.40 var(--sans);
+  --heading3: 600 15px/1.40 var(--sans);
+  --body-l:   400 17px/1.62 var(--serif);   /* assistant reading copy */
+  --body:     400 15px/1.60 var(--sans);    /* workhorse UI text */
+  --body-strong: 500 15px/1.50 var(--sans);
+  --small:    400 13px/1.50 var(--sans);
+  --caption:  500 12px/1.40 var(--sans);
+  --code:     400 13.5px/1.55 var(--mono);
+
+  /* ---- Spacing (4-based) --------------------------------------------------- */
+  --space-2: 2px;  --space-4: 4px;   --space-8: 8px;   --space-12: 12px;
+  --space-16: 16px; --space-20: 20px; --space-24: 24px; --space-32: 32px;
+  --space-40: 40px; --space-48: 48px; --space-64: 64px;
+
+  /* ---- Radius -------------------------------------------------------------- */
+  --radius-6: 6px;   --radius-8: 8px;   --radius-10: 10px; --radius-12: 12px;
+  --radius-16: 16px; --radius-20: 20px; --radius-24: 24px; --radius-pill: 999px;
+
+  /* ---- Stroke -------------------------------------------------------------- */
+  --stroke-hair: 0.5px; --stroke-thin: 1px; --stroke-regular: 1.5px; --stroke-thick: 2px;
+}
+
+/* ============================================================================
+   LIGHT THEME (default) — warm ivory canvas
+   ============================================================================ */
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  /* Surfaces & borders */
+  --bg:            #FAF9F5;  /* app canvas — ivory light */
+  --bg-panel:      #F0EEE6;  /* sidebars, sunken panels — the Claude cream */
+  --surface:       #FFFFFF;  /* raised cards, menus */
+  --surface-sunken:#F5F4EE;  /* code blocks, inset wells */
+  --border:        #E6E3D8;  /* default hairline */
+  --border-strong: #D4D0C3;  /* emphasis outline */
+
+  /* Ink */
+  --text:          #1F1E1D;  /* primary — warm near-black */
+  --text-secondary:#4A4843;
+  --text-muted:    #75726A;
+  --text-faint:    #A8A498;
+
+  /* Primary — Clay (Claude's coral) */
+  --clay:          #D97757;
+  --clay-hover:    #C96442;
+  --clay-active:   #B4552F;
+  --clay-soft:     #FBEDE6;  /* 12%-tint surface */
+  --clay-border:   #E7B7A2;
+  --on-clay:       #FFFFFF;  /* label on a clay fill */
+
+  /* Accent — warm earth (secondary, decorative only) */
+  --kraft:         #C89A6B;
+  --manilla:       #EBDBBC;
+
+  /* Semantic — muted & warm */
+  --success:       #3C8C5E; --success-soft:#E5F0E8; --success-border:#A9CDB4;
+  --danger:        #C0503F; --danger-soft: #F7E6E2; --danger-border: #E3A99B;
+  --warning:       #BC7C2C; --warning-soft:#F8EEDA; --warning-border:#E4C58C;
+  --info:          #5B718C; --info-soft:   #E8ECF2; --info-border:   #B4C0D1;
+
+  /* Effects */
+  --shadow-soft:    0 1px 2px rgba(20,20,19,.05), 0 2px 8px rgba(20,20,19,.06);
+  --shadow-raised:  0 2px 6px rgba(20,20,19,.06), 0 8px 24px rgba(20,20,19,.09);
+  --shadow-overlay: 0 12px 40px rgba(20,20,19,.16);
+  --focus-ring:     0 0 0 3px rgba(217,119,87,.32);
+  --skeleton:       #ECEAE1;
+}
+
+/* ============================================================================
+   DARK THEME — warm charcoal (Claude does have a dark mode)
+   ============================================================================ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg:            #1F1E1D;
+  --bg-panel:      #262624;
+  --surface:       #30302E;
+  --surface-sunken:#262624;
+  --border:        #3A3A36;
+  --border-strong: #4B4A45;
+
+  --text:          #F5F4EE;
+  --text-secondary:#C8C4BA;
+  --text-muted:    #97938A;
+  --text-faint:    #6C695F;
+
+  --clay:          #E08A6A;
+  --clay-hover:    #E89C7F;
+  --clay-active:   #F0AE94;
+  --clay-soft:     #3A2A22;
+  --clay-border:   #6E4838;
+  --on-clay:       #1F1E1D;
+
+  --kraft:         #D4A27F;
+  --manilla:       #A99A78;
+
+  --success:       #5FB081; --success-soft:#22322A; --success-border:#3C6650;
+  --danger:        #E38071; --danger-soft: #392422; --danger-border: #6E4038;
+  --warning:       #D9A45A; --warning-soft:#352B1A; --warning-border:#6B5730;
+  --info:          #8FA3BF; --info-soft:   #232833; --info-border:   #42506A;
+
+  --shadow-soft:    0 1px 2px rgba(0,0,0,.30), 0 2px 8px rgba(0,0,0,.34);
+  --shadow-raised:  0 2px 6px rgba(0,0,0,.34), 0 8px 24px rgba(0,0,0,.42);
+  --shadow-overlay: 0 12px 40px rgba(0,0,0,.55);
+  --focus-ring:     0 0 0 3px rgba(224,138,106,.40);
+  --skeleton:       #35352F;
+}
+
+/* Follow the OS when no explicit theme is set */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg:#1F1E1D; --bg-panel:#262624; --surface:#30302E; --surface-sunken:#262624;
+    --border:#3A3A36; --border-strong:#4B4A45;
+    --text:#F5F4EE; --text-secondary:#C8C4BA; --text-muted:#97938A; --text-faint:#6C695F;
+    --clay:#E08A6A; --clay-hover:#E89C7F; --clay-active:#F0AE94; --clay-soft:#3A2A22;
+    --clay-border:#6E4838; --on-clay:#1F1E1D; --kraft:#D4A27F; --manilla:#A99A78;
+    --success:#5FB081; --success-soft:#22322A; --success-border:#3C6650;
+    --danger:#E38071; --danger-soft:#392422; --danger-border:#6E4038;
+    --warning:#D9A45A; --warning-soft:#352B1A; --warning-border:#6B5730;
+    --info:#8FA3BF; --info-soft:#232833; --info-border:#42506A;
+    --shadow-soft:0 1px 2px rgba(0,0,0,.30),0 2px 8px rgba(0,0,0,.34);
+    --shadow-raised:0 2px 6px rgba(0,0,0,.34),0 8px 24px rgba(0,0,0,.42);
+    --shadow-overlay:0 12px 40px rgba(0,0,0,.55);
+    --focus-ring:0 0 0 3px rgba(224,138,106,.40); --skeleton:#35352F;
+  }
+}
