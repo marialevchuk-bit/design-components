@@ -13,7 +13,13 @@ the dialog (`.hy-dialog`) on its scrim ships.
 
 | File | What it is |
 |------|------------|
-| [`esim-activated.html`](./esim-activated.html) | Interactive prototype. Opens in a browser; links the real `tokens.css` and `components.css`. Controls: Replay, 0.25× slow motion, Reduced motion. |
+| [`esim-activated.json`](./esim-activated.json) | **The asset to ship.** Lottie animation of the 132×132 graphic (ring fills → morph → SIM with check badge). 60fps, 105 frames (1.75s), 4.7 KB. Drop into the Flutter `lottie` package. See "Lottie usage" below. |
+| [`esim-activated.html`](./esim-activated.html) | Reference prototype — open in a browser to feel the full moment in context. Links the real `tokens.css` / `components.css`. Controls: Replay, 0.25× slow motion, Reduced motion. Not shipped. |
+
+**What is Lottie vs native.** The JSON is only the animated **graphic**. The
+percentage counter, the dialog, the scrim, the title, the subtitle and the Continue
+button are **native Flutter** — the counter because Lottie can't render a live number
+reliably in the Flutter `lottie` package, the rest because they are ordinary UI.
 
 ## How it's wired to the design system
 
@@ -101,18 +107,97 @@ Reduced motion (MediaQuery.disableAnimationsOf(context) == true):
   immediately: SIM + check badge at full opacity and scale, title, subtitle and
   button all static. No ring, no fills, no translateY.
 Suggested Flutter approach: present via showDialog (barrier = the scrim); the dialog
-  child is the animated content. One AnimationController + CustomPaint. The ring is a
-  drawArc whose sweep = 2*pi*progress from -pi/2 (12 o'clock, clockwise). The SIM +
-  badge is a second CustomPaint (or a small Stack of shapes) cross-fading/scaling in.
-  Wrap each phase in CurvedAnimation(parent: c, curve: Interval(startMs/1820,
-  (startMs+durMs)/1820, curve: ...)). No flutter_animate needed; no app state for the
-  animation itself. Bind colours to theme: success #1DB681, ring track = skeleton,
-  badge cut-out ring = background, button = brand. SIM body #CFD6DD is graphic-local.
-Assets: none. Everything is drawn in code — no Lottie, no Rive. The animation is
-  simple enough that a native AnimationController is smaller, sharper on device and
-  easier to tweak than an imported asset. esim-activated-layers.svg (in the design
-  handoff bundle) is a geometry reference only.
+  child is native (.hy-dialog card + title + subtitle + Continue button). The GRAPHIC
+  is the Lottie asset esim-activated.json, played by the lottie package driven by an
+  AnimationController (see "Lottie usage" below). The % counter is a native Text
+  overlaid on the Lottie, driven by the same controller. A fully-native CustomPaint
+  alternative (no asset) is viable too — drawArc sweep = 2*pi*progress from -pi/2, SIM
+  as a second painter cross-fading/scaling in — but the Lottie is the chosen handoff.
+  Bind native colours to theme: success #1DB681, brand button = brand. Inside the
+  Lottie the same colours are baked (success arc/badge, skeleton track, #FAF8F4 badge
+  cut-out); SIM body #CFD6DD is graphic-local. Because background/success are constant
+  (not partner-themed), baking them is safe.
+Assets: esim-activated.json — Lottie, 132×132, 60fps, 105 frames (~1.75s), single
+  play, transparent background. Covers phases 1-3 only (ring fill, ring exit, SIM in).
+  The dialog entrance, title, subtitle, button and the % counter are native.
 ```
+
+## Lottie usage (Flutter)
+
+Add the `lottie` package, bundle `esim-activated.json` as an asset, and drive it with
+an `AnimationController` so the native percentage counter can read the same progress.
+
+```dart
+// pubspec.yaml: dependencies: lottie: ^3.x   +   assets: - assets/esim-activated.json
+
+class EsimActivatedGraphic extends StatefulWidget {
+  const EsimActivatedGraphic({super.key});
+  @override
+  State<EsimActivatedGraphic> createState() => _EsimActivatedGraphicState();
+}
+
+class _EsimActivatedGraphicState extends State<EsimActivatedGraphic>
+    with SingleTickerProviderStateMixin {
+  // The Lottie graphic is 1.75s; the ring fill (where the % counts) is the first 1.1s.
+  late final AnimationController _c =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 1750));
+
+  static const _fillMs = 1100, _totalMs = 1750;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (MediaQuery.disableAnimationsOf(context)) {
+        _c.value = 1.0;           // reduced motion: jump to the final SIM frame
+      } else {
+        _c.forward();
+      }
+    });
+  }
+
+  @override
+  void dispose() { _c.dispose(); super.dispose(); }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 132, height: 132,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Lottie.asset('assets/esim-activated.json', controller: _c),
+          // native % counter, synced to the same controller; fades out with the ring
+          AnimatedBuilder(
+            animation: _c,
+            builder: (context, _) {
+              final t = _c.value * _totalMs;
+              final pct = (t / _fillMs).clamp(0.0, 1.0);          // 0..1 over the fill
+              final opacity = 1.0 - ((t - 1260) / 340).clamp(0.0, 1.0); // ring-exit fade
+              if (opacity <= 0) return const SizedBox.shrink();
+              return Opacity(
+                opacity: opacity,
+                child: Text('${(pct * 100).round()}%',
+                  style: const TextStyle(
+                    fontFamily: 'GeneralSans', fontWeight: FontWeight.w600,
+                    fontSize: 26, letterSpacing: -0.5,
+                    fontFeatures: [FontFeature.tabularFigures()],
+                    // color: theme textPrimary
+                  )),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+Notes: the counter reads `_c.value`, so it tracks the ring's easing exactly and stays
+in sync if the duration is tuned. It fades out on the same 1260–1600ms window as the
+ring inside the Lottie, so the number leaves with the ring at the morph. Title,
+subtitle and the Continue button are separate native widgets shown after (phases 4-5).
 
 ### Geometry reference
 
