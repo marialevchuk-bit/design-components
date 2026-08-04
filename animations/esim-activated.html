@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>eSIM activated — success dialog</title>
+
+<!-- Lives in the design system: colours, type, the dialog and the button all come
+     from the shared tokens and component library. Nothing here paints a brand hex. -->
+<link rel="stylesheet" href="../tokens.css"/>
+<link rel="stylesheet" href="../components.css"/>
+
+<style>
+  :root{
+    /* Motion tokens — measured final values, one edit away each. A few sit
+       between the standard duration steps; that is intentional. */
+    --ease-enter:  cubic-bezier(0, 0, .2, 1);      /* arriving / Curves.decelerate    */
+    --ease-move:   cubic-bezier(.4, 0, .2, 1);     /* move     / Curves.fastOutSlowIn  */
+    --ease-settle: cubic-bezier(.2, .9, .3, 1);    /* gentle overshoot on the SIM      */
+
+    --t-scrim:     .20s;    /* phase 0 — modal appears */
+    --t-dialog:    .26s;    /* phase 0 */
+    --t-ring-fill: 1.10s;   /* phase 1 */
+    --t-ring-out:  .34s;    /* phase 2 */
+    --t-sim-fade:  .30s;    /* phase 3 */
+    --t-sim-scale: .42s;    /* phase 3 */
+    --t-text:      .30s;    /* phases 4-5 */
+
+    --d-ring-out: 1.26s;    /* absolute start times on the one timeline */
+    --d-sim:      1.32s;
+    --d-title:    1.44s;
+
+    /* SIM-body grey is specific to this graphic (not a partner-themable value). */
+    --sim-body: #CFD6DD;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0; min-height:100vh; font-family:var(--font); color:var(--textPrimary)}
+
+  /* ======================================================================
+     PREVIEW SCAFFOLDING — none of this ships. Just the review controls.
+     ====================================================================== */
+  .bar{position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:10;
+       display:flex; gap:10px; align-items:center; background:var(--surface);
+       border:1px solid var(--border); border-radius:14px; padding:10px 14px}
+  .bar button{font:var(--bodyXS500); font-family:var(--font); border:1.5px solid var(--border);
+              background:var(--background); color:var(--textPrimary);
+              border-radius:var(--radius-pill); padding:9px 16px; cursor:pointer}
+  .bar button.on{background:var(--brand); border-color:var(--brand); color:var(--on-brand)}
+  .bar button:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+
+  /* ======================================================================
+     COMPONENT — eSIM activated success dialog.
+     Presented modally: a dimmed scrim with the dialog centred over it.
+     No phone frame, no full screen — it pops up over whatever is behind it.
+     ====================================================================== */
+  .scrim{position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+          padding:24px; background:rgba(15,15,17,.45)}
+
+  .dialog{                                   /* .hy-dialog + this = the modal card */
+    display:flex; flex-direction:column; align-items:center;
+    width:340px; max-width:100%; padding:28px 24px 24px; text-align:center;
+  }
+
+  .gfx{position:relative; width:132px; height:132px}
+  .gfx > *{position:absolute; inset:0; transform-origin:66px 66px}
+
+  /* live percentage readout, centred in the ring; exits with the ring */
+  .pct{font-family:var(--font); font-weight:600; font-size:26px; letter-spacing:-.02em;
+       fill:var(--textPrimary); font-variant-numeric:tabular-nums}
+
+  h1{font:var(--title6); color:var(--textPrimary); letter-spacing:-.01em;
+     max-width:260px; margin:16px 0 0}
+
+  .cta{margin-top:24px;                      /* the real button, in flow */
+       box-shadow:0 8px 20px -6px rgba(255,136,0,.45), 0 2px 6px rgba(0,0,0,.08)}
+
+  /* ======================================================================
+     MOTION — modal pops up, then one pass. Nothing loops or pulses.
+     ====================================================================== */
+  @keyframes scrimIn  {from{opacity:0} to{opacity:1}}
+  @keyframes dialogIn {from{opacity:0; transform:scale(.96)} to{opacity:1; transform:scale(1)}}
+  @keyframes fill     {from{stroke-dashoffset:289.03} to{stroke-dashoffset:0}}
+  @keyframes ringOut  {from{opacity:1; transform:scale(1)} to{opacity:0; transform:scale(.86)}}
+  @keyframes simFade  {from{opacity:0} to{opacity:1}}
+  @keyframes simScale {from{transform:scale(.7)} to{transform:scale(1)}}
+  @keyframes up       {from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
+
+  .run #scrim  {animation:scrimIn  var(--t-scrim)     var(--ease-move)   both}
+  .run #dialog {animation:dialogIn var(--t-dialog)    var(--ease-enter)  both}
+  .run #arc    {animation:fill     var(--t-ring-fill) var(--ease-enter)  both}
+  .run #ring   {animation:ringOut  var(--t-ring-out)  var(--ease-move)   var(--d-ring-out) both}
+  .run #sim    {animation:simFade  var(--t-sim-fade)  var(--ease-move)   var(--d-sim) both,
+                          simScale var(--t-sim-scale) var(--ease-settle) var(--d-sim) both}
+  .run h1      {animation:up var(--t-text) var(--ease-move) var(--d-title) both}
+
+  /* reduced motion / final frame — modal present, SIM shown, ring gone, all static */
+  .static #ring{opacity:0}
+  .static #sim {opacity:1; transform:scale(1)}
+</style>
+</head>
+<body>
+  <!-- preview only -->
+  <div class="bar">
+    <button id="replay" class="on">↻ Replay</button>
+    <button id="slow">0.25× slow motion</button>
+    <button id="rm">Reduced motion</button>
+  </div>
+
+  <!-- component -->
+  <div class="scrim" id="scrim">
+    <div class="hy-dialog dialog" id="dialog" role="dialog" aria-modal="true" aria-labelledby="title">
+      <div class="gfx" id="gfx">
+        <!-- State A: progress ring + live percentage -->
+        <svg id="ring" width="132" height="132" viewBox="0 0 132 132" aria-hidden="true">
+          <circle cx="66" cy="66" r="46" fill="none" stroke="var(--skeleton)" stroke-width="8"/>
+          <circle id="arc" cx="66" cy="66" r="46" fill="none" stroke="var(--success)" stroke-width="8"
+                  stroke-linecap="round" stroke-dasharray="289.03" stroke-dashoffset="289.03"
+                  transform="rotate(-90 66 66)"/>
+          <text id="pct" class="pct" x="66" y="66" text-anchor="middle" dominant-baseline="central">0%</text>
+        </svg>
+        <!-- State B: SIM + check badge -->
+        <svg id="sim" width="132" height="132" viewBox="0 0 132 132" style="opacity:0" aria-hidden="true">
+          <path d="M38 32a8 8 0 0 1 8-8h34l14 14v52a8 8 0 0 1-8 8H46a8 8 0 0 1-8-8V32z" fill="var(--sim-body)"/>
+          <rect x="52"   y="46" width="5" height="14" rx="2.5" fill="#fff"/>
+          <rect x="63.5" y="46" width="5" height="14" rx="2.5" fill="#fff"/>
+          <rect x="75"   y="46" width="5" height="14" rx="2.5" fill="#fff"/>
+          <circle cx="92" cy="90" r="20" fill="var(--background)"/>
+          <circle cx="92" cy="90" r="17" fill="var(--success)"/>
+          <path d="M85 90.5l4.8 4.8L99 86" fill="none" stroke="#fff" stroke-width="2.8"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h1 id="title">Your eSIM is successfully activated</h1>
+      <button class="cta hy-btn hy-btn--filled">Continue</button>
+    </div>
+  </div>
+
+<script>
+  var body = document.body;
+  var arc = document.getElementById('arc'), pct = document.getElementById('pct');
+  var slow = false, rm = false, raf = 0;
+
+  // Count the readout straight off the arc's rendered position, so it tracks the
+  // ring's easing exactly and honours slow motion for free.
+  function tick(){
+    var off = parseFloat(getComputedStyle(arc).strokeDashoffset) || 0;
+    var v = Math.max(0, Math.min(100, Math.round((1 - off / 289.03) * 100)));
+    pct.textContent = v + '%';
+    raf = v >= 100 ? 0 : requestAnimationFrame(tick);
+  }
+
+  function play(){
+    if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    pct.textContent = '0%';
+    body.classList.remove('run','static');
+    void body.offsetWidth;                       // restart the CSS animations
+    if (rm) { body.classList.add('static'); return; }
+    body.classList.add('run');
+    var rate = slow ? 4 : 1;                     // 0.25x = 4x longer
+    body.getAnimations({subtree:true}).forEach(function(a){ a.playbackRate = 1 / rate; });
+    raf = requestAnimationFrame(tick);
+  }
+  document.getElementById('replay').onclick = play;
+  document.getElementById('slow').onclick = function(e){
+    slow = !slow; e.currentTarget.classList.toggle('on', slow); play();
+  };
+  document.getElementById('rm').onclick = function(e){
+    rm = !rm; e.currentTarget.classList.toggle('on', rm); play();
+  };
+  play();
+</script>
+</body>
+</html>

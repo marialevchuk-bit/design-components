@@ -14,6 +14,7 @@ theming all come for free.
 | [`components.css`](./components.css) | **The component library.** Button, input, search, card, badge, status pill, bottom sheet, dialog, bottom nav, snackbar, skeleton, progress — built strictly from the tokens as `hy-*` classes. |
 | [`fonts/`](./fonts) | **GeneralSans** — the shipping typeface, weights 400/500/600 as WOFF2 (~24 KB each). Loaded by `tokens.css` via `@font-face`. |
 | [`index.html`](./index.html) | **The living styleguide.** Renders the real components (not mockups) and documents all conventions. Open it in a browser; switch partners live. |
+| [`animations/`](./animations) | **Motion prototypes + Flutter handoff specs.** Interactive, token-bound animation references for the dev team. First up: the eSIM-activated success animation. |
 
 ## The five rules (do not break these)
 
