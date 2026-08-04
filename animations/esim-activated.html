@@ -29,7 +29,6 @@
     --d-ring-out: 1.26s;    /* absolute start times on the one timeline */
     --d-sim:      1.32s;
     --d-title:    1.44s;
-    --d-sub:      1.52s;
 
     /* SIM-body grey is specific to this graphic (not a partner-themable value). */
     --sim-body: #CFD6DD;
@@ -72,7 +71,6 @@
 
   h1{font:var(--title6); color:var(--textPrimary); letter-spacing:-.01em;
      max-width:260px; margin:16px 0 0}
-  p.sub{font:var(--bodyXS400); color:var(--textHint); max-width:260px; margin:8px 0 0}
 
   .cta{margin-top:24px;                      /* the real button, in flow */
        box-shadow:0 8px 20px -6px rgba(255,136,0,.45), 0 2px 6px rgba(0,0,0,.08)}
@@ -95,7 +93,6 @@
   .run #sim    {animation:simFade  var(--t-sim-fade)  var(--ease-move)   var(--d-sim) both,
                           simScale var(--t-sim-scale) var(--ease-settle) var(--d-sim) both}
   .run h1      {animation:up var(--t-text) var(--ease-move) var(--d-title) both}
-  .run p.sub   {animation:up var(--t-text) var(--ease-move) var(--d-sub)   both}
 
   /* reduced motion / final frame — modal present, SIM shown, ring gone, all static */
   .static #ring{opacity:0}
@@ -135,7 +132,6 @@
         </svg>
       </div>
       <h1 id="title">Your eSIM is successfully activated</h1>
-      <p class="sub">Your next step: Set up</p>
       <button class="cta hy-btn hy-btn--filled">Continue</button>
     </div>
   </div>
