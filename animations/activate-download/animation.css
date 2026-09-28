@@ -1,23 +1,11 @@
 /* Activate · download hero — 3.4 s loop. Classes map to element ids in the .svg / .html. */
-@keyframes edRing{0%,28%{stroke-dashoffset:314;opacity:0}32%{stroke-dashoffset:314;opacity:1}78%{stroke-dashoffset:0;opacity:1}90%{stroke-dashoffset:0;opacity:1}97%,100%{stroke-dashoffset:0;opacity:0}}
-
-@keyframes edTrack{0%,28%{opacity:0}32%,90%{opacity:1}97%,100%{opacity:0}}
-
 @keyframes edFinger{0%{transform:translate(12px,14px);opacity:0}6%{opacity:1}18%{transform:translate(0,0) scale(1)}22%{transform:translate(0,1px) scale(.93)}26%{transform:translate(0,0) scale(1);opacity:1}27%,100%{transform:translate(0,0);opacity:0}}
-
 @keyframes edTap{0%,21%{transform:scale(.3);opacity:0}24%{opacity:.9}38%,100%{transform:scale(1.6);opacity:0}}
-
 @keyframes edArrow{0%,30%{transform:translateY(-9px);opacity:0}36%{opacity:1}60%{transform:translateY(1px);opacity:1}66%,100%{transform:translateY(1px);opacity:0}}
-
 @keyframes edBar{0%,30%{stroke-dashoffset:1;opacity:1}78%{stroke-dashoffset:0}90%{stroke-dashoffset:0;opacity:1}97%,100%{stroke-dashoffset:0;opacity:0}}
-
 @keyframes edBarTrack{0%,90%{opacity:1}97%,100%{opacity:0}}
-
 @keyframes edDone{0%,76%{opacity:0;transform:scale(.6)}82%{opacity:1;transform:scale(1.08)}86%,92%{opacity:1;transform:scale(1)}97%,100%{opacity:0}}
-
 @keyframes edGlow{0%,22%{opacity:0}28%,92%{opacity:1}97%,100%{opacity:0}}
-.ed-track{animation:edTrack 3.4s cubic-bezier(.4,0,.2,1) infinite}
-.ed-ring{stroke-dasharray:314;animation:edRing 3.4s cubic-bezier(.4,0,.2,1) infinite;transform:rotate(-90deg);transform-origin:56px 56px}
 .ed-finger{transform-box:fill-box;transform-origin:30% 8%;animation:edFinger 3.4s cubic-bezier(.4,0,.2,1) infinite}
 .ed-tap{transform-box:fill-box;transform-origin:center;animation:edTap 3.4s cubic-bezier(.4,0,.2,1) infinite}
 .ed-arrow{animation:edArrow 3.4s cubic-bezier(.4,0,.2,1) infinite}
@@ -28,8 +16,7 @@
 .ed-hero{cursor:pointer;border:none;background:none;padding:0;border-radius:50%;transition:transform .15s ease}
 .ed-hero:active{transform:scale(.96)}
 .ed-hero:focus-visible{outline:2px solid #0A0F24;outline-offset:4px}
-@media (prefers-reduced-motion:reduce){.ed-track,.ed-ring,.ed-finger,.ed-tap,.ed-arrow,.ed-bar,.ed-bartrack,.ed-done,.ed-glow{animation:none}
-.ed-ring{stroke-dashoffset:0}
+@media (prefers-reduced-motion:reduce){.ed-finger,.ed-tap,.ed-arrow,.ed-bar,.ed-bartrack,.ed-done,.ed-glow{animation:none}
 .ed-finger,.ed-tap,.ed-arrow{opacity:0}
 .ed-bar{stroke-dashoffset:0}
 .ed-done,.ed-glow{opacity:1}}
