@@ -1,0 +1,35 @@
+/* Connect · signal hero — 3.4 s loop. Classes map to element ids in the .svg / .html. */
+@keyframes ecRing{0%,28%{stroke-dashoffset:314;opacity:0}32%{stroke-dashoffset:314;opacity:1}78%{stroke-dashoffset:0;opacity:1}90%{stroke-dashoffset:0;opacity:1}97%,100%{stroke-dashoffset:0;opacity:0}}
+
+@keyframes ecTrack{0%,28%{opacity:0}32%,90%{opacity:1}97%,100%{opacity:0}}
+
+@keyframes ecGlow{0%,22%{opacity:0}28%,92%{opacity:1}97%,100%{opacity:0}}
+
+@keyframes ecFinger{0%{transform:translate(12px,14px);opacity:0}6%{opacity:1}18%{transform:translate(0,0) scale(1)}22%{transform:translate(0,1px) scale(.93)}26%{transform:translate(0,0) scale(1);opacity:1}27%,100%{transform:translate(0,0);opacity:0}}
+
+@keyframes ecTap{0%,21%{transform:scale(.3);opacity:0}24%{opacity:.9}38%,100%{transform:scale(1.6);opacity:0}}
+
+@keyframes ecBar1{0%,30%{transform:scaleY(0)}36%,92%{transform:scaleY(1)}97%,100%{transform:scaleY(0)}}
+
+@keyframes ecBar2{0%,36%{transform:scaleY(0)}42%,92%{transform:scaleY(1)}97%,100%{transform:scaleY(0)}}
+
+@keyframes ecBar3{0%,42%{transform:scaleY(0)}48%,92%{transform:scaleY(1)}97%,100%{transform:scaleY(0)}}
+
+@keyframes ecBar4{0%,48%{transform:scaleY(0)}54%,92%{transform:scaleY(1)}97%,100%{transform:scaleY(0)}}
+
+@keyframes ecDone{0%,76%{opacity:0;transform:scale(.6)}82%{opacity:1;transform:scale(1.08)}86%,92%{opacity:1;transform:scale(1)}97%,100%{opacity:0}}
+.ec-track{animation:ecTrack 3.4s cubic-bezier(.4,0,.2,1) infinite}
+.ec-ring{stroke-dasharray:314;animation:ecRing 3.4s cubic-bezier(.4,0,.2,1) infinite;transform:rotate(-90deg);transform-origin:56px 56px}
+.ec-glow{animation:ecGlow 3.4s cubic-bezier(.4,0,.2,1) infinite}
+.ec-finger{transform-box:fill-box;transform-origin:30% 8%;animation:ecFinger 3.4s cubic-bezier(.4,0,.2,1) infinite}
+.ec-tap{transform-box:fill-box;transform-origin:center;animation:ecTap 3.4s cubic-bezier(.4,0,.2,1) infinite}
+.ec-bar1{transform-box:fill-box;transform-origin:50% 100%;animation:ecBar1 3.4s cubic-bezier(.4,0,.2,1) infinite}
+.ec-bar2{transform-box:fill-box;transform-origin:50% 100%;animation:ecBar2 3.4s cubic-bezier(.4,0,.2,1) infinite}
+.ec-bar3{transform-box:fill-box;transform-origin:50% 100%;animation:ecBar3 3.4s cubic-bezier(.4,0,.2,1) infinite}
+.ec-bar4{transform-box:fill-box;transform-origin:50% 100%;animation:ecBar4 3.4s cubic-bezier(.4,0,.2,1) infinite}
+.ec-done{transform-box:fill-box;transform-origin:center;animation:ecDone 3.4s cubic-bezier(.4,0,.2,1) infinite}
+@media (prefers-reduced-motion:reduce){.ec-track,.ec-ring,.ec-glow,.ec-finger,.ec-tap,.ec-bar1,.ec-bar2,.ec-bar3,.ec-bar4,.ec-done{animation:none}
+.ec-ring{stroke-dashoffset:0}
+.ec-finger,.ec-tap{opacity:0}
+.ec-bar1,.ec-bar2,.ec-bar3,.ec-bar4{transform:scaleY(1)}
+.ec-done,.ec-glow{opacity:1}}

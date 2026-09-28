@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Set up · toggles hero</title>
+<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F5F4F1;font-family:-apple-system,system-ui,sans-serif}
+.stage{width:390px;padding:40px 24px;background:#fff;border-radius:28px;box-shadow:0 10px 30px -12px rgba(10,15,36,.2);display:flex;flex-direction:column;align-items:center;gap:14px}
+.hero svg{width:100px;height:100px;display:block;overflow:visible}
+.cta{width:100%;height:44px;border-radius:12px;background:#0A0F24;border:none;color:#fff;font:500 16px/1 inherit;display:flex;align-items:center;justify-content:center;gap:8px}
+.note{font-size:13px;color:#6B7280;margin-top:18px;text-align:center}</style></head>
+<body><div class="stage"><div class="hero"><svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="0 0 112 112" fill="none" overflow="visible">
+<style>@keyframes esRing{0%,18%{stroke-dashoffset:314;opacity:0}22%{stroke-dashoffset:314;opacity:1}78%{stroke-dashoffset:0;opacity:1}90%{stroke-dashoffset:0;opacity:1}97%,100%{stroke-dashoffset:0;opacity:0}}@keyframes esTrack{0%,18%{opacity:0}22%,90%{opacity:1}97%,100%{opacity:0}}@keyframes esFinger{0%{transform:translate(12px,14px);opacity:0}6%{opacity:1}16%{transform:translate(0,0) scale(1)}19%{transform:translate(0,.8px) scale(.93)}22%{transform:translate(0,0) scale(1)}30%{transform:translate(6.5px,4.5px) scale(1)}33%{transform:translate(6.5px,5.3px) scale(.93)}36%{transform:translate(6.5px,4.5px) scale(1)}44%{transform:translate(6.5px,4.5px);opacity:1}45%,100%{transform:translate(6.5px,4.5px);opacity:0}}@keyframes esKnob1{0%,19%{transform:translateX(0)}25%,92%{transform:translateX(4px)}97%,100%{transform:translateX(0)}}@keyframes esFill1{0%,19%{opacity:0}25%,92%{opacity:1}97%,100%{opacity:0}}@keyframes esKnob2{0%,33%{transform:translateX(0)}39%,92%{transform:translateX(4px)}97%,100%{transform:translateX(0)}}@keyframes esFill2{0%,33%{opacity:0}39%,92%{opacity:1}97%,100%{opacity:0}}@keyframes esGlow{0%,16%{opacity:0}20%,92%{opacity:1}97%,100%{opacity:0}}.es-track{animation:esTrack 3.4s cubic-bezier(.4,0,.2,1) infinite}.es-ring{stroke-dasharray:314;animation:esRing 3.4s cubic-bezier(.4,0,.2,1) infinite;transform:rotate(-90deg);transform-origin:56px 56px}.es-finger{transform-box:fill-box;transform-origin:30% 8%;animation:esFinger 3.4s cubic-bezier(.4,0,.2,1) infinite}.es-knob1{animation:esKnob1 3.4s cubic-bezier(.4,0,.2,1) infinite}.es-fill1{animation:esFill1 3.4s cubic-bezier(.4,0,.2,1) infinite}.es-knob2{animation:esKnob2 3.4s cubic-bezier(.4,0,.2,1) infinite}.es-fill2{animation:esFill2 3.4s cubic-bezier(.4,0,.2,1) infinite}.es-glow{animation:esGlow 3.4s cubic-bezier(.4,0,.2,1) infinite}@media (prefers-reduced-motion:reduce){.es-track,.es-ring,.es-finger,.es-knob1,.es-fill1,.es-knob2,.es-fill2,.es-glow{animation:none}.es-ring{stroke-dashoffset:0}.es-finger{opacity:0}.es-knob1,.es-knob2{transform:translateX(4px)}.es-fill1,.es-fill2,.es-glow{opacity:1}}</style>
+<defs><clipPath id="es-scr"><rect x="-12" y="-22.5" width="24" height="45" rx="3.5"/></clipPath></defs>
+<circle cx="56" cy="56" r="50" fill="rgba(10,15,36,0.07)"/>
+<circle id="ring-track" class="es-track" cx="56" cy="56" r="50" stroke="rgba(10,15,36,0.12)" stroke-width="2.5"/>
+<circle id="ring-progress" class="es-ring" cx="56" cy="56" r="50" stroke="#0A0F24" stroke-width="2.5" stroke-linecap="round"/>
+<g id="phone-shadow" transform="translate(0 3.5) translate(56 64) scale(1 0.5) rotate(-36)"><rect x="-15" y="-26" width="30" height="52" rx="6.5" fill="#8A8D98"/></g>
+<g id="phone" transform="translate(56 64) scale(1 0.5) rotate(-36)">
+<rect x="-15" y="-26" width="30" height="52" rx="6.5" fill="#fff" stroke="#0A0F24" stroke-width="2.2" vector-effect="non-scaling-stroke"/>
+<g clip-path="url(#es-scr)">
+<rect x="-12" y="-22.5" width="24" height="45" fill="rgba(10,15,36,0.04)"/>
+<rect id="screen-glow" class="es-glow" x="-12" y="-22.5" width="24" height="45" fill="rgba(10,15,36,0.10)"/>
+<g id="toggle-1">
+<path d="M-9 -7h7" stroke="rgba(10,15,36,0.35)" stroke-width="1.8" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+<rect x="1" y="-10" width="9" height="6" rx="3" fill="rgba(10,15,36,0.14)"/>
+<rect class="es-fill1" x="1" y="-10" width="9" height="6" rx="3" fill="#0A0F24"/>
+<circle class="es-knob1" cx="3.5" cy="-7" r="2.1" fill="#fff" stroke="#0A0F24" stroke-width="1" vector-effect="non-scaling-stroke"/>
+</g>
+<g id="toggle-2">
+<path d="M-9 4h7" stroke="rgba(10,15,36,0.35)" stroke-width="1.8" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+<rect x="1" y="1" width="9" height="6" rx="3" fill="rgba(10,15,36,0.14)"/>
+<rect class="es-fill2" x="1" y="1" width="9" height="6" rx="3" fill="#0A0F24"/>
+<circle class="es-knob2" cx="3.5" cy="4" r="2.1" fill="#fff" stroke="#0A0F24" stroke-width="1" vector-effect="non-scaling-stroke"/>
+</g>
+</g></g>
+<g class="es-finger"><g transform="translate(47.1 57.3) scale(1.15)">
+<path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15V4a2 2 0 0 1 4 0v5.5V9a2 2 0 0 1 4 0v1a2 2 0 0 1 3 1z" fill="#fff"/>
+<g stroke="#0A0F24" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+<path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
+</g></g></g>
+</svg></div>
+<button class="cta"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="7" width="19" height="10" rx="5"/><circle cx="16.5" cy="12" r="2.6" fill="#fff"/></svg>Set up your eSIM</button>
+<div class="note">3.4 s loop · rendered at 100 × 100 pt in the app</div></div></body></html>

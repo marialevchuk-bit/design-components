@@ -1,0 +1,28 @@
+/* Travel · flight hero — 3.4 s loop. Classes map to element ids in the .svg / .html. */
+@keyframes etRing{0%,8%{stroke-dashoffset:314;opacity:0}12%{stroke-dashoffset:314;opacity:1}78%{stroke-dashoffset:0;opacity:1}90%{stroke-dashoffset:0;opacity:1}97%,100%{stroke-dashoffset:0;opacity:0}}
+
+@keyframes etTrack{0%,8%{opacity:0}12%,90%{opacity:1}97%,100%{opacity:0}}
+
+@keyframes etGlow{0%,6%{opacity:0}12%,92%{opacity:1}97%,100%{opacity:0}}
+
+@keyframes etPlane{0%,14%{transform:translateY(16px);opacity:0}20%{opacity:1}56%{opacity:1}62%,100%{transform:translateY(-6px);opacity:0}}
+
+@keyframes etDot1{0%,28%{opacity:0}32%,90%{opacity:1}97%,100%{opacity:0}}
+
+@keyframes etDot2{0%,36%{opacity:0}40%,90%{opacity:1}97%,100%{opacity:0}}
+
+@keyframes etDot3{0%,46%{opacity:0}50%,90%{opacity:1}97%,100%{opacity:0}}
+
+@keyframes etPin{0%,58%{transform:translateY(-5px);opacity:0}64%{transform:translateY(.6px);opacity:1}68%,92%{transform:translateY(0);opacity:1}97%,100%{transform:translateY(0);opacity:0}}
+.et-track{animation:etTrack 3.4s cubic-bezier(.4,0,.2,1) infinite}
+.et-ring{stroke-dasharray:314;animation:etRing 3.4s cubic-bezier(.4,0,.2,1) infinite;transform:rotate(-90deg);transform-origin:56px 56px}
+.et-glow{animation:etGlow 3.4s cubic-bezier(.4,0,.2,1) infinite}
+.et-plane{animation:etPlane 3.4s cubic-bezier(.4,0,.2,1) infinite}
+.et-dot1{animation:etDot1 3.4s cubic-bezier(.4,0,.2,1) infinite}
+.et-dot2{animation:etDot2 3.4s cubic-bezier(.4,0,.2,1) infinite}
+.et-dot3{animation:etDot3 3.4s cubic-bezier(.4,0,.2,1) infinite}
+.et-pin{animation:etPin 3.4s cubic-bezier(.4,0,.2,1) infinite}
+@media (prefers-reduced-motion:reduce){.et-track,.et-ring,.et-glow,.et-plane,.et-dot1,.et-dot2,.et-dot3,.et-pin{animation:none}
+.et-ring{stroke-dashoffset:0}
+.et-plane{opacity:0}
+.et-dot1,.et-dot2,.et-dot3,.et-glow,.et-pin{opacity:1}}
