@@ -1,13 +1,11 @@
 # eSIM home hero animations — handoff
 
-Four looping illustrations, one per step of the tracker (Activate, Set up, Travel, Connect), used on the home screen above the primary CTA:
+Two looping illustrations used on the home screen above the primary CTA:
 
 | Animation | Home state | CTA under it | Tap target |
 |---|---|---|---|
 | **activate-download** | Ready to activate (K1, W1) | "Activate your eSIM" · download icon | Opens the activation walkthrough |
 | **setup-toggles** | Ready to set up (K2, W2) | "Set up your eSIM" · toggle icon | Opens the settings walkthrough |
-| **travel-flight** | Ready to travel (K3, W3) | "View your trip" · plane icon *(copy to confirm)* | Opens the travel / what happens on arrival screen |
-| **connect-signal** | Ready to connect (K4, W4) | "Connect your eSIM" · signal icon *(copy to confirm)* | Opens the connect-on-arrival walkthrough |
 
 Each folder contains:
 
@@ -82,53 +80,9 @@ Toggle geometry: label line 7 wide (primary @ 35 %, stroke 1.8), track 9×6 r3 (
 
 ---
 
-## 3 · travel-flight
-
-Story: the eSIM is ready, so there is nothing to tap. A plane takes off from the bottom of the flat phone's screen and flies up it, leaving a dotted trail. A destination pin drops in where it lands, and the ring closes. There is **no finger** in this one, because the traveller has nothing to do until they land.
-
-| Element | Keyframes |
-|---|---|
-| Screen glow | fade in 204 → 408, hold to 3128, out by 3298 |
-| Ring track | fade in 272 → 408, hold to 3060, out by 3298 |
-| Ring progress | dashoffset 314 → 0 from 408 to 2652, hold to 3060, fade out by 3298 |
-| Plane | 476 at +16 y, opacity 0 → 680 opacity 1 → 2108 at −6 y (one eased segment, 476 → 2108) → fades out 1904 → 2108 |
-| Trail dot 1 (y 12) | fade in 952 → 1088, hold to 3060, out by 3298 |
-| Trail dot 2 (y 6) | fade in 1224 → 1360, hold to 3060, out by 3298 |
-| Trail dot 3 (y 0) | fade in 1564 → 1700, hold to 3060, out by 3298 |
-| Destination pin | 1972 at −5 y, opacity 0 → 2176 at +0.6 y, opacity 1 → 2312 at rest → hold to 3128 → out by 3298 |
-
-Geometry (screen space): plane is a top-down silhouette about 12 wide × 12 tall, nose pointing to −y, filled primary. Trail dots r1 at x 0, primary @ 35 %. Pin is a teardrop 9.6 wide with its tip at y −8.8 and a white centre dot r1.8 at y −16.2, filled primary.
-
-**Reduced motion:** static final frame. Ring full, trail dots, pin and glow visible, plane hidden.
-
----
-
-## 4 · connect-signal
-
-Story: the traveller has landed. The finger taps the phone once, the signal bars rise one after another, a tick appears and the ring closes. It has the same rhythm as activate-download, so steps 1 and 4 feel like a pair.
-
-| Element | Keyframes |
-|---|---|
-| Finger | same as activate-download: 0 enters from (+12, +14), opacity 0 → 204 opacity 1 → 612 at rest → 748 press (scale 0.93, +1 y) → 884 release → 918 gone |
-| Tap ripple (r7, stroke 1.8) | 714 scale 0.3, opacity 0 → 816 opacity 0.9 → 1292 scale 1.6, opacity 0 |
-| Screen glow | fade in 748 → 952, hold to 3128, out by 3298 |
-| Ring track | fade in 952 → 1088, hold to 3060, out by 3298 |
-| Ring progress | dashoffset 314 → 0 from 1088 to 2652, hold to 3060, fade out by 3298 |
-| Signal bar 1 | scaleY 0 → 1 (origin bottom) 1020 → 1224, hold to 3128, back to 0 by 3298 |
-| Signal bar 2 | 1224 → 1428, same hold and reset |
-| Signal bar 3 | 1428 → 1632, same hold and reset |
-| Signal bar 4 | 1632 → 1836, same hold and reset |
-| Done tick (r5.5 disc + white check) | 2584 scale 0.6, opacity 0 → 2788 scale 1.08 → 2924 scale 1 → hold to 3128 → out by 3298 |
-
-Geometry (screen space): four bars 2.6 wide, rx 0.9, bottoms on y 7, heights 4 / 7 / 10 / 13, x at −7.6 / −3.4 / 0.8 / 5.0. Behind them sits a track of the same bars at primary @ 14 %. A label line runs `M−6 12h12` at primary @ 35 %, stroke 1.8. The tick disc is centred at (0, −14).
-
-**Reduced motion:** static final frame. Ring full, all four bars up, tick and glow visible, finger and ripple hidden.
-
----
-
 ## Implementation options (Flutter)
 
-1. **Hand-coded (recommended):** one `AnimationController(duration: 3400 ms)..repeat()`, one `CustomPainter` per hero (four in total, sharing the backdrop, ring, phone and finger painters). Drive each element with an `Interval(start, end, curve: Curves.fastOutSlowIn)` built from the tables above. Use `MediaQuery.disableAnimations` for the reduced-motion frame.
+1. **Hand-coded (recommended):** one `AnimationController(duration: 3400 ms)..repeat()`, one `CustomPainter` per hero. Drive each element with an `Interval(start, end, curve: Curves.fastOutSlowIn)` built from the tables above. Use `MediaQuery.disableAnimations` for the reduced-motion frame.
 2. **Lottie:** rebuild in After Effects from the HTML and export with Bodymovin. It's more convenient, but it adds a dependency and makes partner recolouring harder. A hand-coded painter can take the partner primary as a parameter.
 
 Either way, the colour **must** come from the partner theme. Nothing is hard-coded except the shadow grey.
