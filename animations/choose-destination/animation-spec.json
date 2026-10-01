@@ -1,0 +1,94 @@
+{
+  "name": "choose-destination",
+  "description": "Flat phone lying on a surface. Its screen shows a small globe. A finger arrives, taps the globe, a ripple spreads, a pin drops onto the land and a landing marker grows under it, the screen glows, then everything fades and the loop restarts.",
+  "canvas": { "viewBox": [112, 112], "renderSize_pt": [100, 100], "background": "transparent", "overflow": "visible" },
+  "timing": { "duration_ms": 3600, "fps": 60, "frames": 216, "loop": true, "easing": "cubic-bezier(0.4, 0, 0.2, 1)" },
+  "colors": {
+    "primary": "#0A0F24",
+    "white": "#FFFFFF",
+    "phoneShadow": "#8A8D98",
+    "screenTint": "primary @ 8%",
+    "land": "primary @ 42%"
+  },
+  "groupTransform": {
+    "note": "Every layer sits inside the hero group. All coordinates and translations below are in that group's local units.",
+    "hero": "translate(56 56) scale(1.8) translate(-56 -62)",
+    "flatPhone": "translate(56 64) scale(1 0.5) rotate(-36)",
+    "flatPhoneShadow": "translate(0 3.5) + flatPhone"
+  },
+  "layers": [
+    { "id": "phone-shadow", "parent": "flatPhoneShadow", "shape": "roundRect", "x": -15, "y": -26, "w": 30, "h": 52, "r": 6.5, "fill": "phoneShadow", "animated": false },
+    { "id": "phone-body", "parent": "flatPhone", "shape": "roundRect", "x": -15, "y": -26, "w": 30, "h": 52, "r": 6.5, "fill": "white", "stroke": "primary", "strokeWidth": 2.2, "nonScalingStroke": true, "animated": false },
+    { "id": "screen", "parent": "flatPhone", "shape": "rect", "x": -12, "y": -22.5, "w": 24, "h": 45, "r": 3.5, "fill": "screenTint", "clipsChildren": true, "animated": false },
+    { "id": "screen-glow", "parent": "screen", "shape": "rect", "x": -12, "y": -22.5, "w": 24, "h": 45, "fill": "primary @ 8%", "animated": true },
+    { "id": "globe-ball", "parent": "screen", "shape": "circle", "cx": 0, "cy": 0, "r": 9, "fill": "white", "animated": false },
+    { "id": "globe-land", "parent": "screen", "clip": "globe-ball", "shape": "paths", "fill": "land", "paths": [
+      "M-2.6 -1.2c1.2-.5 2.6-.4 3.6.1.9.4 1.9.3 2.7.9.9.7.9 1.9 1.5 2.8-.9.9-1.4 2.1-2 3.1-.6 1.1-1.1 2.3-2 3.1-.4-.9-.4-1.9-.9-2.8-.5-1-1.5-1.7-1.8-2.8-.3-1-.1-2-.7-2.9-.2-.5-.4-1-.4-1.5z",
+      "M-2.2 -2.4c.3-1 .9-1.9 1.8-2.4.8-.5 1.1-1.5 2-1.8 1-.3 2 .2 2.9.6.8.4 1.8.4 2.4 1.1-.6.6-1.5.7-2.2 1.1-.8.4-1.2 1.3-2.1 1.5-.9.2-1.8-.3-2.7-.2-.7.1-1.4.2-2.1.1z",
+      "M-9 -3.6c.9-.4 1.9-.2 2.6.4.8.7.6 1.9 1.3 2.6.6.6 1.6.8 1.8 1.6.3 1-.6 1.9-.9 2.8-.3.9-.1 2-.6 2.8-.8-.8-1.5-1.8-2-2.8-.5-1.1-.6-2.3-1.2-3.3-.3-.6-.8-1.2-1-1.9v-2.2z"
+    ], "animated": false },
+    { "id": "globe-outline", "parent": "screen", "shape": "circle", "cx": 0, "cy": 0, "r": 9, "stroke": "primary", "strokeWidth": 1.8, "nonScalingStroke": true, "animated": false },
+    { "id": "tap-ripple", "parent": "screen", "shape": "circle", "cx": 0, "cy": 0, "r": 5, "stroke": "primary", "strokeWidth": 1.6, "nonScalingStroke": true, "transformOrigin": "center", "animated": true },
+    { "id": "landing-marker", "parent": "screen", "shape": "circle", "cx": 0, "cy": 0, "r": 2.6, "fill": "white", "stroke": "primary", "strokeWidth": 1.2, "nonScalingStroke": true, "transformOrigin": "center", "animated": true },
+    { "id": "pin", "parent": "hero", "note": "Upright, not flattened with the phone.", "shapes": [
+      { "shape": "path", "d": "M56 64c-3.2-3.6-4.9-6.2-4.9-8.4a4.9 4.9 0 0 1 9.8 0c0 2.2-1.7 4.8-4.9 8.4z", "fill": "primary", "stroke": "white", "strokeWidth": 1.2, "lineJoin": "round" },
+      { "shape": "circle", "cx": 56, "cy": 55.6, "r": 1.8, "fill": "white" }
+    ], "animated": true },
+    { "id": "finger", "parent": "hero", "offset": "translate(47.4 62.6) scale(1.15)", "transformOrigin": "30% 8% of its box", "shapes": [
+      { "shape": "path", "role": "fill", "d": "M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15V4a2 2 0 0 1 4 0v5.5V9a2 2 0 0 1 4 0v1a2 2 0 0 1 3 1z", "fill": "white" },
+      { "shape": "paths", "role": "outline", "stroke": "primary", "strokeWidth": 1.3, "lineCap": "round", "lineJoin": "round", "paths": [
+        "M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2",
+        "M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1",
+        "M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10",
+        "M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"
+      ]}
+    ], "animated": true }
+  ],
+  "keyframes": {
+    "note": "t is the fraction of the 3.6 s loop; frame = t × 216. Between keyframes use the global easing. A property not listed at a keyframe holds its last value.",
+    "finger": [
+      { "t": 0.00, "frame": 0,   "translate": [14, 16], "scale": 1,   "opacity": 0 },
+      { "t": 0.10, "frame": 22,  "translate": [0, 0],   "scale": 1,   "opacity": 1 },
+      { "t": 0.16, "frame": 35,  "translate": [0, 0],   "scale": 0.9, "opacity": 1 },
+      { "t": 0.19, "frame": 41,  "translate": [0, 0],   "scale": 1,   "opacity": 1 },
+      { "t": 0.27, "frame": 58,  "translate": [8, 10],  "scale": 1,   "opacity": 0 },
+      { "t": 1.00, "frame": 216, "translate": [8, 10],  "scale": 1,   "opacity": 0 }
+    ],
+    "tap-ripple": [
+      { "t": 0.00, "frame": 0,   "scale": 0.4, "opacity": 0 },
+      { "t": 0.16, "frame": 35,  "scale": 0.4, "opacity": 0 },
+      { "t": 0.18, "frame": 39,  "opacity": 0.9 },
+      { "t": 0.32, "frame": 69,  "scale": 1.7, "opacity": 0 },
+      { "t": 1.00, "frame": 216, "scale": 1.7, "opacity": 0 }
+    ],
+    "pin": [
+      { "t": 0.00, "frame": 0,   "translateY": -22,  "opacity": 0 },
+      { "t": 0.20, "frame": 43,  "translateY": -22,  "opacity": 0 },
+      { "t": 0.24, "frame": 52,  "opacity": 1 },
+      { "t": 0.30, "frame": 65,  "translateY": 0 },
+      { "t": 0.33, "frame": 71,  "translateY": -2.5 },
+      { "t": 0.36, "frame": 78,  "translateY": 0,    "opacity": 1 },
+      { "t": 0.90, "frame": 194, "translateY": 0,    "opacity": 1 },
+      { "t": 0.97, "frame": 210, "opacity": 0 },
+      { "t": 1.00, "frame": 216, "opacity": 0 }
+    ],
+    "landing-marker": [
+      { "t": 0.00, "frame": 0,   "scale": 0.3, "opacity": 0 },
+      { "t": 0.24, "frame": 52,  "scale": 0.3, "opacity": 0 },
+      { "t": 0.32, "frame": 69,  "scale": 1,   "opacity": 1 },
+      { "t": 0.90, "frame": 194, "scale": 1,   "opacity": 1 },
+      { "t": 0.97, "frame": 210, "opacity": 0 },
+      { "t": 1.00, "frame": 216, "opacity": 0 }
+    ],
+    "screen-glow": [
+      { "t": 0.00, "frame": 0,   "opacity": 0 },
+      { "t": 0.30, "frame": 65,  "opacity": 0 },
+      { "t": 0.36, "frame": 78,  "opacity": 1 },
+      { "t": 0.90, "frame": 194, "opacity": 1 },
+      { "t": 0.97, "frame": 210, "opacity": 0 },
+      { "t": 1.00, "frame": 216, "opacity": 0 }
+    ]
+  },
+  "reducedMotion": "Show the final frame statically: pin, landing marker and glow visible; finger and ripple hidden.",
+  "interaction": "The whole hero is one tap target that opens the destination picker. A 'Choose destination' primary button sits 22 pt below it."
+}
