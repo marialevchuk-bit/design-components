@@ -1,0 +1,421 @@
+<title>Top-up Rolling Counter</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/*@@FONTS@@*/
+/* Layout: review bench. Phone at 390pt on the left, scenario + playback controls on the right,
+   handoff (spec + Flutter code) below. Card tokens are copied verbatim from tokens.css.
+   Single light theme on purpose: the app has no dark mode. */
+:root {
+  color-scheme: light;
+  /* Hubby tokens (tokens.css) */
+  --brand:#FF8800; --brand-pressed:#E07800; --brand-soft:rgba(255,136,0,.12); --on-brand:#FFFFFF;
+  --background:#FAF8F4; --surface:#FFFFFF; --border:#E8E6E0; --borderStrong:#D4D2CC; --skeleton:#EBEBEB;
+  --grayscale100:#F7F7F7; --grayscale200:#F0F0F0; --grayscale300:#EBEBEB; --grayscale500:#A3A3A3;
+  --grayscale600:#666666; --grayscale700:#474747; --grayscale800:#292929; --grayscale900:#0F0F11;
+  --textPrimary:var(--grayscale900); --textSecondary:var(--grayscale700); --textHint:var(--grayscale600);
+  --statusSuccessBg:#DDF4EC; --statusSuccessBorder:#16A34A; --statusSuccessDot:#00BC7D; --statusSuccessText:#1E8E3E;
+  --font:"GeneralSans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:ui-monospace, "SF Mono", Menlo, monospace;
+  --title3:600 24px/1.30 var(--font); --title6:600 18px/1.40 var(--font); --title7:600 16px/1.40 var(--font);
+  --bodyM500:500 18px/1.40 var(--font); --bodyS500:500 16px/1.40 var(--font); --bodyS400:400 16px/1.40 var(--font);
+  --bodyXS500:500 14px/1.50 var(--font); --bodyXS400:400 14px/1.50 var(--font); --bodyXXS500:500 12px/1.50 var(--font);
+  --labelS:500 13px/1.50 var(--font); --dataMeterText:600 42px/1.25 var(--font);
+  /* Bench chrome */
+  --bench:#EFECE5; --ink:#0F0F11; --ink-soft:#474747; --rule:#DEDAD1; --code-bg:#0F0F11; --code-fg:#EDEAE3;
+  /* Motion tokens (hubby-motion) */
+  --dur-quick:200ms; --dur-standard:300ms;
+  --ease-enter:cubic-bezier(0,0,0.2,1); --ease-move:cubic-bezier(0.4,0,0.2,1);
+}
+* { box-sizing:border-box }
+body { background:var(--bench); color:var(--ink); font:var(--bodyS400); margin:0 }
+.wrap { max-width:1120px; margin:0 auto; padding-block:32px 64px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)) }
+header h1 { font:600 32px/1.2 var(--font); margin:0; text-wrap:balance }
+header p { font:var(--bodyS400); color:var(--ink-soft); max-width:64ch; margin:8px 0 0 }
+.bench { display:grid; grid-template-columns:minmax(0,390px) minmax(0,1fr); gap:40px; margin-top:28px; align-items:start }
+@media (max-width:860px) { .bench { grid-template-columns:minmax(0,1fr) } .phone { margin:0 auto } }
+
+/* ---- Phone ---- */
+.phone { width:100%; max-width:390px; background:var(--background); border-radius:44px; overflow:hidden;
+  box-shadow:0 0 0 10px #0F0F11, 0 24px 60px rgba(15,15,17,.25); margin:10px; width:calc(100% - 20px) }
+.sbar { display:flex; justify-content:space-between; padding:14px 28px 6px; font:600 15px/1 var(--font) }
+.screen { padding:8px 16px 28px; display:flex; flex-direction:column; gap:16px; min-height:560px }
+.screen h2 { font:var(--title3); margin:8px 0 0 }
+
+/* ---- Plan card (hy-card--emphasised) ---- */
+.card { background:var(--surface); border:1.5px solid var(--borderStrong); border-radius:16px; padding:16px }
+.card-head { display:flex; align-items:center; gap:12px }
+.flag { width:28px; height:20px; border-radius:4px; display:block; box-shadow:0 0 0 0.5px rgba(15,15,17,.12) }
+.card-name { font:var(--title6); flex:1 }
+.pill { display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:999px; font:var(--labelS);
+  letter-spacing:-0.2px; border:1px solid var(--statusSuccessBorder); background:var(--statusSuccessBg); color:var(--statusSuccessText) }
+.pill i { width:6px; height:6px; border-radius:50%; background:var(--statusSuccessDot) }
+.num { position:relative; height:52.5px; margin-top:16px; font:var(--dataMeterText); color:var(--textPrimary);
+  font-variant-numeric:tabular-nums }
+.grp { position:absolute; left:0; top:0; display:flex; align-items:flex-end; will-change:transform }
+.reel { display:block; overflow:hidden; height:52.5px; text-align:center; flex:none }
+.reel.tens { position:absolute; left:0; top:0 }
+.strip { display:block; will-change:transform }
+.strip span { display:block; height:52.5px }
+.dec { display:block; position:relative; height:52.5px; white-space:nowrap }
+.swap { display:block; position:relative; white-space:nowrap }
+.swap .b { position:absolute; left:0; top:0 }
+.of { font:var(--bodyM500); color:var(--textHint); margin:0 0 8px 6px; height:25.2px }
+.sub { font:var(--bodyXS400); color:var(--textHint); margin-top:2px }
+.meter { position:relative; height:4px; border-radius:4px; background:var(--grayscale200); overflow:hidden; margin-top:16px }
+.fill { position:absolute; inset:0; border-radius:4px; background:var(--brand); transform-origin:0 50%; will-change:transform }
+.link { display:flex; justify-content:center; align-items:center; gap:8px; margin-top:16px; padding-top:16px;
+  border-top:1px solid var(--grayscale300); font:var(--bodyS500) }
+.fade { will-change:opacity }
+.btn { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; height:52px; border:none; border-radius:10px;
+  font:var(--bodyM500); cursor:pointer; background:var(--brand); color:var(--on-brand) }
+.btn:active { background:var(--brand-pressed) }
+.btn:focus-visible, .ctl:focus-visible, .sc:focus-visible { outline:3px solid var(--ink); outline-offset:2px }
+.hint { font:var(--bodyXS400); color:var(--textHint); text-align:center; margin:0 }
+
+/* ---- Controls ---- */
+.panel { display:flex; flex-direction:column; gap:24px; min-width:0 }
+.eyebrow { font:600 12px/1.4 var(--font); letter-spacing:1.5px; text-transform:uppercase; color:var(--ink-soft); margin:0 0 10px }
+.scs { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px }
+.sc { text-align:left; background:var(--surface); border:1.2px solid var(--border); border-radius:14px; padding:14px; cursor:pointer;
+  font:var(--bodyS500); color:var(--ink); display:flex; flex-direction:column; gap:4px }
+.sc small { font:var(--bodyXS400); color:var(--ink-soft) }
+.sc .ex { font:600 14px/1.4 var(--font); font-variant-numeric:tabular-nums; color:var(--ink) }
+.sc[aria-pressed="true"] { border-color:var(--brand); background:#FFF8EA; box-shadow:inset 0 0 0 1px var(--brand) }
+.row { display:flex; flex-wrap:wrap; gap:10px; align-items:center }
+.ctl { height:40px; padding:0 16px; border-radius:10px; border:1.2px solid var(--borderStrong); background:var(--surface);
+  font:var(--bodyXS500); color:var(--ink); cursor:pointer; display:inline-flex; align-items:center; gap:8px }
+.ctl[aria-pressed="true"] { background:var(--ink); color:#FFFFFF; border-color:var(--ink) }
+.scrub { display:flex; align-items:center; gap:12px }
+.scrub input { flex:1; min-width:0; accent-color:var(--brand) }
+.scrub output { font:500 13px/1 var(--mono); min-width:72px; text-align:right; color:var(--ink-soft) }
+.custom { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-top:10px }
+.custom label { display:flex; flex-direction:column; gap:4px; font:var(--bodyXS500); color:var(--ink-soft) }
+.custom input, .custom select { height:40px; border:1px solid var(--borderStrong); border-radius:10px; padding:0 10px;
+  font:var(--bodyS500); background:var(--surface); color:var(--ink); min-width:0 }
+.err { font:var(--bodyXS400); color:#DC2626; min-height:21px; margin:6px 0 0 }
+
+/* Timeline */
+.tl { background:var(--surface); border:1.2px solid var(--border); border-radius:14px; padding:14px 16px }
+.tl-track { position:relative; isolation:isolate; height:var(--h,120px) }
+.tl-row { position:absolute; left:0; right:0; height:22px }
+.tl-row b { position:absolute; left:0; top:0; width:112px; font:var(--bodyXXS500); color:var(--ink-soft); line-height:22px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.tl-bar { position:absolute; top:5px; height:12px; border-radius:3px; background:var(--brand-soft); box-shadow:inset 0 0 0 1px var(--brand) }
+.tl-bar em { position:absolute; left:100%; margin-left:6px; top:-2px; font:500 11px/16px var(--mono); font-style:normal; color:var(--ink-soft); white-space:nowrap }
+.tl-head { position:absolute; top:0; bottom:0; width:2px; z-index:-1; background:var(--ink); margin-left:-1px }
+.tl-area { position:absolute; left:120px; right:150px; top:0; bottom:0 }
+
+/* Handoff */
+.handoff { margin-top:56px; display:flex; flex-direction:column; gap:24px }
+.handoff h2 { font:600 24px/1.3 var(--font); margin:0 }
+.handoff p { margin:0; color:var(--ink-soft); max-width:70ch }
+.codebox { position:relative; background:var(--code-bg); border-radius:14px; min-width:0 }
+.codebox pre { margin:0; padding:20px; overflow:auto; max-height:520px; font:13px/1.55 var(--mono); color:var(--code-fg); tab-size:2 }
+.codebox .copy { position:absolute; top:10px; right:10px; height:32px; padding:0 12px; border-radius:8px; border:1px solid #474747;
+  background:#292929; color:#FFFFFF; font:var(--bodyXS500); cursor:pointer }
+.cols { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px }
+.note { background:var(--surface); border:1.2px solid var(--border); border-radius:14px; padding:16px }
+.note h3 { font:var(--title7); margin:0 0 6px }
+.note p { font:var(--bodyXS400) }
+table.sc-t { width:100%; border-collapse:collapse; font:var(--bodyXS400); background:var(--surface); border-radius:14px; overflow:hidden }
+table.sc-t th, table.sc-t td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--grayscale300); vertical-align:top }
+table.sc-t th { font:var(--bodyXS500); color:var(--ink-soft); background:var(--grayscale100) }
+table.sc-t td { font-variant-numeric:tabular-nums }
+.tscroll { overflow-x:auto; border:1.2px solid var(--border); border-radius:14px }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Top-up rolling counter</h1>
+    <p>When a top-up lands on the eSIM plan card, the balance rolls once to the new value. Built on the app design system: GeneralSans, the dataMeterText style and the 4px brand meter. Pick a scenario, then tap the top-up button in the phone.</p>
+  </header>
+
+  <div class="bench">
+    <div class="phone" aria-label="App preview">
+      <div class="sbar"><span>9:41</span><span>●●● ▮</span></div>
+      <div class="screen">
+        <h2>My eSIMs</h2>
+        <div class="card" id="card">
+          <div class="card-head">
+            <svg class="flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#E30A17"/><circle cx="10.6" cy="10" r="5" fill="#FFFFFF"/><circle cx="11.85" cy="10" r="4" fill="#E30A17"/><polygon fill="#FFFFFF" points="14,10 15.51,9.5 15.52,7.91 16.46,9.19 17.98,8.71 17.05,10 17.98,11.29 16.46,10.81 15.52,12.09 15.51,10.5"/></svg>
+            <span class="card-name">Turkey</span>
+            <span class="pill"><i></i>Active</span>
+          </div>
+          <div class="fade" id="body">
+            <div class="num" id="num" aria-live="polite">
+              <span class="reel tens" id="tensBox"><span class="strip" id="tens"></span></span>
+              <div class="grp" id="grp">
+                <span class="reel" id="unitsBox"><span class="strip" id="units"></span></span>
+                <span class="dec swap" id="dec"><span class="a"></span><span class="b"></span></span>
+                <span class="of swap" id="of"><span class="a"></span><span class="b"></span></span>
+              </div>
+            </div>
+            <div class="sub" id="sub"></div>
+            <div class="meter"><div class="fill" id="fill"></div></div>
+          </div>
+          <div class="link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r="0.6" fill="currentColor"/></svg>
+            Your plan details
+          </div>
+        </div>
+        <button class="btn" id="topup" type="button"></button>
+        <p class="hint" id="hint">In the app this plays when the user lands back on the card after paying.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <section>
+        <p class="eyebrow">Scenario</p>
+        <div class="scs" id="scs"></div>
+        <div id="customBox" hidden>
+          <div class="custom">
+            <label for="cRem">Remaining<input id="cRem" type="number" step="0.01" min="0" value="7.25"></label>
+            <label for="cTot">Plan size<input id="cTot" type="number" step="1" min="1" value="10"></label>
+            <label for="cAdd">Top-up<input id="cAdd" type="number" step="1" min="0" value="20"></label>
+            <label for="cUnit">Unit<select id="cUnit"><option value="GB">GB</option><option value="days">days</option></select></label>
+          </div>
+          <p class="err" id="cErr"></p>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Playback</p>
+        <div class="row">
+          <button class="ctl" id="replay" type="button">↻ Replay</button>
+          <button class="ctl" id="slow" type="button" aria-pressed="false">0.25× slow motion</button>
+          <button class="ctl" id="reduced" type="button" aria-pressed="false">Reduced motion</button>
+        </div>
+        <div class="scrub" style="margin-top:14px">
+          <input id="scrubber" type="range" min="0" max="1600" step="1" value="0" aria-label="Scrub the timeline">
+          <output id="tout">0 ms</output>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Timeline for this scenario</p>
+        <div class="tl"><div class="tl-track" id="tl"></div></div>
+      </section>
+    </div>
+  </div>
+
+  <section class="handoff">
+    <h2>Handoff</h2>
+    <p>Everything the prototype does, in Flutter terms. Every value in the prototype maps 1:1 to the spec and the widget below. The widget is a reference implementation: swap its token constants for the app's own theme classes.</p>
+
+    <div class="tscroll">
+      <table class="sc-t">
+        <tr><th>Scenario</th><th>Before</th><th>After</th><th>What moves</th><th>Roll</th></tr>
+        <tr><td>Unused plan</td><td>3.00 / 3 GB, meter full</td><td>8.00 / 8 GB</td><td>Units roll 3 → 8. Meter stays full. Total swaps.</td><td>5 steps, 840 ms</td></tr>
+        <tr><td>Used plan</td><td>0.48 / 3 GB, meter 16%</td><td>5.48 / 8 GB</td><td>Units roll 0 → 5. Meter fills 16% → 69% with the roll. Total swaps.</td><td>5 steps, 840 ms</td></tr>
+        <tr><td>Into two digits</td><td>2.40 / 3 GB, meter 80%</td><td>12.40 / 13 GB</td><td>Units roll 2 → 12. Tens digit fades in as units pass 9 and the row slides right. Meter fills.</td><td>10 steps, 1140 ms</td></tr>
+        <tr><td>Unlimited, days</td><td>3 / 7 days, meter 43%</td><td>6 / 10 days</td><td>Units roll 3 → 6, no decimals. Meter fills 43% → 60%. Total swaps.</td><td>3 steps, 720 ms</td></tr>
+      </table>
+    </div>
+
+    <div class="cols">
+      <div class="note"><h3>Interruption</h3><p>Never blocks input. A tap anywhere works mid-roll. If a second top-up arrives mid-flight, jump to the end state, then roll from there. If the card leaves the screen, jump to the end.</p></div>
+      <div class="note"><h3>Reduced motion</h3><p>When MediaQuery.disableAnimationsOf is true: no roll. The old card content cross-fades to the new one in 150 ms (AnimatedSwitcher), meter included.</p></div>
+      <div class="note"><h3>Edge cases</h3><p>Top-up under 1 GB (no whole step): no roll; decimals, total and meter swap in 200 ms. Already two digits (12 → 22): the tens reel rolls with the carry, no entrance. Partner apps: the meter uses --brand.</p></div>
+    </div>
+
+    <div>
+      <p class="eyebrow">Animation spec</p>
+      <div class="codebox"><button class="copy" type="button" data-copy="spec">Copy</button><pre id="spec">@@SPEC@@</pre></div>
+    </div>
+    <div>
+      <p class="eyebrow">Flutter widget · top_up_data_meter.dart</p>
+      <div class="codebox"><button class="copy" type="button" data-copy="dart">Copy</button><pre id="dart">@@DART@@</pre></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const LH = 52.5;                 // dataMeterText 42px x 1.25
+  const START = 300;               // landingDelay
+  const TENS = 300, LABEL = 200, LABEL_LEAD = 100, OVER = 0.15, RED = 150;
+  const SCEN = [
+    { id:'unused', name:'Unused plan',      note:'Only the number rolls; the meter stays full.', a:3.00, ta:3, add:5,  unit:'GB',   sub:'Valid for 29 days' },
+    { id:'used',   name:'Used plan',        note:'The meter fills along with the roll.',          a:0.48, ta:3, add:5,  unit:'GB',   sub:'Valid for 29 days' },
+    { id:'tens',   name:'Into two digits',  note:'A second digit slides in as it passes 9.',      a:2.40, ta:3, add:10, unit:'GB',   sub:'Valid for 29 days' },
+    { id:'days',   name:'Unlimited, days',  note:'Day-limited plan, whole numbers only.',         a:3,    ta:7, add:3,  unit:'days', sub:'Unlimited data' },
+    { id:'custom', name:'Your own numbers', note:'Try any balance and top-up.',                    a:7.25, ta:10, add:20, unit:'GB',  sub:'Valid for 29 days' },
+  ];
+  const $ = (id) => document.getElementById(id);
+  const clamp01 = (x) => Math.min(1, Math.max(0, x));
+  const bez = (x1, y1, x2, y2) => (x) => {          // CSS cubic-bezier, solved for y at x
+    if (x <= 0) return 0; if (x >= 1) return 1;
+    let t = x;
+    for (let i = 0; i < 8; i++) {
+      const cx = 3*x1*t*(1-t)*(1-t) + 3*x2*t*t*(1-t) + t*t*t - x;
+      const d = 3*x1*(1-t)*(1-t) + 6*(x2-x1)*t*(1-t) + 3*(1-x2)*t*t;
+      if (Math.abs(cx) < 1e-5 || d === 0) break; t -= cx / d;
+    }
+    return 3*y1*t*(1-t)*(1-t) + 3*y2*t*t*(1-t) + t*t*t;
+  };
+  const enter = bez(0, 0, 0.2, 1), move = bez(0.4, 0, 0.2, 1);   // Curves.decelerate ~ / fastOutSlowIn
+  const outCubic = (p) => 1 - Math.pow(1 - p, 3);                 // Curves.easeOutCubic
+  const inOutCubic = (p) => p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3) / 2;  // Curves.easeInOutCubic
+
+  let sc = SCEN[0], S = null, t = 0, playing = false, last = 0, speed = 1, reduced = false;
+  try { reduced = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+
+  const strip = (el) => { el.innerHTML = Array.from({ length: 11 }, (_, i) => '<span>' + (i % 10) + '</span>').join(''); };
+  strip($('units')); strip($('tens'));
+
+  function fmt(x, dp) { return dp ? x.toFixed(dp) : String(Math.round(x)); }
+  function build(c) {
+    const dp = c.unit === 'GB' ? 2 : 0;
+    const b = c.a + c.add, tb = c.ta + c.add;
+    const ai = Math.floor(c.a + 1e-9), bi = Math.floor(b + 1e-9);
+    const steps = bi - ai;
+    const D = steps > 0 ? Math.min(1200, Math.max(600, 600 + 60 * (steps - 1))) : 0;
+    const s = { c, dp, ai, bi, steps, D,
+      decA: dp ? '.' + fmt(c.a, 2).split('.')[1] : '', decB: dp ? '.' + fmt(b, 2).split('.')[1] : '',
+      ofA: '/ ' + fmt(c.ta, 0) + ' ' + c.unit, ofB: '/ ' + fmt(tb, 0) + ' ' + c.unit,
+      fA: clamp01(c.a / c.ta), fB: clamp01(b / tb), tensNew: ai < 10 && bi >= 10 };
+    s.k = (tt) => {               // rolled steps (with overshoot) at tt ms into the roll
+      if (!s.D) return 0;
+      const p = clamp01(tt / s.D);
+      return p <= .85 ? (steps + OVER) * outCubic(p / .85) : steps + OVER - OVER * inOutCubic((p - .85) / .15);
+    };
+    s.tc = Infinity;              // ms into the roll where units pass 9
+    if (s.tensNew) for (let tt = 0; tt <= s.D; tt += 1) if (ai + s.k(tt) >= 9) { s.tc = tt; break; }
+    s.labelAt = s.D ? s.D - LABEL_LEAD : 0;
+    s.total = reduced ? START + RED : START + Math.max(s.D, s.labelAt + LABEL, s.tensNew ? s.tc + TENS : 0);
+    return s;
+  }
+
+  let digitW = 26;
+  function measure() {
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;font:var(--dataMeterText);font-variant-numeric:tabular-nums';
+    document.body.appendChild(probe);
+    let w = 0; for (let d = 0; d < 10; d++) { probe.textContent = d; w = Math.max(w, probe.getBoundingClientRect().width); }
+    probe.remove(); digitW = Math.ceil(w);
+    for (const id of ['unitsBox', 'tensBox']) $(id).style.width = digitW + 'px';
+  }
+
+  function setSwap(el, a, b, p) {
+    const A = el.querySelector('.a'), B = el.querySelector('.b');
+    A.textContent = a; B.textContent = b;
+    if (a === b) { A.style.opacity = 1; A.style.transform = 'none'; B.style.opacity = 0; return; }
+    A.style.opacity = 1 - p; A.style.transform = 'translateY(' + (-8 * p).toFixed(2) + 'px)';
+    B.style.opacity = p;     B.style.transform = 'translateY(' + (8 * (1 - p)).toFixed(2) + 'px)';
+  }
+
+  function paint(v, tensIn, swap, frac) {
+    const u = ((v % 10) + 10) % 10;
+    const tens = Math.floor(v / 10) + clamp01(u - 9);
+    $('units').style.transform = 'translateY(' + (-u * LH).toFixed(2) + 'px)';
+    $('tens').style.transform = 'translateY(' + (-(tens % 10) * LH).toFixed(2) + 'px)';
+    $('tensBox').style.opacity = tensIn;
+    $('tensBox').style.visibility = tensIn > 0 ? 'visible' : 'hidden';
+    $('grp').style.transform = 'translateX(' + (digitW * tensIn).toFixed(2) + 'px)';
+    setSwap($('dec'), S.decA, S.decB, swap);
+    setSwap($('of'), S.ofA, S.ofB, swap);
+    $('fill').style.transform = 'scaleX(' + frac.toFixed(4) + ')';
+  }
+
+  function render() {
+    const tt = t - START;
+    $('tout').value = Math.round(t) + ' ms';
+    $('scrubber').value = Math.round(t);
+    head();
+    if (reduced) {                              // fade-through stand-in for AnimatedSwitcher
+      const after = tt >= RED / 2;
+      const o = tt < 0 ? 1 : tt < RED / 2 ? 1 - tt / (RED / 2) : clamp01((tt - RED / 2) / (RED / 2));
+      $('body').style.opacity = o.toFixed(3);
+      paint(after ? S.bi : S.ai, (after ? S.bi : S.ai) >= 10 ? 1 : 0, after ? 1 : 0, after ? S.fB : S.fA);
+      return;
+    }
+    $('body').style.opacity = 1;
+    const k = tt < 0 ? 0 : S.k(tt);
+    const swap = S.steps === 0 ? move(clamp01(tt / LABEL)) : move(clamp01((tt - S.labelAt) / LABEL));
+    const prog = S.steps === 0 ? swap : clamp01(k / S.steps);
+    const tensIn = S.tensNew ? enter(clamp01((tt - S.tc) / TENS)) : (S.ai >= 10 ? 1 : 0);
+    paint(S.ai + k, tensIn, swap, S.fA + (S.fB - S.fA) * prog);
+  }
+
+  function frame(now) {
+    if (!playing) return;
+    t = Math.min(S.total, t + (now - last) * speed); last = now;
+    render();
+    if (t >= S.total) { playing = false; return; }
+    requestAnimationFrame(frame);
+  }
+  function play() { t = 0; render(); playing = true; last = performance.now(); requestAnimationFrame(frame); }
+  function reset() { playing = false; t = 0; render(); }
+
+  // Timeline diagram
+  function timeline() {
+    const span = Math.max(S.total, 900);
+    const rows = [];
+    const x = (ms) => (ms / span * 100).toFixed(2) + '%';
+    const bar = (label, a, d, txt) => rows.push('<div class="tl-row" style="top:' + (rows.length * 26) + 'px"><b>' + label + '</b><div class="tl-area"><div class="tl-bar" style="left:' + x(a) + ';width:' + x(Math.max(d, 8)) + '"><em>' + txt + '</em></div></div></div>');
+    if (reduced) {
+      bar('Delay', 0, START, '300 ms');
+      bar('Cross-fade', START, RED, '150 ms · whole card body');
+    } else {
+      bar('Delay', 0, START, '300 ms');
+      if (S.steps) bar('Number roll', START, S.D, S.D + ' ms · ' + S.steps + ' steps');
+      if (S.steps && S.fA !== S.fB) bar('Meter fill', START, S.D, 'with the roll');
+      if (S.tensNew) bar('Tens digit in', START + S.tc, TENS, '300 ms · decelerate');
+      bar('Total label', START + S.labelAt, LABEL, '200 ms · fastOutSlowIn');
+    }
+    const el = $('tl');
+    el.style.setProperty('--h', (rows.length * 26) + 'px');
+    el.innerHTML = rows.join('') + '<div class="tl-area"><div class="tl-head" id="tlh"></div></div>';
+    $('scrubber').max = Math.round(S.total);
+  }
+  function head() { const h = $('tlh'); if (h) h.style.left = (t / Math.max(S.total, 900) * 100).toFixed(2) + '%'; }
+
+  function choose(c) {
+    sc = c; S = build(c);
+    document.querySelectorAll('.sc').forEach((b) => b.setAttribute('aria-pressed', b.dataset.id === c.id));
+    $('customBox').hidden = c.id !== 'custom';
+    $('sub').textContent = c.sub;
+    $('topup').textContent = 'Top up ' + fmt(c.add, 0) + ' ' + (c.unit === 'GB' ? 'GB' : 'days');
+    timeline(); reset();
+  }
+
+  $('scs').innerHTML = SCEN.map((c) => {
+    const dp = c.unit === 'GB' ? 2 : 0;
+    const ex = c.id === 'custom' ? 'Any balance' : fmt(c.a, dp) + ' → ' + fmt(c.a + c.add, dp) + ' ' + c.unit;
+    return '<button type="button" class="sc" data-id="' + c.id + '" aria-pressed="false"><span>' + c.name + '</span><span class="ex">' + ex + '</span><small>' + c.note + '</small></button>';
+  }).join('');
+  $('scs').addEventListener('click', (e) => { const b = e.target.closest('.sc'); if (b) choose(SCEN.find((c) => c.id === b.dataset.id)); });
+
+  const cust = SCEN[4];
+  function readCustom() {
+    const a = parseFloat($('cRem').value), ta = parseFloat($('cTot').value), add = parseFloat($('cAdd').value), unit = $('cUnit').value;
+    let err = '';
+    if (!(a >= 0) || !(ta > 0) || !(add >= 0)) err = 'Enter a balance, a plan size and a top-up of 0 or more.';
+    else if (a > ta) err = 'The balance can’t be larger than the plan size.';
+    else if (a + add >= 100) err = 'The card shows up to two digits, so keep the new balance under 100.';
+    else if (add !== Math.floor(add)) err = 'Top-ups are whole GB or whole days.';
+    $('cErr').textContent = err;
+    if (err) return;
+    Object.assign(cust, { a: unit === 'days' ? Math.floor(a) : a, ta, add, unit, sub: unit === 'days' ? 'Unlimited data' : 'Valid for 29 days' });
+    choose(cust);
+  }
+  ['cRem', 'cTot', 'cAdd', 'cUnit'].forEach((id) => $(id).addEventListener('change', readCustom));
+
+  $('topup').addEventListener('click', play);
+  $('replay').addEventListener('click', play);
+  $('slow').addEventListener('click', (e) => { speed = speed === 1 ? .25 : 1; e.currentTarget.setAttribute('aria-pressed', speed !== 1); });
+  $('reduced').addEventListener('click', (e) => { reduced = !reduced; e.currentTarget.setAttribute('aria-pressed', reduced); choose(sc); });
+  $('reduced').setAttribute('aria-pressed', reduced);
+  $('scrubber').addEventListener('input', (e) => { playing = false; t = +e.target.value; render(); });
+
+  document.querySelectorAll('.copy').forEach((b) => b.addEventListener('click', () => {
+    const txt = $(b.dataset.copy).textContent;
+    const done = () => { b.textContent = 'Copied'; setTimeout(() => (b.textContent = 'Copy'), 1500); };
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents($(b.dataset.copy)); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = 'Selected'; };
+    try { navigator.clipboard.writeText(txt).then(done, fallback); } catch (e) { fallback(); }
+  }));
+
+  measure(); choose(SCEN[0]);
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { measure(); render(); });
+})();
+</script>

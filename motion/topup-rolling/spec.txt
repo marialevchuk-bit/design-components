@@ -1,0 +1,56 @@
+ANIMATION SPEC: Top-up rolling counter
+Screen / component: eSIM plan card (My eSIMs), number row + data meter
+Purpose: Confirms the top-up has landed by rolling the balance to its new value.
+Trigger: Data event. The user lands back on the plan card after a successful
+  top-up (or the card is on screen when the new balance arrives). Plays once,
+  300ms after the card is visible. Never on later visits.
+
+Phases (t = 0 when the card is on screen):
+1. Delay: 300ms (landingDelay), nothing moves.
+2. Units reel: translateY, rolls from the old whole number to the new one,
+   odometer style, overshoots by 0.15 of a digit and settles back.
+   Duration: roll = 600ms + 60ms per extra step, capped at 1200ms
+     (3 steps 720ms, 5 steps 840ms, 10 steps 1140ms)
+   Curve: first 85% Curves.easeOutCubic to steps + 0.15,
+          last 15% Curves.easeInOutCubic back to steps (TweenSequence 85/15)
+3. Data meter fill: follows the roll, from old fraction to new fraction,
+   driven by the same controller (progress = rolled steps / steps, clamped).
+   If the fraction does not change (unused plan), the meter does not move.
+4. Tens digit (only when the balance goes from one digit to two):
+   starts the moment the units pass 9.
+   Tens reel: opacity 0 to 1. Rest of the row: translateX 0 to one digit width.
+   Duration: standard (300ms) | Curve: enter (Curves.decelerate)
+   If the balance already had two digits, the tens reel simply rolls with the
+   carry (12 to 22), no entrance.
+5. Total label ("/ 3 GB" to "/ 13 GB"): cross-fade, old moves up 8px and fades
+   out, new rises 8px into place. Starts 100ms before the roll ends.
+   Duration: quick (200ms) | Curve: move (Curves.fastOutSlowIn)
+   Decimals (".40") stay still: top-ups are whole GB or whole days. If they
+   ever change, they swap with the label.
+
+Stagger / delays: 300ms landing delay; tens entrance tied to the units passing
+  9; label at roll end minus 100ms. Total: under 1.6s at 10 steps.
+Interruption: Never blocks input; the card stays tappable. A new balance
+  mid-flight jumps to the end state, then rolls from there to the new value.
+  Card leaves the screen: jump to the end state.
+Reduced motion (MediaQuery.disableAnimationsOf == true):
+  No roll. Old card body (number, label, meter) cross-fades to the new one in
+  150ms via AnimatedSwitcher (decelerate in, easeIn out).
+Suggested Flutter approach: One AnimationController for the roll (TweenSequence
+  for the overshoot), two short controllers for the tens entrance and the label.
+  Reels are ClipRect + Transform.translate over a 0-9-0 column. Tabular figures
+  (FontFeature.tabularFigures) so digits do not jitter. Meter as
+  LinearProgressIndicator(value:) inside a 4px ClipRRect. Reference widget:
+  top_up_data_meter.dart.
+Assets: none.
+
+Design tokens (tokens.css, names match the app):
+  Number      dataMeterText 600 42/1.25 GeneralSans, textPrimary #0F0F11
+  Total label bodyM500 500 18/1.4, textHint #666666, 6px left of the number
+  Sub line    bodyXS400 400 14/1.5, textHint
+  Meter       4px tall, radius 4, track grayscale200 #F0F0F0, fill --brand
+              (Hubby #FF8800; partner colour in white-label apps)
+  Card        emphasised: surface #FFFFFF, 1.5px borderStrong #D4D2CC,
+              radius 16, padding 16
+New motion token: roll (600 + 60/step, max 1200ms). Non-blocking, so it may
+  exceed the 300ms limit for blocking motion.
