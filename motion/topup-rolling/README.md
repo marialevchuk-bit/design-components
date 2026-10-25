@@ -1,14 +1,14 @@
 # Top-up rolling counter
 
 When a top-up lands on the eSIM plan card, the balance rolls once to the new
-value, odometer style. Built on the app design system (GeneralSans,
-`dataMeterText`, the 4px `--brand` meter, the emphasised card).
+value, odometer style. The card and its motion are 1:1 from the approved
+animation film; the only change is the typeface, GeneralSans.
 
 | File | For |
 |------|-----|
 | `prototype.html` | Interactive prototype: four scenarios plus your own numbers, replay, 0.25x, reduced motion, timeline scrubber. Self-contained (fonts inlined). |
-| `spec.txt` | The animation spec for developers: phases, durations, curves, interruption, reduced motion, tokens. |
-| `top_up_data_meter.dart` | Flutter reference widget (`TopUpDataMeter`). Swap `_Tokens` for the app's theme classes. |
+| `spec.txt` | The animation spec for developers: phases, durations, curves, interruption, reduced motion, card measurements. |
+| `top_up_data_meter.dart` | Flutter reference widgets: `TopUpPlanCard` (the whole card) and `TopUpDataMeter` (the animated part). |
 | `prototype.src.html`, `build.py` | Source of the prototype. Edit the source, then run `python3 motion/topup-rolling/build.py`. |
 
 ## Scenarios

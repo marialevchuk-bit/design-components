@@ -1,56 +1,60 @@
 ANIMATION SPEC: Top-up rolling counter
-Screen / component: eSIM plan card (My eSIMs), number row + data meter
+Screen / component: eSIM plan card, number row + data meter
 Purpose: Confirms the top-up has landed by rolling the balance to its new value.
 Trigger: Data event. The user lands back on the plan card after a successful
   top-up (or the card is on screen when the new balance arrives). Plays once,
   300ms after the card is visible. Never on later visits.
 
-Phases (t = 0 when the card is on screen):
-1. Delay: 300ms (landingDelay), nothing moves.
-2. Units reel: translateY, rolls from the old whole number to the new one,
-   odometer style, overshoots by 0.15 of a digit and settles back.
-   Duration: roll = 600ms + 60ms per extra step, capped at 1200ms
-     (3 steps 720ms, 5 steps 840ms, 10 steps 1140ms)
-   Curve: first 85% Curves.easeOutCubic to steps + 0.15,
-          last 15% Curves.easeInOutCubic back to steps (TweenSequence 85/15)
-3. Data meter fill: follows the roll, from old fraction to new fraction,
-   driven by the same controller (progress = rolled steps / steps, clamped).
-   If the fraction does not change (unused plan), the meter does not move.
-4. Tens digit (only when the balance goes from one digit to two):
-   starts the moment the units pass 9.
-   Tens reel: opacity 0 to 1. Rest of the row: translateX 0 to one digit width.
-   Duration: standard (300ms) | Curve: enter (Curves.decelerate)
-   If the balance already had two digits, the tens reel simply rolls with the
+Phases (t = 0 when the roll starts, 300ms after the card is on screen):
+1. Units reel: translateY, rolls from the old whole number to the new one,
+   odometer style, overshoots by 0.25 of a digit, then settles back.
+   Roll:   0-1300ms, 0 to steps + 0.25 | Curve: Curves.easeOutCubic
+   Settle: 1300-1520ms, back to steps  | Curve: Curves.easeInOutCubic
+   The roll is 1300ms however many steps (3 days or 10 GB).
+   Motion blur on the units reel while it moves fast:
+   blur = min(2px, 0.12 x speed in digits per second), none under 1 digit/s.
+2. Data meter fill: follows the roll, from old fraction to new fraction,
+   driven by the same controller (progress = rolled steps / steps, clamped
+   to 0-1, so it does not overshoot). If the fraction does not change
+   (unused plan), the meter does not move.
+3. Tens digit (only when the balance goes from one digit to two):
+   starts 100ms before the units pass 9.5.
+   Tens slot: width 0 to one digit (43.2px), pushing the row right.
+   Tens reel: the "1" rises from below into the slot (translateY 76px to 0).
+   Duration: 420ms | Curve: Curves.easeOutCubic
+   If the balance already had two digits, the tens reel rolls with the
    carry (12 to 22), no entrance.
-5. Total label ("/ 3 GB" to "/ 13 GB"): cross-fade, old moves up 8px and fades
-   out, new rises 8px into place. Starts 100ms before the roll ends.
-   Duration: quick (200ms) | Curve: move (Curves.fastOutSlowIn)
-   Decimals (".40") stay still: top-ups are whole GB or whole days. If they
-   ever change, they swap with the label.
+4. Total label ("/ 3 GB" to "/ 13 GB"): cross-fade, old moves up 14px and
+   fades out, new rises 14px into place. 1200-1500ms.
+   Duration: 300ms | Curve: Curves.easeOutCubic
+   Decimals (".40") stay still: top-ups are whole GB or whole days.
 
-Stagger / delays: 300ms landing delay; tens entrance tied to the units passing
-  9; label at roll end minus 100ms. Total: under 1.6s at 10 steps.
+Total: 1520ms after the delay.
 Interruption: Never blocks input; the card stays tappable. A new balance
   mid-flight jumps to the end state, then rolls from there to the new value.
   Card leaves the screen: jump to the end state.
 Reduced motion (MediaQuery.disableAnimationsOf == true):
   No roll. Old card body (number, label, meter) cross-fades to the new one in
-  150ms via AnimatedSwitcher (decelerate in, easeIn out).
-Suggested Flutter approach: One AnimationController for the roll (TweenSequence
-  for the overshoot), two short controllers for the tens entrance and the label.
-  Reels are ClipRect + Transform.translate over a 0-9-0 column. Tabular figures
-  (FontFeature.tabularFigures) so digits do not jitter. Meter as
-  LinearProgressIndicator(value:) inside a 4px ClipRRect. Reference widget:
-  top_up_data_meter.dart.
+  150ms via AnimatedSwitcher.
+Suggested Flutter approach: One AnimationController (1520ms) for roll + settle
+  + meter + label (Intervals), one 420ms controller for the tens entrance,
+  started when the value passes 9.5 minus 100ms. Reels are ClipRect +
+  Transform.translate over a 0-9-0 column, tabular figures. Blur via
+  ImageFiltered, optional if it costs frames on low-end Android.
+  Reference widget: top_up_data_meter.dart.
 Assets: none.
 
-Design tokens (tokens.css, names match the app):
-  Number      dataMeterText 600 42/1.25 GeneralSans, textPrimary #0F0F11
-  Total label bodyM500 500 18/1.4, textHint #666666, 6px left of the number
-  Sub line    bodyXS400 400 14/1.5, textHint
-  Meter       4px tall, radius 4, track grayscale200 #F0F0F0, fill --brand
-              (Hubby #FF8800; partner colour in white-label apps)
-  Card        emphasised: surface #FFFFFF, 1.5px borderStrong #D4D2CC,
-              radius 16, padding 16
-New motion token: roll (600 + 60/step, max 1200ms). Non-blocking, so it may
-  exceed the 300ms limit for blocking motion.
+Card (1:1 from the approved film; only the typeface changed to GeneralSans):
+  Card       width 440, padding 34 / 26 / 26, white #FFFFFF,
+             2px border #A9DCC5, radius 28, shadow 0 1 2 rgba(0,0,0,.04)
+  Header     flag 44x30 radius 5 + 1px ring rgba(0,0,0,.06), gap 18, row 34 tall;
+             country name 30px w600, letter-spacing -1%, #0A0F24
+  Number     72px, line height 76, tabular figures, #0A0F24;
+             each digit in a 0.6em (43.2px) slot, centred; "." with -0.02em sides
+             Weight: the film used 800; GeneralSans is bundled at 400/500/600,
+             so 600 here.
+  Total      28px, line height 28, #0A0F24, 10px left of the number, 8px up
+  Sub line   21px #6B7280, 14px below the number row (26px row margin above)
+  Meter      7px tall, radius 4, track #E5E7EB, fill #0A0F24, 26px below
+  Link       info icon 22 + "Your plan details" 22px w600, underline 2px
+             offset 5, centred, gap 10, 28px below the meter

@@ -1,68 +1,66 @@
-// Hubby eSIM: top-up rolling counter for the eSIM plan card.
+// Hubby eSIM: top-up rolling counter on the eSIM plan card.
 //
 // When a top-up lands on a plan card, the balance rolls once from the old
 // value to the new one, odometer style. The data meter fills along with the
 // roll, a second digit slides in when the balance passes 9, and the
 // "/ 3 GB" total cross-fades to the new total as the roll settles.
 //
-// Reference implementation for the handoff. Swap the `_Tokens` values for the
-// app's own theme (AppColors / AppTextStyles); the names match tokens.css.
+// Card measurements and motion are 1:1 from the approved animation film; the
+// only change is the typeface, GeneralSans. Reference implementation for the
+// handoff: swap `_Card` for the app's own theme classes where they exist.
 // Prototype: motion/topup-rolling/prototype.html in the design-components repo.
+
+import 'dart:math' as math;
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 
-/// Design tokens used by this widget. Names match tokens.css and the app.
-class _Tokens {
-  static const brand = Color(0xFFFF8800); // --brand (partner-overridable)
-  static const meterTrack = Color(0xFFF0F0F0); // --grayscale200
-  static const textPrimary = Color(0xFF0F0F11); // --grayscale900
-  static const textHint = Color(0xFF666666); // --grayscale600
+/// Card values, 1:1 from the film.
+class _Card {
+  static const main = Color(0xFF0A0F24);
+  static const muted = Color(0xFF6B7280);
+  static const border = Color(0xFFA9DCC5);
+  static const track = Color(0xFFE5E7EB);
 
-  // --dataMeterText: 600 42px / 1.25
-  static const dataMeterText = TextStyle(
-    fontFamily: 'GeneralSans',
-    fontWeight: FontWeight.w600,
-    fontSize: 42,
-    height: 1.25,
-    color: textPrimary,
+  static const font = 'GeneralSans';
+  static const numberSize = 72.0;
+  static const lineH = 76.0;
+  static const digitW = numberSize * 0.6; // 43.2: one slot per digit
+
+  static const number = TextStyle(
+    fontFamily: font,
+    fontWeight: FontWeight.w600, // film: 800; GeneralSans is bundled at 400/500/600
+    fontSize: numberSize,
+    height: lineH / numberSize,
+    color: main,
     fontFeatures: [FontFeature.tabularFigures()],
   );
-
-  // --bodyM500: 500 18px / 1.4, hint colour
-  static const totalLabel = TextStyle(
-    fontFamily: 'GeneralSans',
-    fontWeight: FontWeight.w500,
-    fontSize: 18,
-    height: 1.4,
-    color: textHint,
+  static const total = TextStyle(fontFamily: font, fontSize: 28, height: 1, color: main);
+  static const name = TextStyle(
+      fontFamily: font, fontSize: 30, fontWeight: FontWeight.w600, letterSpacing: -0.3, color: main);
+  static const sub = TextStyle(fontFamily: font, fontSize: 21, color: muted);
+  static const link = TextStyle(
+    fontFamily: font,
+    fontSize: 22,
+    fontWeight: FontWeight.w600,
+    color: main,
+    decoration: TextDecoration.underline,
+    decorationThickness: 2,
   );
 }
 
-/// Motion tokens (hubby-motion). One new token: `roll`, the scaled duration
-/// of the counter itself, see [TopUpMotion.rollDuration].
+/// Motion values, 1:1 from the film. All in milliseconds.
 class TopUpMotion {
-  /// Wait after the card is on screen before the roll starts, so the user's
-  /// eye has landed on the card.
   static const landingDelay = Duration(milliseconds: 300);
-
-  /// `standard`: tens digit entrance.
-  static const tensEnter = Duration(milliseconds: 300);
-
-  /// `quick`: total label and decimals swap.
-  static const labelSwap = Duration(milliseconds: 200);
-
-  /// Reduced motion: plain cross-fade between old and new state.
+  static const roll = 1300; // ease out to steps + overshoot, same for any step count
+  static const settle = 220; // ease back to the target
+  static const overshoot = 0.25; // digits
+  static const tensLead = 100; // tens slot starts opening 100ms before units pass 9.5
+  static const tensEnter = 420;
+  static const labelLead = 100; // label swap starts 100ms before the roll ends
+  static const labelSwap = 300;
+  static const labelShift = 14.0; // px
   static const reducedCrossFade = Duration(milliseconds: 150);
-
-  /// Overshoot past the target digit before settling back, in digits.
-  static const overshoot = 0.15;
-
-  /// `roll`: 600ms for one step, +60ms per extra step, capped at 1200ms.
-  /// 3 steps = 720ms, 5 steps = 840ms, 10 steps = 1140ms.
-  static Duration rollDuration(int steps) {
-    final ms = (600 + 60 * (steps - 1)).clamp(600, 1200);
-    return Duration(milliseconds: ms);
-  }
 }
 
 /// One state of the plan balance, e.g. 2.40 of 3 GB, or 3 of 7 days.
@@ -87,10 +85,8 @@ class PlanBalance {
   int get whole => remaining.floor();
 
   /// Fraction digits as shown, without the dot: "40" for 2.40.
-  String get fractionDigits {
-    if (decimals == 0) return '';
-    return remaining.toStringAsFixed(decimals).split('.').last;
-  }
+  String get fractionDigits =>
+      decimals == 0 ? '' : remaining.toStringAsFixed(decimals).split('.').last;
 
   String get totalLabel {
     final t = total == total.roundToDouble() ? total.toStringAsFixed(0) : total.toString();
@@ -111,48 +107,119 @@ class PlanBalance {
   int get hashCode => Object.hash(remaining, total, unit, decimals);
 }
 
-/// The number, total label and data meter of the eSIM plan card.
+/// The eSIM plan card with the top-up roll.
 ///
 /// Pass the balance from before the top-up as [previous] and the new one as
-/// [balance]. The widget plays the roll once, [TopUpMotion.landingDelay]
-/// after it is first built. With no [previous], or when it equals [balance],
-/// it renders the static card. A later change to [balance] while mounted
-/// (a second top-up) plays again from the value currently shown.
+/// [balance]. The card plays the roll once, [TopUpMotion.landingDelay] after
+/// it is first built. With no [previous], or when it equals [balance], it
+/// renders the static card. A later change to [balance] while mounted (a
+/// second top-up) plays again from the value currently shown.
+class TopUpPlanCard extends StatelessWidget {
+  const TopUpPlanCard({
+    super.key,
+    required this.country,
+    required this.flag,
+    required this.subtitle,
+    required this.balance,
+    this.previous,
+    this.onDetails,
+  });
+
+  final String country;
+
+  /// 44x30 flag image.
+  final Widget flag;
+
+  /// "Valid for 1 day 5 hours" or "Unlimited data".
+  final String subtitle;
+  final PlanBalance balance;
+  final PlanBalance? previous;
+  final VoidCallback? onDetails;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 440,
+      padding: const EdgeInsets.fromLTRB(26, 34, 26, 26),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: _Card.border, width: 2),
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: const [BoxShadow(color: Color(0x0A000000), offset: Offset(0, 1), blurRadius: 2)],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: 34,
+            child: Row(children: [
+              Container(
+                width: 44,
+                height: 30,
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  boxShadow: const [BoxShadow(color: Color(0x0F000000), spreadRadius: 1)],
+                ),
+                child: flag,
+              ),
+              const SizedBox(width: 18),
+              Text(country, style: _Card.name),
+            ]),
+          ),
+          const SizedBox(height: 26),
+          TopUpDataMeter(balance: balance, previous: previous, subtitle: subtitle),
+          const SizedBox(height: 28),
+          GestureDetector(
+            onTap: onDetails,
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
+              Icon(Icons.info_outline, size: 22, color: _Card.main),
+              SizedBox(width: 10),
+              Text('Your plan details', style: _Card.link),
+            ]),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Number row, subtitle and meter: the part of the card that animates.
 class TopUpDataMeter extends StatefulWidget {
-  const TopUpDataMeter({super.key, required this.balance, this.previous});
+  const TopUpDataMeter({super.key, required this.balance, required this.subtitle, this.previous});
 
   final PlanBalance balance;
   final PlanBalance? previous;
+  final String subtitle;
 
   @override
   State<TopUpDataMeter> createState() => _TopUpDataMeterState();
 }
 
-class _TopUpDataMeterState extends State<TopUpDataMeter> with TickerProviderStateMixin {
-  late final AnimationController _roll = AnimationController(vsync: this);
-  late final AnimationController _tens =
-      AnimationController(vsync: this, duration: TopUpMotion.tensEnter);
-  late final AnimationController _label =
-      AnimationController(vsync: this, duration: TopUpMotion.labelSwap);
-  late Animation<double> _steps = const AlwaysStoppedAnimation(0);
+class _TopUpDataMeterState extends State<TopUpDataMeter> with SingleTickerProviderStateMixin {
+  // One clock drives everything; each phase is a pure function of its time.
+  late final AnimationController _c = AnimationController(vsync: this);
 
   late PlanBalance _from;
   late PlanBalance _to;
-  int _stepCount = 0;
+  int _steps = 0;
+  double _tc = double.infinity; // ms where the units pass 9.5
+  bool _started = false;
   bool _reduced = false;
+
+  bool get _tensNew => _from.whole < 10 && _to.whole >= 10;
+  double get _ms => _c.value * (_c.duration?.inMilliseconds ?? 0);
 
   @override
   void initState() {
     super.initState();
     _to = widget.balance;
     _from = widget.previous ?? widget.balance;
-    _roll.addListener(_onRollTick);
     if (_from != _to) {
       Future.delayed(TopUpMotion.landingDelay, () {
         if (mounted) _start();
       });
-    } else {
-      _settle();
     }
   }
 
@@ -166,257 +233,210 @@ class _TopUpDataMeterState extends State<TopUpDataMeter> with TickerProviderStat
   void didUpdateWidget(TopUpDataMeter old) {
     super.didUpdateWidget(old);
     if (widget.balance != _to) {
-      // Interruption: a new balance mid-flight jumps to the end state, then
-      // rolls from there to the new value.
-      final shown = _to;
-      _settle();
-      _from = shown;
+      // Interruption: jump to the end state, then roll from there.
+      _from = _to;
       _to = widget.balance;
       _start();
     }
   }
 
-  void _settle() {
-    _stepCount = 0;
-    _roll.value = 1;
-    _tens.value = 1;
-    _label.value = 1;
-    _from = _to;
-    _steps = const AlwaysStoppedAnimation(0);
-  }
-
   void _start() {
-    _stepCount = (_to.whole - _from.whole).clamp(0, 99);
-    final s = _stepCount.toDouble();
+    _steps = (_to.whole - _from.whole).clamp(0, 99);
+    _tc = double.infinity;
+    if (_tensNew) {
+      for (var t = 0; t <= TopUpMotion.roll; t++) {
+        if (_from.whole + _k(t.toDouble()) >= 9.5) {
+          _tc = t.toDouble();
+          break;
+        }
+      }
+    }
+    final labelAt = _steps > 0 ? TopUpMotion.roll - TopUpMotion.labelLead : 0;
+    final end = [
+      if (_steps > 0) TopUpMotion.roll + TopUpMotion.settle,
+      labelAt + TopUpMotion.labelSwap,
+      if (_tensNew) (_tc - TopUpMotion.tensLead + TopUpMotion.tensEnter).ceil(),
+    ].reduce(math.max);
+    setState(() => _started = true);
+    if (_reduced) return; // AnimatedSwitcher cross-fades to the new state
+    _c.duration = Duration(milliseconds: end);
+    _c.forward(from: 0);
+  }
+
+  /// Rolled steps at [t] ms: ease out past the target, then settle back.
+  double _k(double t) {
+    if (_steps == 0) return 0;
     const o = TopUpMotion.overshoot;
-    _steps = TweenSequence<double>([
-      TweenSequenceItem(
-        tween: Tween(begin: 0.0, end: s + o).chain(CurveTween(curve: Curves.easeOutCubic)),
-        weight: 85,
-      ),
-      TweenSequenceItem(
-        tween: Tween(begin: s + o, end: s).chain(CurveTween(curve: Curves.easeInOutCubic)),
-        weight: 15,
-      ),
-    ]).animate(_roll);
-    _tens.value = 0;
-    _label.value = 0;
-
-    if (_reduced) {
-      // Reduced motion: flip to the new state; AnimatedSwitcher cross-fades.
-      setState(() => _label.value = 1);
-      return;
-    }
-    if (_stepCount == 0) {
-      // Nothing to roll (a top-up under 1 GB): label, decimals and meter swap.
-      _tens.value = 1;
-      _label.forward();
-      return;
-    }
-    _roll.duration = TopUpMotion.rollDuration(_stepCount);
-    _roll.forward(from: 0);
+    final p = (t / TopUpMotion.roll).clamp(0.0, 1.0);
+    final q = ((t - TopUpMotion.roll) / TopUpMotion.settle).clamp(0.0, 1.0);
+    return (_steps + o) * Curves.easeOutCubic.transform(p) - o * Curves.easeInOutCubic.transform(q);
   }
 
-  void _onRollTick() {
-    if (_stepCount == 0 || _roll.duration == null) return;
-    final v = _from.whole + _steps.value;
-    // Tens digit slides in as the units pass 9 (only when it is new).
-    if (_from.whole < 10 && _to.whole >= 10 && v >= 9 && !_tens.isAnimating && _tens.value == 0) {
-      _tens.forward();
-    }
-    // Total label swaps 100ms before the roll ends.
-    final ms = _roll.duration!.inMilliseconds;
-    if (!_label.isAnimating && _label.value == 0 && _roll.value >= 1 - 100 / ms) {
-      _label.forward();
-    }
-  }
+  double _seg(double t, num a, num b) => ((t - a) / (b - a)).clamp(0.0, 1.0);
 
   @override
   void dispose() {
-    _roll.dispose();
-    _tens.dispose();
-    _label.dispose();
+    _c.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     if (_reduced) {
-      // Reduced motion: one 150ms cross-fade from the old card to the new one.
-      final shown = _label.value == 0 ? _from : _to;
+      final shown = _started ? _to : _from;
       return AnimatedSwitcher(
         duration: TopUpMotion.reducedCrossFade,
-        switchInCurve: Curves.decelerate,
-        switchOutCurve: Curves.easeIn,
-        child: _StaticMeter(key: ValueKey(shown), balance: shown),
+        child: KeyedSubtree(
+          key: ValueKey(shown),
+          child: _frame(
+            value: shown.whole.toDouble(),
+            tensIn: shown.whole >= 10 ? 1 : 0,
+            tensPos: (shown.whole ~/ 10).toDouble(),
+            swap: 1,
+            from: shown,
+            to: shown,
+            meter: shown.meterFraction,
+            blur: 0,
+          ),
+        ),
       );
     }
 
     return AnimatedBuilder(
-      animation: Listenable.merge([_roll, _tens, _label]),
+      animation: _c,
       builder: (context, _) {
-        final k = _steps.value;
-        final value = _from.whole + k;
-        // The meter follows the roll; with nothing to roll it follows the swap.
-        final progress =
-            _stepCount == 0 ? _label.value : (k / _stepCount).clamp(0.0, 1.0);
-        final meter = _from.meterFraction + (_to.meterFraction - _from.meterFraction) * progress;
-        final tensIsNew = _from.whole < 10 && _to.whole >= 10;
-        final tensIn = tensIsNew
-            ? Curves.decelerate.transform(_tens.value)
-            : (_to.whole >= 10 ? 1.0 : 0.0);
-        final swap = Curves.fastOutSlowIn.transform(_label.value);
+        final t = _started ? _ms : 0.0;
+        final k = _k(t);
+        final v = _from.whole + k;
+        final labelAt = _steps > 0 ? TopUpMotion.roll - TopUpMotion.labelLead : 0;
+        final swap = Curves.easeOutCubic.transform(_seg(t, labelAt, labelAt + TopUpMotion.labelSwap));
+        final progress = _steps == 0 ? swap : (k / _steps).clamp(0.0, 1.0);
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _NumberRow(
-              value: value,
-              tensIn: tensIn,
-              swap: swap,
-              fromFraction: _from.fractionDigits,
-              toFraction: _to.fractionDigits,
-              fromLabel: _from.totalLabel,
-              toLabel: _to.totalLabel,
-            ),
-            const SizedBox(height: 16),
-            _Meter(fraction: meter),
-          ],
+        // Tens: slot opens and the digit rises in (only when it is new);
+        // otherwise a plain odometer with carry.
+        final units = v % 10;
+        final odo = (v / 10).floorToDouble() + (units - 9).clamp(0.0, 1.0);
+        final tensIn = _tensNew
+            ? Curves.easeOutCubic.transform(
+                _seg(t, _tc - TopUpMotion.tensLead, _tc - TopUpMotion.tensLead + TopUpMotion.tensEnter))
+            : (_from.whole >= 10 ? 1.0 : 0.0);
+        final tensPos = _tensNew && odo < 2 ? tensIn + math.max(0, odo - 1) : odo;
+
+        // Motion blur while the reel moves faster than 1 digit/s, max 2px.
+        final speed = (_k(t + 8) - k).abs() / 0.008;
+        final blur = speed > 1 ? math.min(2.0, speed * 0.12) : 0.0;
+
+        return _frame(
+          value: v,
+          tensIn: tensIn,
+          tensPos: tensPos,
+          swap: swap,
+          from: _from,
+          to: _to,
+          meter: _from.meterFraction + (_to.meterFraction - _from.meterFraction) * progress,
+          blur: blur,
         );
       },
     );
   }
-}
 
-/// Integer reels + fixed decimals + total label, all on one baseline row.
-class _NumberRow extends StatelessWidget {
-  const _NumberRow({
-    required this.value,
-    required this.tensIn,
-    required this.swap,
-    required this.fromFraction,
-    required this.toFraction,
-    required this.fromLabel,
-    required this.toLabel,
-  });
-
-  /// Continuous odometer value, e.g. 7.63 while rolling from 2 to 12.
-  final double value;
-
-  /// 0..1: tens digit entrance (fade + push the rest right by one digit).
-  final double tensIn;
-
-  /// 0..1: total label (and decimals, if they change) cross-fade.
-  final double swap;
-  final String fromFraction, toFraction, fromLabel, toLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    const style = _Tokens.dataMeterText;
-    final digitW = _digitWidth(context, style);
-    final lineH = style.fontSize! * style.height!;
-
-    final units = value % 10;
-    final carry = (units - 9).clamp(0.0, 1.0);
-    final tens = (value / 10).floorToDouble() + carry;
-
-    Widget swapText(String a, String b, TextStyle s) {
-      if (a == b) return Text(a, style: s);
-      return Stack(children: [
-        Opacity(
-          opacity: 1 - swap,
-          child: Transform.translate(offset: Offset(0, -8 * swap), child: Text(a, style: s)),
-        ),
-        Opacity(
-          opacity: swap,
-          child: Transform.translate(offset: Offset(0, 8 * (1 - swap)), child: Text(b, style: s)),
-        ),
-      ]);
+  Widget _frame({
+    required double value,
+    required double tensIn,
+    required double tensPos,
+    required double swap,
+    required PlanBalance from,
+    required PlanBalance to,
+    required double meter,
+    required double blur,
+  }) {
+    final dec = swap < 0.5 ? from.fractionDigits : to.fractionDigits;
+    Widget units = _Reel(position: value % 10, labels: List.generate(11, (i) => '${i % 10}'));
+    if (blur > 0) {
+      units = ImageFiltered(imageFilter: ImageFilter.blur(sigmaX: 0, sigmaY: blur), child: units);
     }
 
-    final trailing = Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        _Reel(position: units, width: digitW, height: lineH, style: style),
-        if (toFraction.isNotEmpty) swapText('.$fromFraction', '.$toFraction', style),
-        Padding(
-          // Sits the 18px label on the 42px numeral baseline.
-          padding: const EdgeInsets.only(left: 6, bottom: 8),
-          child: swapText(fromLabel, toLabel, _Tokens.totalLabel),
+        SizedBox(
+          height: _Card.lineH,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              // Tens slot: opens from 0 to one digit; the reel is anchored right.
+              ClipRect(
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  widthFactor: tensIn,
+                  child: _Reel(
+                    position: tensPos,
+                    labels: const [' ', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+                  ),
+                ),
+              ),
+              units,
+              if (dec.isNotEmpty) ...[
+                Transform.translate(
+                  offset: const Offset(-0.02 * _Card.numberSize, 0),
+                  child: const Text('.', style: _Card.number),
+                ),
+                for (final d in dec.split(''))
+                  SizedBox(
+                    width: _Card.digitW,
+                    height: _Card.lineH,
+                    child: Center(child: Text(d, style: _Card.number)),
+                  ),
+              ],
+              Padding(
+                padding: const EdgeInsets.only(left: 10, bottom: 8),
+                child: _SwapText(from: from.totalLabel, to: to.totalLabel, p: swap),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 14),
+        Text(widget.subtitle, style: _Card.sub),
+        const SizedBox(height: 26),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: meter,
+            minHeight: 7,
+            backgroundColor: _Card.track,
+            color: _Card.main,
+          ),
         ),
       ],
     );
-
-    // Transform-only: the tens reel fades in at x=0 while the rest of the row
-    // slides right by one digit width. No layout animates.
-    return SizedBox(
-      height: lineH,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          if (tensIn > 0)
-            Opacity(
-              opacity: tensIn,
-              child: _Reel(position: tens % 10, width: digitW, height: lineH, style: style),
-            ),
-          Transform.translate(offset: Offset(digitW * tensIn, 0), child: trailing),
-        ],
-      ),
-    );
-  }
-
-  static double _digitWidth(BuildContext context, TextStyle style) {
-    var w = 0.0;
-    for (var d = 0; d <= 9; d++) {
-      final tp = TextPainter(
-        text: TextSpan(text: '$d', style: style),
-        textDirection: TextDirection.ltr,
-        textScaler: MediaQuery.textScalerOf(context),
-      )..layout();
-      if (tp.width > w) w = tp.width;
-    }
-    return w.ceilToDouble();
   }
 }
 
-/// A single odometer column: 0-9 then 0 again, translated by [position].
+/// One odometer column: [labels] stacked, translated by [position] rows.
 class _Reel extends StatelessWidget {
-  const _Reel({
-    required this.position,
-    required this.width,
-    required this.height,
-    required this.style,
-  });
+  const _Reel({required this.position, required this.labels});
 
-  /// 0..10. 2.0 shows "2"; 9.5 shows half of "9" and half of the next "0".
   final double position;
-  final double width, height;
-  final TextStyle style;
+  final List<String> labels;
 
   @override
   Widget build(BuildContext context) {
+    const h = _Card.lineH;
     return SizedBox(
-      width: width,
-      height: height,
+      width: _Card.digitW,
+      height: h,
       child: ClipRect(
         child: OverflowBox(
           alignment: Alignment.topCenter,
-          minHeight: height * 11,
-          maxHeight: height * 11,
+          minHeight: h * labels.length,
+          maxHeight: h * labels.length,
           child: Transform.translate(
-            offset: Offset(0, -position * height),
-            child: Column(
-              children: [
-                for (var i = 0; i <= 10; i++)
-                  SizedBox(
-                    height: height,
-                    width: width,
-                    child: Center(child: Text('${i % 10}', style: style)),
-                  ),
-              ],
-            ),
+            offset: Offset(0, -position * h),
+            child: Column(children: [
+              for (final l in labels)
+                SizedBox(height: h, child: Center(child: Text(l, style: _Card.number))),
+            ]),
           ),
         ),
       ),
@@ -424,64 +444,46 @@ class _Reel extends StatelessWidget {
   }
 }
 
-/// 4px meter: --grayscale200 track, --brand fill, 4px radius.
-class _Meter extends StatelessWidget {
-  const _Meter({required this.fraction});
-  final double fraction;
+/// "/ 3 GB" to "/ 13 GB": old rises 14px and fades out, new rises 14px in.
+class _SwapText extends StatelessWidget {
+  const _SwapText({required this.from, required this.to, required this.p});
+
+  final String from, to;
+  final double p;
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: LinearProgressIndicator(
-        value: fraction,
-        minHeight: 4,
-        backgroundColor: _Tokens.meterTrack,
-        color: _Tokens.brand,
+    if (from == to) return Text(to, style: _Card.total);
+    const d = TopUpMotion.labelShift;
+    return Stack(children: [
+      Opacity(
+        opacity: 1 - p,
+        child: Transform.translate(offset: Offset(0, -d * p), child: Text(from, style: _Card.total)),
       ),
-    );
+      Opacity(
+        opacity: p,
+        child: Transform.translate(offset: Offset(0, d * (1 - p)), child: Text(to, style: _Card.total)),
+      ),
+    ]);
   }
 }
 
-/// The settled card content, used for the reduced-motion cross-fade.
-class _StaticMeter extends StatelessWidget {
-  const _StaticMeter({super.key, required this.balance});
-  final PlanBalance balance;
-
-  @override
-  Widget build(BuildContext context) {
-    final f = balance.fractionDigits;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text('${balance.whole}${f.isEmpty ? '' : '.$f'}', style: _Tokens.dataMeterText),
-            Padding(
-              padding: const EdgeInsets.only(left: 6, bottom: 8),
-              child: Text(balance.totalLabel, style: _Tokens.totalLabel),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        _Meter(fraction: balance.meterFraction),
-      ],
-    );
-  }
-}
-
-// Usage on the plan card, after a successful top-up:
+// Usage, after a successful top-up:
 //
-//   TopUpDataMeter(
+//   TopUpPlanCard(
+//     country: 'Turkey',
+//     flag: Image.asset('assets/flags/tr.png', fit: BoxFit.cover),
+//     subtitle: 'Valid for 1 day 5 hours',
 //     previous: const PlanBalance(remaining: 2.40, total: 3, unit: 'GB'),
 //     balance: const PlanBalance(remaining: 12.40, total: 13, unit: 'GB'),
 //   )
 //
 // Unlimited (day-limited) plan:
 //
-//   TopUpDataMeter(
+//   TopUpPlanCard(
+//     country: 'Turkey',
+//     flag: ...,
+//     subtitle: 'Unlimited data',
 //     previous: const PlanBalance(remaining: 3, total: 7, unit: 'days', decimals: 0),
 //     balance: const PlanBalance(remaining: 6, total: 10, unit: 'days', decimals: 0),
 //   )

@@ -2,8 +2,9 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /*@@FONTS@@*/
-/* Layout: review bench. Phone at 390pt on the left, scenario + playback controls on the right,
-   handoff (spec + Flutter code) below. Card tokens are copied verbatim from tokens.css.
+/* Layout: review bench. The plan card on its ground on the left, scenario + playback controls on the
+   right, handoff (spec + Flutter code) below. The card is copied 1:1 from the approved Motion film
+   (modules/base.css); the only change is the typeface, GeneralSans.
    Single light theme on purpose: the app has no dark mode. */
 :root {
   color-scheme: light;
@@ -22,6 +23,8 @@
   --labelS:500 13px/1.50 var(--font); --dataMeterText:600 42px/1.25 var(--font);
   /* Bench chrome */
   --bench:#EFECE5; --ink:#0F0F11; --ink-soft:#474747; --rule:#DEDAD1; --code-bg:#0F0F11; --code-fg:#EDEAE3;
+  /* Plan card, from the film */
+  --ground:#F6F3EC; --main:#0A0F24; --muted:#6B7280; --mint:#A9DCC5; --track:#E5E7EB;
   /* Motion tokens (hubby-motion) */
   --dur-quick:200ms; --dur-standard:300ms;
   --ease-enter:cubic-bezier(0,0,0.2,1); --ease-move:cubic-bezier(0.4,0,0.2,1);
@@ -32,46 +35,40 @@ body { background:var(--bench); color:var(--ink); font:var(--bodyS400); margin:0
   padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)) }
 header h1 { font:600 32px/1.2 var(--font); margin:0; text-wrap:balance }
 header p { font:var(--bodyS400); color:var(--ink-soft); max-width:64ch; margin:8px 0 0 }
-.bench { display:grid; grid-template-columns:minmax(0,390px) minmax(0,1fr); gap:40px; margin-top:28px; align-items:start }
-@media (max-width:860px) { .bench { grid-template-columns:minmax(0,1fr) } .phone { margin:0 auto } }
+.bench { display:grid; grid-template-columns:minmax(0,520px) minmax(0,1fr); gap:40px; margin-top:28px; align-items:start }
+@media (max-width:900px) { .bench { grid-template-columns:minmax(0,1fr) } }
 
-/* ---- Phone ---- */
-.phone { width:100%; max-width:390px; background:var(--background); border-radius:44px; overflow:hidden;
-  box-shadow:0 0 0 10px #0F0F11, 0 24px 60px rgba(15,15,17,.25); margin:10px; width:calc(100% - 20px) }
-.sbar { display:flex; justify-content:space-between; padding:14px 28px 6px; font:600 15px/1 var(--font) }
-.screen { padding:8px 16px 28px; display:flex; flex-direction:column; gap:16px; min-height:560px }
-.screen h2 { font:var(--title3); margin:8px 0 0 }
+/* ---- Stage: the card's ground ---- */
+.stage { background:var(--ground); border-radius:20px; padding:40px; display:flex; flex-direction:column; align-items:center; gap:24px; min-width:0 }
+.fit { width:440px; transform-origin:0 0 }
+.fitbox { width:100%; display:flex; justify-content:center; overflow:hidden }
+@media (max-width:560px) { .stage { padding:24px 12px } }
 
-/* ---- Plan card (hy-card--emphasised) ---- */
-.card { background:var(--surface); border:1.5px solid var(--borderStrong); border-radius:16px; padding:16px }
-.card-head { display:flex; align-items:center; gap:12px }
-.flag { width:28px; height:20px; border-radius:4px; display:block; box-shadow:0 0 0 0.5px rgba(15,15,17,.12) }
-.card-name { font:var(--title6); flex:1 }
-.pill { display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:999px; font:var(--labelS);
-  letter-spacing:-0.2px; border:1px solid var(--statusSuccessBorder); background:var(--statusSuccessBg); color:var(--statusSuccessText) }
-.pill i { width:6px; height:6px; border-radius:50%; background:var(--statusSuccessDot) }
-.num { position:relative; height:52.5px; margin-top:16px; font:var(--dataMeterText); color:var(--textPrimary);
-  font-variant-numeric:tabular-nums }
-.grp { position:absolute; left:0; top:0; display:flex; align-items:flex-end; will-change:transform }
-.reel { display:block; overflow:hidden; height:52.5px; text-align:center; flex:none }
-.reel.tens { position:absolute; left:0; top:0 }
-.strip { display:block; will-change:transform }
-.strip span { display:block; height:52.5px }
-.dec { display:block; position:relative; height:52.5px; white-space:nowrap }
-.swap { display:block; position:relative; white-space:nowrap }
-.swap .b { position:absolute; left:0; top:0 }
-.of { font:var(--bodyM500); color:var(--textHint); margin:0 0 8px 6px; height:25.2px }
-.sub { font:var(--bodyXS400); color:var(--textHint); margin-top:2px }
-.meter { position:relative; height:4px; border-radius:4px; background:var(--grayscale200); overflow:hidden; margin-top:16px }
-.fill { position:absolute; inset:0; border-radius:4px; background:var(--brand); transform-origin:0 50%; will-change:transform }
-.link { display:flex; justify-content:center; align-items:center; gap:8px; margin-top:16px; padding-top:16px;
-  border-top:1px solid var(--grayscale300); font:var(--bodyS500) }
+/* ---- Plan card: values 1:1 from the film's base.css ---- */
+.pc { width:440px; padding:34px 26px 26px; background:#FFFFFF; border:2px solid var(--mint); border-radius:28px;
+  color:var(--main); box-shadow:0 1px 2px rgba(0,0,0,.04); font-family:var(--font) }
+.pc-head { display:flex; align-items:center; gap:18px; height:34px }
+.pc-flag { width:44px; height:30px; border-radius:5px; overflow:hidden; display:block; box-shadow:0 0 0 1px rgba(0,0,0,.06) }
+.pc-name { font-size:30px; font-weight:600; letter-spacing:-.01em }
+.pc-row { display:flex; align-items:flex-end; margin-top:26px; height:76px }
+.reel { display:block; position:relative; flex:none; height:76px; width:.6em; overflow:hidden; font-size:72px; font-weight:600;
+  line-height:76px; text-align:center; font-variant-numeric:tabular-nums }
+.reel.tens { width:0 }
+.strip { position:absolute; right:0; top:0; width:.6em; display:flex; flex-direction:column; will-change:transform }
+.strip span { display:block; height:76px }
+.pc-dot { display:block; font-size:72px; font-weight:600; line-height:76px; height:76px; margin:0 -.02em }
+.pc-of { display:block; position:relative; font-size:28px; line-height:28px; height:28px; margin:0 0 8px 10px; white-space:nowrap }
+.pc-of span { display:block } .pc-of .b { position:absolute; left:0; top:0; opacity:0 }
+.pc-valid { margin-top:14px; font-size:21px; color:var(--muted) }
+.pc-bar { position:relative; margin-top:26px; height:7px; border-radius:4px; background:var(--track); overflow:hidden }
+.pc-fill { position:absolute; inset:0; border-radius:4px; background:var(--main); transform-origin:0 50%; will-change:transform }
+.pc-link { display:flex; justify-content:center; align-items:center; gap:10px; margin-top:28px; font-size:22px; font-weight:600 }
+.pc-link u { text-decoration-thickness:2px; text-underline-offset:5px }
 .fade { will-change:opacity }
-.btn { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; height:52px; border:none; border-radius:10px;
-  font:var(--bodyM500); cursor:pointer; background:var(--brand); color:var(--on-brand) }
-.btn:active { background:var(--brand-pressed) }
+.btn { display:flex; align-items:center; justify-content:center; gap:8px; height:52px; padding:0 28px; border:none; border-radius:10px;
+  font:var(--bodyM500); cursor:pointer; background:var(--main); color:#FFFFFF }
 .btn:focus-visible, .ctl:focus-visible, .sc:focus-visible { outline:3px solid var(--ink); outline-offset:2px }
-.hint { font:var(--bodyXS400); color:var(--textHint); text-align:center; margin:0 }
+.hint { font:var(--bodyXS400); color:var(--ink-soft); text-align:center; margin:0 }
 
 /* ---- Controls ---- */
 .panel { display:flex; flex-direction:column; gap:24px; min-width:0 }
@@ -127,40 +124,35 @@ table.sc-t td { font-variant-numeric:tabular-nums }
 <div class="wrap">
   <header>
     <h1>Top-up rolling counter</h1>
-    <p>When a top-up lands on the eSIM plan card, the balance rolls once to the new value. Built on the app design system: GeneralSans, the dataMeterText style and the 4px brand meter. Pick a scenario, then tap the top-up button in the phone.</p>
+    <p>When a top-up lands on the eSIM plan card, the balance rolls once to the new value. The card is the one from the approved animation film, pixel for pixel, set in GeneralSans. Pick a scenario, then press Top up.</p>
   </header>
 
   <div class="bench">
-    <div class="phone" aria-label="App preview">
-      <div class="sbar"><span>9:41</span><span>●●● ▮</span></div>
-      <div class="screen">
-        <h2>My eSIMs</h2>
-        <div class="card" id="card">
-          <div class="card-head">
-            <svg class="flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#E30A17"/><circle cx="10.6" cy="10" r="5" fill="#FFFFFF"/><circle cx="11.85" cy="10" r="4" fill="#E30A17"/><polygon fill="#FFFFFF" points="14,10 15.51,9.5 15.52,7.91 16.46,9.19 17.98,8.71 17.05,10 17.98,11.29 16.46,10.81 15.52,12.09 15.51,10.5"/></svg>
-            <span class="card-name">Turkey</span>
-            <span class="pill"><i></i>Active</span>
+    <div class="stage">
+      <div class="fitbox" id="fitbox"><div class="fit" id="fit">
+        <div class="pc" id="card">
+          <div class="pc-head">
+            <svg class="pc-flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#E30A17"/><circle cx="10.6" cy="10" r="5" fill="#FFFFFF"/><circle cx="11.85" cy="10" r="4" fill="#E30A17"/><polygon fill="#FFFFFF" points="14,10 15.51,9.5 15.52,7.91 16.46,9.19 17.98,8.71 17.05,10 17.98,11.29 16.46,10.81 15.52,12.09 15.51,10.5"/></svg>
+            <span class="pc-name">Turkey</span>
           </div>
           <div class="fade" id="body">
-            <div class="num" id="num" aria-live="polite">
+            <div class="pc-row" id="num" aria-live="polite">
               <span class="reel tens" id="tensBox"><span class="strip" id="tens"></span></span>
-              <div class="grp" id="grp">
-                <span class="reel" id="unitsBox"><span class="strip" id="units"></span></span>
-                <span class="dec swap" id="dec"><span class="a"></span><span class="b"></span></span>
-                <span class="of swap" id="of"><span class="a"></span><span class="b"></span></span>
-              </div>
+              <span class="reel" id="unitsBox"><span class="strip" id="units"></span></span>
+              <span id="dec" style="display:contents"></span>
+              <span class="pc-of" id="of"><span class="a"></span><span class="b"></span></span>
             </div>
-            <div class="sub" id="sub"></div>
-            <div class="meter"><div class="fill" id="fill"></div></div>
+            <div class="pc-valid" id="sub"></div>
+            <div class="pc-bar"><div class="pc-fill" id="fill"></div></div>
           </div>
-          <div class="link">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r="0.6" fill="currentColor"/></svg>
-            Your plan details
+          <div class="pc-link">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r="0.6" fill="currentColor"/></svg>
+            <u>Your plan details</u>
           </div>
         </div>
-        <button class="btn" id="topup" type="button"></button>
-        <p class="hint" id="hint">In the app this plays when the user lands back on the card after paying.</p>
-      </div>
+      </div></div>
+      <button class="btn" id="topup" type="button"></button>
+      <p class="hint">In the app this plays when the user lands back on the card after paying.</p>
     </div>
 
     <div class="panel">
@@ -200,22 +192,22 @@ table.sc-t td { font-variant-numeric:tabular-nums }
 
   <section class="handoff">
     <h2>Handoff</h2>
-    <p>Everything the prototype does, in Flutter terms. Every value in the prototype maps 1:1 to the spec and the widget below. The widget is a reference implementation: swap its token constants for the app's own theme classes.</p>
+    <p>Everything the prototype does, in Flutter terms. Card measurements and motion are taken 1:1 from the approved animation film; the typeface is GeneralSans. The widget is a reference implementation: swap its constants for the app's own theme classes.</p>
 
     <div class="tscroll">
       <table class="sc-t">
-        <tr><th>Scenario</th><th>Before</th><th>After</th><th>What moves</th><th>Roll</th></tr>
-        <tr><td>Unused plan</td><td>3.00 / 3 GB, meter full</td><td>8.00 / 8 GB</td><td>Units roll 3 → 8. Meter stays full. Total swaps.</td><td>5 steps, 840 ms</td></tr>
-        <tr><td>Used plan</td><td>0.48 / 3 GB, meter 16%</td><td>5.48 / 8 GB</td><td>Units roll 0 → 5. Meter fills 16% → 69% with the roll. Total swaps.</td><td>5 steps, 840 ms</td></tr>
-        <tr><td>Into two digits</td><td>2.40 / 3 GB, meter 80%</td><td>12.40 / 13 GB</td><td>Units roll 2 → 12. Tens digit fades in as units pass 9 and the row slides right. Meter fills.</td><td>10 steps, 1140 ms</td></tr>
-        <tr><td>Unlimited, days</td><td>3 / 7 days, meter 43%</td><td>6 / 10 days</td><td>Units roll 3 → 6, no decimals. Meter fills 43% → 60%. Total swaps.</td><td>3 steps, 720 ms</td></tr>
+        <tr><th>Scenario</th><th>Before</th><th>After</th><th>What moves</th><th>Steps</th></tr>
+        <tr><td>Unused plan</td><td>3.00 / 3 GB, meter full</td><td>8.00 / 8 GB</td><td>Units roll 3 → 8. Meter stays full. Total swaps.</td><td>5 steps</td></tr>
+        <tr><td>Used plan</td><td>0.48 / 3 GB, meter 16%</td><td>5.48 / 8 GB</td><td>Units roll 0 → 5. Meter fills 16% → 69% with the roll. Total swaps.</td><td>5 steps</td></tr>
+        <tr><td>Into two digits</td><td>2.40 / 3 GB, meter 80%</td><td>12.40 / 13 GB</td><td>Units roll 2 → 12. As they pass 9 a slot opens on the left and the 1 rises into it. Meter fills.</td><td>10 steps</td></tr>
+        <tr><td>Unlimited, days</td><td>3 / 7 days, meter 43%</td><td>6 / 10 days</td><td>Units roll 3 → 6, no decimals. Meter fills 43% → 60%. Total swaps.</td><td>3 steps</td></tr>
       </table>
     </div>
 
     <div class="cols">
       <div class="note"><h3>Interruption</h3><p>Never blocks input. A tap anywhere works mid-roll. If a second top-up arrives mid-flight, jump to the end state, then roll from there. If the card leaves the screen, jump to the end.</p></div>
       <div class="note"><h3>Reduced motion</h3><p>When MediaQuery.disableAnimationsOf is true: no roll. The old card content cross-fades to the new one in 150 ms (AnimatedSwitcher), meter included.</p></div>
-      <div class="note"><h3>Edge cases</h3><p>Top-up under 1 GB (no whole step): no roll; decimals, total and meter swap in 200 ms. Already two digits (12 → 22): the tens reel rolls with the carry, no entrance. Partner apps: the meter uses --brand.</p></div>
+      <div class="note"><h3>Edge cases</h3><p>Top-up under 1 GB (no whole step): no roll; decimals, total and meter swap in 300 ms. Already two digits (12 → 22): the tens reel rolls with the carry, no entrance. The roll is always 1300 ms, however many steps.</p></div>
     </div>
 
     <div>
@@ -231,37 +223,31 @@ table.sc-t td { font-variant-numeric:tabular-nums }
 
 <script>
 (() => {
-  const LH = 52.5;                 // dataMeterText 42px x 1.25
-  const START = 300;               // landingDelay
-  const TENS = 300, LABEL = 200, LABEL_LEAD = 100, OVER = 0.15, RED = 150;
+  // Motion values from the approved film (modules/shared.js), in ms
+  const LH = 76;                   // reel line height
+  const START = 300;               // landing delay before the roll
+  const ROLL = 1300, SETTLE = 220, OVER = 0.25;
+  const TENS_LEAD = 100, TENS = 420;        // tens slot opens 100ms before units pass 9.5, over 420ms
+  const LABEL_LEAD = 100, LABEL = 300, LABEL_Y = 14, RED = 150;
   const SCEN = [
-    { id:'unused', name:'Unused plan',      note:'Only the number rolls; the meter stays full.', a:3.00, ta:3, add:5,  unit:'GB',   sub:'Valid for 29 days' },
-    { id:'used',   name:'Used plan',        note:'The meter fills along with the roll.',          a:0.48, ta:3, add:5,  unit:'GB',   sub:'Valid for 29 days' },
-    { id:'tens',   name:'Into two digits',  note:'A second digit slides in as it passes 9.',      a:2.40, ta:3, add:10, unit:'GB',   sub:'Valid for 29 days' },
+    { id:'unused', name:'Unused plan',      note:'Only the number rolls; the meter stays full.', a:3.00, ta:3, add:5,  unit:'GB',   sub:'Valid for 1 day 5 hours' },
+    { id:'used',   name:'Used plan',        note:'The meter fills along with the roll.',          a:0.48, ta:3, add:5,  unit:'GB',   sub:'Valid for 1 day 5 hours' },
+    { id:'tens',   name:'Into two digits',  note:'A second digit slides in as it passes 9.',      a:2.40, ta:3, add:10, unit:'GB',   sub:'Valid for 1 day 5 hours' },
     { id:'days',   name:'Unlimited, days',  note:'Day-limited plan, whole numbers only.',         a:3,    ta:7, add:3,  unit:'days', sub:'Unlimited data' },
-    { id:'custom', name:'Your own numbers', note:'Try any balance and top-up.',                    a:7.25, ta:10, add:20, unit:'GB',  sub:'Valid for 29 days' },
+    { id:'custom', name:'Your own numbers', note:'Try any balance and top-up.',                    a:7.25, ta:10, add:20, unit:'GB',  sub:'Valid for 1 day 5 hours' },
   ];
   const $ = (id) => document.getElementById(id);
   const clamp01 = (x) => Math.min(1, Math.max(0, x));
-  const bez = (x1, y1, x2, y2) => (x) => {          // CSS cubic-bezier, solved for y at x
-    if (x <= 0) return 0; if (x >= 1) return 1;
-    let t = x;
-    for (let i = 0; i < 8; i++) {
-      const cx = 3*x1*t*(1-t)*(1-t) + 3*x2*t*t*(1-t) + t*t*t - x;
-      const d = 3*x1*(1-t)*(1-t) + 6*(x2-x1)*t*(1-t) + 3*(1-x2)*t*t;
-      if (Math.abs(cx) < 1e-5 || d === 0) break; t -= cx / d;
-    }
-    return 3*y1*t*(1-t)*(1-t) + 3*y2*t*t*(1-t) + t*t*t;
-  };
-  const enter = bez(0, 0, 0.2, 1), move = bez(0.4, 0, 0.2, 1);   // Curves.decelerate ~ / fastOutSlowIn
-  const outCubic = (p) => 1 - Math.pow(1 - p, 3);                 // Curves.easeOutCubic
-  const inOutCubic = (p) => p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3) / 2;  // Curves.easeInOutCubic
+  const seg = (t, a, b) => clamp01((t - a) / (b - a));
+  const outCubic = (p) => 1 - Math.pow(1 - p, 3);                                 // Curves.easeOutCubic
+  const inOutCubic = (p) => p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3) / 2;     // Curves.easeInOutCubic
 
   let sc = SCEN[0], S = null, t = 0, playing = false, last = 0, speed = 1, reduced = false;
   try { reduced = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
 
-  const strip = (el) => { el.innerHTML = Array.from({ length: 11 }, (_, i) => '<span>' + (i % 10) + '</span>').join(''); };
-  strip($('units')); strip($('tens'));
+  // Units: 0-9 then 0 again. Tens: blank, 1-9 (a leading 0 is never shown).
+  $('units').innerHTML = Array.from({ length: 11 }, (_, i) => '<span>' + (i % 10) + '</span>').join('');
+  $('tens').innerHTML = '<span>&nbsp;</span>' + Array.from({ length: 9 }, (_, i) => '<span>' + (i + 1) + '</span>').join('');
 
   function fmt(x, dp) { return dp ? x.toFixed(dp) : String(Math.round(x)); }
   function build(c) {
@@ -269,50 +255,42 @@ table.sc-t td { font-variant-numeric:tabular-nums }
     const b = c.a + c.add, tb = c.ta + c.add;
     const ai = Math.floor(c.a + 1e-9), bi = Math.floor(b + 1e-9);
     const steps = bi - ai;
-    const D = steps > 0 ? Math.min(1200, Math.max(600, 600 + 60 * (steps - 1))) : 0;
-    const s = { c, dp, ai, bi, steps, D,
-      decA: dp ? '.' + fmt(c.a, 2).split('.')[1] : '', decB: dp ? '.' + fmt(b, 2).split('.')[1] : '',
+    const s = { c, dp, ai, bi, steps,
+      decA: dp ? fmt(c.a, 2).split('.')[1] : '', decB: dp ? fmt(b, 2).split('.')[1] : '',
       ofA: '/ ' + fmt(c.ta, 0) + ' ' + c.unit, ofB: '/ ' + fmt(tb, 0) + ' ' + c.unit,
       fA: clamp01(c.a / c.ta), fB: clamp01(b / tb), tensNew: ai < 10 && bi >= 10 };
-    s.k = (tt) => {               // rolled steps (with overshoot) at tt ms into the roll
-      if (!s.D) return 0;
-      const p = clamp01(tt / s.D);
-      return p <= .85 ? (steps + OVER) * outCubic(p / .85) : steps + OVER - OVER * inOutCubic((p - .85) / .15);
+    s.k = (tt) => {               // rolled steps at tt ms into the roll: ease out past the target, settle back
+      if (!steps) return 0;
+      return (steps + OVER) * outCubic(seg(tt, 0, ROLL)) - OVER * inOutCubic(seg(tt, ROLL, ROLL + SETTLE));
     };
-    s.tc = Infinity;              // ms into the roll where units pass 9
-    if (s.tensNew) for (let tt = 0; tt <= s.D; tt += 1) if (ai + s.k(tt) >= 9) { s.tc = tt; break; }
-    s.labelAt = s.D ? s.D - LABEL_LEAD : 0;
-    s.total = reduced ? START + RED : START + Math.max(s.D, s.labelAt + LABEL, s.tensNew ? s.tc + TENS : 0);
+    s.tc = Infinity;              // ms into the roll where the units pass 9.5
+    if (s.tensNew) for (let tt = 0; tt <= ROLL; tt += 1) if (ai + s.k(tt) >= 9.5) { s.tc = tt; break; }
+    s.labelAt = steps ? ROLL - LABEL_LEAD : 0;
+    s.total = reduced ? START + RED : START + Math.max(steps ? ROLL + SETTLE : 0, s.labelAt + LABEL, s.tensNew ? s.tc - TENS_LEAD + TENS : 0);
+    // decimals: static digits in the same reel slots as the film
+    $('dec').innerHTML = dp ? '<span class="pc-dot">.</span><span class="reel"><span class="strip"><span class="d0"></span></span></span><span class="reel"><span class="strip"><span class="d1"></span></span></span>' : '';
     return s;
-  }
-
-  let digitW = 26;
-  function measure() {
-    const probe = document.createElement('span');
-    probe.style.cssText = 'position:absolute;visibility:hidden;font:var(--dataMeterText);font-variant-numeric:tabular-nums';
-    document.body.appendChild(probe);
-    let w = 0; for (let d = 0; d < 10; d++) { probe.textContent = d; w = Math.max(w, probe.getBoundingClientRect().width); }
-    probe.remove(); digitW = Math.ceil(w);
-    for (const id of ['unitsBox', 'tensBox']) $(id).style.width = digitW + 'px';
   }
 
   function setSwap(el, a, b, p) {
     const A = el.querySelector('.a'), B = el.querySelector('.b');
     A.textContent = a; B.textContent = b;
     if (a === b) { A.style.opacity = 1; A.style.transform = 'none'; B.style.opacity = 0; return; }
-    A.style.opacity = 1 - p; A.style.transform = 'translateY(' + (-8 * p).toFixed(2) + 'px)';
-    B.style.opacity = p;     B.style.transform = 'translateY(' + (8 * (1 - p)).toFixed(2) + 'px)';
+    A.style.opacity = 1 - p; A.style.transform = 'translateY(' + (-LABEL_Y * p).toFixed(2) + 'px)';
+    B.style.opacity = p;     B.style.transform = 'translateY(' + (LABEL_Y * (1 - p)).toFixed(2) + 'px)';
   }
 
-  function paint(v, tensIn, swap, frac) {
+  function paint(v, tensIn, swap, frac, blur) {
     const u = ((v % 10) + 10) % 10;
-    const tens = Math.floor(v / 10) + clamp01(u - 9);
+    const odo = Math.floor(v / 10) + clamp01(u - 9);        // tens as an odometer, carry included
+    const tensPos = S.tensNew && odo < 2 ? tensIn + Math.max(0, odo - 1) : odo;
+    const W = parseFloat(getComputedStyle($('unitsBox')).width);
     $('units').style.transform = 'translateY(' + (-u * LH).toFixed(2) + 'px)';
-    $('tens').style.transform = 'translateY(' + (-(tens % 10) * LH).toFixed(2) + 'px)';
-    $('tensBox').style.opacity = tensIn;
-    $('tensBox').style.visibility = tensIn > 0 ? 'visible' : 'hidden';
-    $('grp').style.transform = 'translateX(' + (digitW * tensIn).toFixed(2) + 'px)';
-    setSwap($('dec'), S.decA, S.decB, swap);
+    $('units').style.filter = blur > 0 ? 'blur(' + blur.toFixed(2) + 'px)' : 'none';
+    $('tens').style.transform = 'translateY(' + (-tensPos * LH).toFixed(2) + 'px)';
+    $('tensBox').style.width = (W * (S.tensNew ? tensIn : (S.ai >= 10 ? 1 : 0))).toFixed(2) + 'px';
+    const d = swap < .5 ? S.decA : S.decB;
+    if (S.dp) { $('dec').querySelector('.d0').textContent = d[0]; $('dec').querySelector('.d1').textContent = d[1]; }
     setSwap($('of'), S.ofA, S.ofB, swap);
     $('fill').style.transform = 'scaleX(' + frac.toFixed(4) + ')';
   }
@@ -326,15 +304,18 @@ table.sc-t td { font-variant-numeric:tabular-nums }
       const after = tt >= RED / 2;
       const o = tt < 0 ? 1 : tt < RED / 2 ? 1 - tt / (RED / 2) : clamp01((tt - RED / 2) / (RED / 2));
       $('body').style.opacity = o.toFixed(3);
-      paint(after ? S.bi : S.ai, (after ? S.bi : S.ai) >= 10 ? 1 : 0, after ? 1 : 0, after ? S.fB : S.fA);
+      const v = after ? S.bi : S.ai;
+      paint(v, S.tensNew ? (after ? 1 : 0) : 1, after ? 1 : 0, after ? S.fB : S.fA, 0);
       return;
     }
     $('body').style.opacity = 1;
     const k = tt < 0 ? 0 : S.k(tt);
-    const swap = S.steps === 0 ? move(clamp01(tt / LABEL)) : move(clamp01((tt - S.labelAt) / LABEL));
+    const vel = tt < 0 ? 0 : Math.abs(S.k(tt + 8) - k) / 0.008;           // steps per second
+    const blur = vel > 1 ? Math.min(2, vel * 0.12) : 0;
+    const swap = outCubic(seg(tt, S.labelAt, S.labelAt + LABEL));
     const prog = S.steps === 0 ? swap : clamp01(k / S.steps);
-    const tensIn = S.tensNew ? enter(clamp01((tt - S.tc) / TENS)) : (S.ai >= 10 ? 1 : 0);
-    paint(S.ai + k, tensIn, swap, S.fA + (S.fB - S.fA) * prog);
+    const tensIn = S.tensNew ? outCubic(seg(tt, S.tc - TENS_LEAD, S.tc - TENS_LEAD + TENS)) : 0;
+    paint(S.ai + k, tensIn, swap, S.fA + (S.fB - S.fA) * prog, blur);
   }
 
   function frame(now) {
@@ -353,15 +334,14 @@ table.sc-t td { font-variant-numeric:tabular-nums }
     const rows = [];
     const x = (ms) => (ms / span * 100).toFixed(2) + '%';
     const bar = (label, a, d, txt) => rows.push('<div class="tl-row" style="top:' + (rows.length * 26) + 'px"><b>' + label + '</b><div class="tl-area"><div class="tl-bar" style="left:' + x(a) + ';width:' + x(Math.max(d, 8)) + '"><em>' + txt + '</em></div></div></div>');
-    if (reduced) {
-      bar('Delay', 0, START, '300 ms');
-      bar('Cross-fade', START, RED, '150 ms · whole card body');
-    } else {
-      bar('Delay', 0, START, '300 ms');
-      if (S.steps) bar('Number roll', START, S.D, S.D + ' ms · ' + S.steps + ' steps');
-      if (S.steps && S.fA !== S.fB) bar('Meter fill', START, S.D, 'with the roll');
-      if (S.tensNew) bar('Tens digit in', START + S.tc, TENS, '300 ms · decelerate');
-      bar('Total label', START + S.labelAt, LABEL, '200 ms · fastOutSlowIn');
+    bar('Delay', 0, START, '300 ms');
+    if (reduced) bar('Cross-fade', START, RED, '150 ms · card body');
+    else {
+      if (S.steps) bar('Number roll', START, ROLL, '1300 ms · ' + S.steps + ' steps');
+      if (S.steps) bar('Settle back', START + ROLL, SETTLE, '220 ms');
+      if (S.steps && S.fA !== S.fB) bar('Meter fill', START, ROLL + SETTLE, 'with the roll');
+      if (S.tensNew) bar('Tens digit in', START + S.tc - TENS_LEAD, TENS, '420 ms · easeOutCubic');
+      bar('Total label', START + S.labelAt, LABEL, '300 ms · easeOutCubic');
     }
     const el = $('tl');
     el.style.setProperty('--h', (rows.length * 26) + 'px');
@@ -396,10 +376,20 @@ table.sc-t td { font-variant-numeric:tabular-nums }
     else if (add !== Math.floor(add)) err = 'Top-ups are whole GB or whole days.';
     $('cErr').textContent = err;
     if (err) return;
-    Object.assign(cust, { a: unit === 'days' ? Math.floor(a) : a, ta, add, unit, sub: unit === 'days' ? 'Unlimited data' : 'Valid for 29 days' });
+    Object.assign(cust, { a: unit === 'days' ? Math.floor(a) : a, ta, add, unit, sub: unit === 'days' ? 'Unlimited data' : 'Valid for 1 day 5 hours' });
     choose(cust);
   }
   ['cRem', 'cTot', 'cAdd', 'cUnit'].forEach((id) => $(id).addEventListener('change', readCustom));
+
+  // Keep the 440px card at its true size; shrink it only when the screen is narrower.
+  function fit() {
+    const box = $('fitbox'), card = $('fit');
+    const k = Math.min(1, box.clientWidth / 440);
+    card.style.transform = k < 1 ? 'scale(' + k + ')' : 'none';
+    box.style.height = (card.offsetHeight * k) + 'px';
+    card.style.marginRight = k < 1 ? (440 * k - 440) + 'px' : '0';
+  }
+  addEventListener('resize', fit);
 
   $('topup').addEventListener('click', play);
   $('replay').addEventListener('click', play);
@@ -415,7 +405,7 @@ table.sc-t td { font-variant-numeric:tabular-nums }
     try { navigator.clipboard.writeText(txt).then(done, fallback); } catch (e) { fallback(); }
   }));
 
-  measure(); choose(SCEN[0]);
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { measure(); render(); });
+  choose(SCEN[0]); fit();
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { fit(); render(); });
 })();
 </script>
