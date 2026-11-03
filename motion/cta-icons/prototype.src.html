@@ -1,0 +1,298 @@
+<title>eSIM CTA Icons</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/*@@FONTS@@*/
+/* Layout: review bench. The CTA on its ground on the left, scenario + playback controls on the
+   right, handoff (spec + Flutter code) below. Button, pill and motion are copied 1:1 from the
+   approved video; the only change is the typeface, GeneralSans.
+   Single light theme on purpose: the app has no dark mode. */
+:root {
+  color-scheme: light;
+  --brand:#FF8800; --brand-soft:rgba(255,136,0,.12);
+  --surface:#FFFFFF; --border:#E8E6E0; --borderStrong:#D4D2CC;
+  --grayscale100:#F7F7F7; --grayscale300:#EBEBEB;
+  --font:"GeneralSans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:ui-monospace, "SF Mono", Menlo, monospace;
+  --title7:600 16px/1.40 var(--font);
+  --bodyM500:500 18px/1.40 var(--font); --bodyS500:500 16px/1.40 var(--font); --bodyS400:400 16px/1.40 var(--font);
+  --bodyXS500:500 14px/1.50 var(--font); --bodyXS400:400 14px/1.50 var(--font); --bodyXXS500:500 12px/1.50 var(--font);
+  /* Bench chrome */
+  --bench:#EFECE5; --ink:#0F0F11; --ink-soft:#474747; --code-bg:#0F0F11; --code-fg:#EDEAE3;
+  /* CTA, from the video */
+  --ground:#F6F4F0; --cta:#0D112E; --on-cta:#FFFFFF;
+  --pill-text:#9C5C0F; --pill-border:#FDBA74; --pill-fill:#FDF8F3;
+}
+* { box-sizing:border-box }
+body { background:var(--bench); color:var(--ink); font:var(--bodyS400); margin:0 }
+.wrap { max-width:1120px; margin:0 auto; padding-block:32px 64px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)) }
+header h1 { font:600 32px/1.2 var(--font); margin:0; text-wrap:balance }
+header p { font:var(--bodyS400); color:var(--ink-soft); max-width:64ch; margin:8px 0 0 }
+.bench { display:grid; grid-template-columns:minmax(0,520px) minmax(0,1fr); gap:40px; margin-top:28px; align-items:start }
+@media (max-width:900px) { .bench { grid-template-columns:minmax(0,1fr) } }
+
+/* ---- Stage ---- */
+.stage { background:var(--ground); border-radius:20px; min-height:420px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; overflow:hidden; padding:24px 12px; min-width:0 }
+.zoom { transform-origin:50% 50%; display:flex; flex-direction:column; align-items:center }
+.view { display:flex; flex-direction:column; align-items:center }
+
+/* ---- CTA (values from the video) ---- */
+.pill { display:inline-flex; align-items:center; gap:5px; height:20px; padding:0 9px; border-radius:999px;
+  border:1px solid var(--pill-border); background:var(--pill-fill); color:var(--pill-text);
+  font:500 11px/1 var(--font); white-space:nowrap; margin-bottom:20px }
+.pill i { width:5px; height:5px; border-radius:50%; background:var(--brand) }
+.cta { display:flex; align-items:center; justify-content:center; gap:12px; width:328px; height:52px; border:none;
+  border-radius:10px; background:var(--cta); color:var(--on-cta); font:500 18px/1.4 var(--font);
+  box-shadow:0 4px 14px rgba(13,17,46,.22); cursor:pointer; padding:0 16px }
+.cta svg { width:18px; height:18px; flex:none; overflow:visible }
+.cta .s { fill:none; stroke:var(--on-cta); stroke-width:2; stroke-linecap:round; stroke-linejoin:round }
+.stack { display:flex; flex-direction:column; gap:20px }
+.stack .cta { width:284px }
+.cta:focus-visible, .ctl:focus-visible, .sc:focus-visible { outline:3px solid var(--ink); outline-offset:2px }
+.hint { font:var(--bodyXS400); color:var(--ink-soft); text-align:center; margin:24px 0 0 }
+/*@@BENCH@@*/
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>eSIM call-to-action icons</h1>
+    <p>Three looping icon animations for the eSIM buttons, rebuilt from the approved video and set in GeneralSans. Pick a button to review it on its own, or see all three together.</p>
+  </header>
+
+  <div class="bench">
+    <div class="stage">
+      <div class="zoom" id="zoom"><div class="view" id="view"></div></div>
+    </div>
+
+    <div class="panel">
+      <section>
+        <p class="eyebrow">Scenario</p>
+        <div class="scs" id="scs"></div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Playback</p>
+        <div class="row">
+          <button class="ctl" id="replay" type="button">↻ Replay</button>
+          <button class="ctl" id="slow" type="button" aria-pressed="false">0.25× slow motion</button>
+          <button class="ctl" id="reduced" type="button" aria-pressed="false">Reduced motion</button>
+          <button class="ctl" id="zoomBtn" type="button" aria-pressed="true">1.5× zoom</button>
+        </div>
+        <div class="scrub" style="margin-top:14px">
+          <input id="scrubber" type="range" min="0" max="3000" step="1" value="0" aria-label="Scrub the timeline">
+          <output id="tout">0 ms</output>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">One loop</p>
+        <div class="tl"><div class="tl-track" id="tl"></div></div>
+      </section>
+    </div>
+  </div>
+
+  <section class="handoff">
+    <h2>Handoff</h2>
+    <p>Everything the prototype does, in Flutter terms. Button, pill and motion are measured from the approved video frame by frame; the typeface is GeneralSans. The code is a reference implementation: the icons are painted in code, so no Lottie files are needed.</p>
+
+    <div class="tscroll">
+      <table class="sc-t">
+        <tr><th>Button</th><th>Icon motion</th><th>Loop</th><th>First run</th></tr>
+        <tr><td>Activate your eSIM</td><td>Arrow drops through the tray, falls back in from above, lands slightly low and settles.</td><td>1800 ms</td><td>after 1080 ms</td></tr>
+        <tr><td>Set up your eSIM</td><td>Toggle switches on (250 ms), holds 920 ms, switches off, holds.</td><td>2400 ms</td><td>after 750 ms</td></tr>
+        <tr><td>Connect eSIM</td><td>Bolt retracts, stays empty for 280 ms, redraws from the top point, then pulses twice.</td><td>2600 ms</td><td>after 680 ms</td></tr>
+      </table>
+    </div>
+
+    <div class="cols">
+      <div class="note"><h3>Interruption</h3><p>The loops never block input: the button can be tapped at any moment. Pause the loop when the button is off screen or the app is in the background.</p></div>
+      <div class="note"><h3>Reduced motion</h3><p>When MediaQuery.disableAnimationsOf is true, nothing loops. Each icon shows its rest state: arrow in place, toggle off, full bolt.</p></div>
+      <div class="note"><h3>Open question</h3><p>Our motion guidelines ask decorative loops to stop after about 5 seconds. Keep looping as in the video, or play 2 to 3 loops and stop at rest?</p></div>
+    </div>
+
+    <div>
+      <p class="eyebrow">Animation spec</p>
+      <div class="codebox"><button class="copy" type="button" data-copy="spec">Copy</button><pre id="spec">@@SPEC@@</pre></div>
+    </div>
+    <div>
+      <p class="eyebrow">Flutter widgets · cta_icon_animations.dart</p>
+      <div class="codebox"><button class="copy" type="button" data-copy="dart">Copy</button><pre id="dart">@@DART@@</pre></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  // Timings from the video, ms. Same names as CtaIconMotion in the Dart file.
+  const M = {
+    download: { period:1800, delay:1080 },
+    toggle:   { period:2400, delay:750 },
+    zap:      { period:2600, delay:680 },
+  };
+  const ENTER_STAGGER = 170, ENTER = 300;
+  const SCEN = [
+    { id:'download', name:'Activate your eSIM', pill:'Ready to activate', note:'Download arrow drops into place.' },
+    { id:'toggle',   name:'Set up your eSIM',   pill:'Setup pending',     note:'Toggle switches on, then off again.' },
+    { id:'zap',      name:'Connect eSIM',       pill:'Ready to connect',  note:'Lightning draws, charges and settles.' },
+    { id:'all',      name:'All three',          pill:'',                  note:'The three buttons together, as in the last part of the video.' },
+  ];
+  const $ = (id) => document.getElementById(id);
+  const clamp01 = (x) => Math.min(1, Math.max(0, x));
+  const seg = (t, a, b) => clamp01((t - a) / (b - a));
+  const inCubic = (p) => p * p * p;
+  const outCubic = (p) => 1 - Math.pow(1 - p, 3);
+  const bez = (x1, y1, x2, y2) => (x) => {
+    if (x <= 0) return 0; if (x >= 1) return 1;
+    let t = x;
+    for (let i = 0; i < 8; i++) {
+      const cx = 3*x1*t*(1-t)*(1-t) + 3*x2*t*t*(1-t) + t*t*t - x;
+      const d = 3*x1*(1-t)*(1-t) + 6*(x2-x1)*t*(1-t) + 3*(1-x2)*t*t;
+      if (Math.abs(cx) < 1e-5 || d === 0) break; t -= cx / d;
+    }
+    return 3*y1*t*(1-t)*(1-t) + 3*y2*t*t*(1-t) + t*t*t;
+  };
+  const inOut = bez(0.42, 0, 0.58, 1);                 // Curves.easeInOut
+  const fastOutSlowIn = bez(0.4, 0, 0.2, 1);           // Curves.fastOutSlowIn
+  const easeOut = bez(0, 0, 0.58, 1);                  // Curves.easeOut
+  const mix = (a, b, p) => '#' + [0, 2, 4].map((i) => {
+    const x = parseInt(a.slice(1 + i, 3 + i), 16), y = parseInt(b.slice(1 + i, 3 + i), 16);
+    return Math.round(x + (y - x) * p).toString(16).padStart(2, '0');
+  }).join('');
+  const CTA = '#0D112E', ON = '#FFFFFF';
+
+  // ---- Icon states as pure functions of loop time (ms) ----
+  function downloadOffset(t) {
+    if (t < 230) return 22 * inCubic(seg(t, 0, 230));
+    if (t < 250) return 22;
+    if (t < 480) return -16 + 17.7 * outCubic(seg(t, 250, 480));
+    return 1.7 * (1 - inOut(seg(t, 480, 620)));
+  }
+  function toggleOn(t) {
+    if (t < 1170) return fastOutSlowIn(seg(t, 0, 250));
+    return fastOutSlowIn(1 - seg(t, 1170, 1420));
+  }
+  function zapState(t) {
+    let from = 0, to = 1;
+    if (t < 250) from = inOut(seg(t, 0, 250));
+    else if (t < 530) { from = 0; to = 0; }
+    else to = outCubic(seg(t, 530, 850));
+    const pulse = (at) => easeOut(seg(t, at, at + 200)) - inOut(seg(t, at + 200, at + 400));
+    return { from, to, scale: 1 + 0.05 * Math.max(pulse(900), pulse(1320)) };
+  }
+
+  // ---- Markup ----
+  let uid = 0;
+  function iconSvg(kind) {
+    const id = 'c' + (uid++);
+    if (kind === 'download') return '<svg viewBox="0 0 24 24" aria-hidden="true" data-k="download"><defs><clipPath id="' + id + '"><rect x="0" y="0.7" width="24" height="18.5"/></clipPath></defs>' +
+      '<line class="s" x1="5" y1="21" x2="19" y2="21"/><g clip-path="url(#' + id + ')"><g class="arrow"><path class="s" d="M12 3v14M6 11l6 6 6-6"/></g></g></svg>';
+    if (kind === 'toggle') return '<svg viewBox="0 0 24 24" aria-hidden="true" data-k="toggle"><rect class="s track" x="2" y="6" width="20" height="12" rx="6"/><circle class="knob" cx="8" cy="12" r="3"/></svg>';
+    return '<svg viewBox="0 0 24 24" aria-hidden="true" data-k="zap"><g class="zg"><path class="s bolt" d="M13 2L3 14L12 14L11 22L21 10L12 10L13 2"/></g></svg>';
+  }
+  function cta(s) { return '<button type="button" class="cta" data-k="' + s.id + '">' + iconSvg(s.id) + '<span>' + s.name + '</span></button>'; }
+
+  function paintIcon(svg, t) {      // t = ms into the loop
+    const k = svg.dataset.k;
+    if (k === 'download') svg.querySelector('.arrow').setAttribute('transform', 'translate(0 ' + downloadOffset(t).toFixed(3) + ')');
+    else if (k === 'toggle') {
+      const p = toggleOn(t);
+      svg.querySelector('.track').style.fill = mix(CTA, ON, p);
+      const kn = svg.querySelector('.knob'); kn.setAttribute('cx', (8 + 8 * p).toFixed(3)); kn.style.fill = mix(ON, CTA, p);
+    } else {
+      const z = zapState(t), b = svg.querySelector('.bolt'), L = b.getTotalLength();
+      if (z.to <= z.from + 1e-4) b.style.strokeDasharray = '0 ' + (L + 1);
+      else { b.style.strokeDasharray = ((z.to - z.from) * L).toFixed(3) + ' ' + (L + 1); }
+      b.style.strokeDashoffset = (-z.from * L).toFixed(3);
+      svg.querySelector('.zg').setAttribute('transform', 'translate(12 12) scale(' + z.scale.toFixed(4) + ') translate(-12 -12)');
+    }
+  }
+
+  let sc = SCEN[0], T = 0, playing = false, last = 0, speed = 1, reduced = false, zoom = 1.5;
+  try { reduced = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+
+  function build() {
+    if (sc.id === 'all') $('view').innerHTML = '<div class="stack">' + SCEN.slice(0, 3).map(cta).join('') + '</div>';
+    else $('view').innerHTML = '<span class="pill"><i></i>' + sc.pill + '</span>' + cta(sc);
+  }
+  const maxT = () => sc.id === 'all' ? 6000 : M[sc.id].delay + M[sc.id].period;
+
+  function render() {
+    $('tout').value = Math.round(T) + ' ms';
+    $('scrubber').value = Math.round(T);
+    const btns = [...$('view').querySelectorAll('.cta')];
+    btns.forEach((b, i) => {
+      const k = b.dataset.k, m = M[k];
+      const start = sc.id === 'all' ? i * ENTER_STAGGER : 0;
+      b.style.opacity = sc.id === 'all' && !reduced ? seg(T, start, start + ENTER).toFixed(3) : 1;
+      const local = T - start - m.delay;
+      const t = reduced || local < 0 ? 0 : local % m.period;
+      paintIcon(b.querySelector('svg'), t);
+    });
+    head();
+  }
+  function frame(now) {
+    if (!playing) return;
+    T += (now - last) * speed; last = now;
+    render();
+    requestAnimationFrame(frame);
+  }
+  function play() { T = 0; playing = true; last = performance.now(); render(); requestAnimationFrame(frame); }
+
+  // ---- Timeline (one loop of the selected icon; all three stacked for "All") ----
+  const PH = {
+    download: [['Drop out', 0, 230, 'easeInCubic'], ['Fall in', 250, 230, 'easeOutCubic'], ['Settle', 480, 140, 'easeInOut']],
+    toggle: [['Switch on', 0, 250, 'fastOutSlowIn'], ['Hold on', 250, 920, ''], ['Switch off', 1170, 250, 'reverse'], ['Hold off', 1420, 980, '']],
+    zap: [['Retract', 0, 250, 'easeInOut'], ['Draw', 530, 320, 'easeOutCubic'], ['Charge', 900, 400, '1.05×'], ['Charge', 1320, 400, '1.05×']],
+  };
+  function timeline() {
+    const kinds = sc.id === 'all' ? ['download', 'toggle', 'zap'] : [sc.id];
+    const span = 2600, rows = [];
+    const x = (ms) => (ms / span * 100).toFixed(2) + '%';
+    kinds.forEach((k) => PH[k].forEach(([n, a, d, txt]) => rows.push('<div class="tl-row" style="top:' + (rows.length * 26) + 'px"><b>' + (kinds.length > 1 ? SCEN.find((s) => s.id === k).name.split(' ')[0] + ' · ' : '') + n + '</b><div class="tl-area"><div class="tl-bar" style="left:' + x(a) + ';width:' + x(d) + '"><em>' + d + ' ms' + (txt ? ' · ' + txt : '') + '</em></div></div></div>')));
+    $('tl').style.setProperty('--h', (rows.length * 26) + 'px');
+    $('tl').innerHTML = rows.join('') + '<div class="tl-area"><div class="tl-head" id="tlh"></div></div>';
+  }
+  function head() {
+    const h = $('tlh'); if (!h) return;
+    h.hidden = sc.id === 'all';               // three loops of different lengths: no single playhead
+    const k = sc.id === 'all' ? 'download' : sc.id, m = M[k];
+    const local = T - m.delay, t = local < 0 ? 0 : local % m.period;
+    h.style.left = (t / 2600 * 100).toFixed(2) + '%';
+  }
+
+  function choose(s) {
+    sc = s; build(); timeline();
+    document.querySelectorAll('.sc').forEach((b) => b.setAttribute('aria-pressed', b.dataset.id === s.id));
+    $('scrubber').max = maxT();
+    play();
+  }
+
+  $('scs').innerHTML = SCEN.map((s) => '<button type="button" class="sc" data-id="' + s.id + '" aria-pressed="false"><span>' + s.name + '</span>' +
+    (s.pill ? '<span class="ex">' + s.pill + '</span>' : '<span class="ex">Activate · Set up · Connect</span>') + '<small>' + s.note + '</small></button>').join('');
+  $('scs').addEventListener('click', (e) => { const b = e.target.closest('.sc'); if (b) choose(SCEN.find((s) => s.id === b.dataset.id)); });
+
+  function applyZoom() {
+    $('zoom').style.transform = 'scale(' + zoom + ')';
+    $('zoom').style.margin = zoom > 1 ? '48px 0' : '0';
+  }
+  $('replay').addEventListener('click', play);
+  $('slow').addEventListener('click', (e) => { speed = speed === 1 ? .25 : 1; e.currentTarget.setAttribute('aria-pressed', speed !== 1); });
+  $('reduced').addEventListener('click', (e) => { reduced = !reduced; e.currentTarget.setAttribute('aria-pressed', reduced); render(); });
+  $('reduced').setAttribute('aria-pressed', reduced);
+  $('zoomBtn').addEventListener('click', (e) => { zoom = zoom === 1.5 ? 1 : 1.5; e.currentTarget.setAttribute('aria-pressed', zoom > 1); applyZoom(); });
+  $('scrubber').addEventListener('input', (e) => { playing = false; T = +e.target.value; render(); });
+  // Small screens: a zoomed 328px button does not fit; start at 1x.
+  if (innerWidth < 760) { zoom = 1; $('zoomBtn').setAttribute('aria-pressed', 'false'); }
+  applyZoom();
+
+  document.querySelectorAll('.copy').forEach((b) => b.addEventListener('click', () => {
+    const txt = $(b.dataset.copy).textContent;
+    const done = () => { b.textContent = 'Copied'; setTimeout(() => (b.textContent = 'Copy'), 1500); };
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents($(b.dataset.copy)); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = 'Selected'; };
+    try { navigator.clipboard.writeText(txt).then(done, fallback); } catch (e) { fallback(); }
+  }));
+
+  choose(SCEN[0]);
+})();
+</script>
