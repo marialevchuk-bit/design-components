@@ -3,6 +3,7 @@
 //   Activate your eSIM  -> download arrow drops into the tray and back into place
 //   Set up your eSIM    -> toggle switches on, then off again
 //   Connect eSIM        -> lightning bolt draws itself, charges and settles
+//   Top up              -> plus turns a quarter turn and settles
 //
 // Button and motion values are 1:1 from the approved animation video; the only
 // change is the typeface, GeneralSans. Reference implementation for the
@@ -58,9 +59,16 @@ class CtaIconMotion {
   static const zapPulse1 = 1400; // two gentle "charge" pulses, scale to 1.04
   static const zapPulse2 = 2050;
   static const zapPulseHalf = 300; // up 300ms, down 300ms
+
+  // Plus: 30s loop, first run 1000ms after the button appears.
+  static const plusPeriod = 30000;
+  static const plusDelay = 1000;
+  static const plusTurn = 500; // 0 to 96 degrees (easeOutCubic)
+  static const plusSettle = 700; // back to 90 degrees (easeInOut)
+  static const plusGrow = 250; // scale to 1.12 (easeOut), back to 1 by plusSettle
 }
 
-enum CtaIcon { download, toggle, zap }
+enum CtaIcon { download, toggle, zap, plus }
 
 /// The dark eSIM call-to-action button with its animated icon.
 class EsimCtaButton extends StatelessWidget {
@@ -83,6 +91,7 @@ class EsimCtaButton extends StatelessWidget {
       CtaIcon.download => const DownloadDropIcon(),
       CtaIcon.toggle => const ToggleSwitchIcon(),
       CtaIcon.zap => const ZapChargeIcon(),
+      CtaIcon.plus => const PlusTurnIcon(),
     };
     return Container(
       width: width,
@@ -340,6 +349,58 @@ class _ZapPainter extends CustomPainter {
   bool shouldRepaint(_ZapPainter old) => old.from != from || old.to != to || old.scale != scale;
 }
 
+// ---------------------------------------------------------------------------
+// Plus: a quarter turn, slightly past and back, growing a little as it turns.
+// A plus turned 90 degrees looks the same, so the loop ends where it began.
+// ---------------------------------------------------------------------------
+
+class PlusTurnIcon extends StatefulWidget {
+  const PlusTurnIcon({super.key});
+  @override
+  State<PlusTurnIcon> createState() => _PlusTurnIconState();
+}
+
+class _PlusTurnIconState extends _LoopIconState<PlusTurnIcon> {
+  @override
+  int get period => CtaIconMotion.plusPeriod;
+  @override
+  int get delay => CtaIconMotion.plusDelay;
+
+  @override
+  Widget build(BuildContext context) => paint(() {
+        const m = CtaIconMotion;
+        final t = ms;
+        final deg = t < m.plusTurn
+            ? 96 * Curves.easeOutCubic.transform(seg(t, 0, m.plusTurn))
+            : 96 - 6 * Curves.easeInOut.transform(seg(t, m.plusTurn, m.plusSettle));
+        final scale = 1 +
+            0.12 *
+                (Curves.easeOut.transform(seg(t, 0, m.plusGrow)) -
+                    Curves.easeInOut.transform(seg(t, m.plusGrow, m.plusSettle)));
+        return _PlusPainter(deg * math.pi / 180, scale);
+      });
+}
+
+class _PlusPainter extends CustomPainter {
+  _PlusPainter(this.angle, this.scale);
+  final double angle, scale;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.scale(size.width / 24);
+    canvas.translate(12, 12);
+    canvas.rotate(angle);
+    canvas.scale(scale);
+    canvas.translate(-12, -12);
+    final p = _stroke();
+    canvas.drawLine(const Offset(5, 12), const Offset(19, 12), p);
+    canvas.drawLine(const Offset(12, 5), const Offset(12, 19), p);
+  }
+
+  @override
+  bool shouldRepaint(_PlusPainter old) => old.angle != angle || old.scale != scale;
+}
+
 Paint _stroke() => Paint()
   ..color = _Cta.onFill
   ..style = PaintingStyle.stroke
@@ -352,3 +413,4 @@ Paint _stroke() => Paint()
 //   EsimCtaButton(icon: CtaIcon.download, label: 'Activate your eSIM', onPressed: ...)
 //   EsimCtaButton(icon: CtaIcon.toggle,   label: 'Set up your eSIM',   onPressed: ...)
 //   EsimCtaButton(icon: CtaIcon.zap,      label: 'Connect eSIM',       onPressed: ...)
+//   EsimCtaButton(icon: CtaIcon.plus,     label: 'Top up',             onPressed: ...)

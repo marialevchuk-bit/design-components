@@ -1,7 +1,7 @@
 ANIMATION SPEC: eSIM call-to-action icons
-Screen / component: eSIM call-to-action button (Activate / Set up / Connect)
+Screen / component: eSIM call-to-action button (Activate / Set up / Connect / Top up)
 Purpose: Draws the eye to the one action the traveller needs to take next,
-  and hints at what it does (download, switch on, connect).
+  and hints at what it does (download, switch on, connect, add).
 Trigger: Shown on screen. Each icon starts its loop after a short delay
   and repeats while the button is visible. Tapping the button works at any
   moment; the loop never blocks input.
@@ -49,18 +49,29 @@ Time 0 = start of one loop.
                  2050-2650ms the same pulse again
    e. Still      2650ms-30s
 
-Stagger / delays: per icon as above. When all three buttons are on one
+4. PLUS (Top up)
+   Loop 30s (every 30 seconds). First loop starts 1000ms after the button appears.
+   A plus turned 90 degrees looks the same, so the loop ends where it began.
+   a. Turn       0-500ms     rotate 0 to 96 degrees, around the icon centre
+                             Curves.easeOutCubic
+   b. Settle     500-700ms   rotate 96 to 90 degrees
+                             Curves.easeInOut
+      Scale, alongside:      1 to 1.12 (0-250ms, Curves.easeOut), then back
+                             to 1 (250-700ms, Curves.easeInOut)
+   c. Still      700ms-30s
+
+Stagger / delays: per icon as above. When several buttons are on one
   screen, they enter one after another, 170ms apart (fade in, 300ms), and
   each icon keeps its own loop.
 Interruption: None needed; loops never block input. Pause the loops when
   the button scrolls off screen or the app goes to the background.
 Reduced motion (MediaQuery.disableAnimationsOf == true):
   No loops. Each icon shows its rest state: arrow in place, toggle off,
-  full bolt.
+  full bolt, plain plus.
 Suggested Flutter approach: One repeating AnimationController per icon,
   started after its delay, driving a CustomPainter. The lightning uses
   PathMetric.extractPath for the draw and retract. Reference code:
-  cta_icon_animations.dart (EsimCtaButton + the three icons).
+  cta_icon_animations.dart (EsimCtaButton + the four icons).
 Assets: none (painted in code, no Lottie needed).
 
 Open question for design: the hubby-motion guidelines ask decorative loops
