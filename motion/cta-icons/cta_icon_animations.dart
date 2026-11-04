@@ -3,7 +3,7 @@
 //   Activate your eSIM  -> download arrow drops into the tray and back into place
 //   Set up your eSIM    -> toggle switches on, then off again
 //   Connect eSIM        -> lightning bolt draws itself, charges and settles
-//   Top up              -> plus: draw, pop or rise (design picks one, see PlusMotion)
+//   Top up              -> plus pulls into the centre and draws itself again
 //
 // Button and motion values are 1:1 from the approved animation video; the only
 // change is the typeface, GeneralSans. Reference implementation for the
@@ -63,6 +63,10 @@ class CtaIconMotion {
   // Plus: 30s loop, first run 1000ms after the button appears.
   static const plusPeriod = 30000;
   static const plusDelay = 1000;
+  static const plusPullIn = 350; // both bars shrink into the centre (easeInCubic)
+  static const plusGrowV = 500; // vertical bar starts growing back (empty 350-500)
+  static const plusGrowH = 600; // horizontal bar starts 100ms later
+  static const plusGrow = 450; // each bar grows back over 450ms (easeOutCubic)
 }
 
 enum CtaIcon { download, toggle, zap, plus }
@@ -88,7 +92,7 @@ class EsimCtaButton extends StatelessWidget {
       CtaIcon.download => const DownloadDropIcon(),
       CtaIcon.toggle => const ToggleSwitchIcon(),
       CtaIcon.zap => const ZapChargeIcon(),
-      CtaIcon.plus => const PlusIcon(),
+      CtaIcon.plus => const PlusDrawIcon(),
     };
     return Container(
       width: width,
@@ -347,94 +351,53 @@ class _ZapPainter extends CustomPainter {
 }
 
 // ---------------------------------------------------------------------------
-// Plus: three options, pick one with [PlusMotion].
-//   draw: the bars pull into the centre, then grow back out, vertical first
-//   pop:  the plus shrinks away, then pops back slightly too big and settles
-//   rise: the plus slides up out of the icon box, a new one rises from below
+// Plus: both bars pull into the centre, then grow back out, vertical first.
 // ---------------------------------------------------------------------------
 
-enum PlusMotion { draw, pop, rise }
-
-class PlusIcon extends StatefulWidget {
-  const PlusIcon({super.key, this.motion = PlusMotion.draw});
-  final PlusMotion motion;
+class PlusDrawIcon extends StatefulWidget {
+  const PlusDrawIcon({super.key});
   @override
-  State<PlusIcon> createState() => _PlusIconState();
+  State<PlusDrawIcon> createState() => _PlusDrawIconState();
 }
 
-class _PlusIconState extends _LoopIconState<PlusIcon> {
+class _PlusDrawIconState extends _LoopIconState<PlusDrawIcon> {
   @override
   int get period => CtaIconMotion.plusPeriod;
   @override
   int get delay => CtaIconMotion.plusDelay;
 
-  _PlusPainter _state(double t) {
-    switch (widget.motion) {
-      case PlusMotion.draw:
-        // 0-350 pull in (easeInCubic), 350-500 empty,
-        // 500-950 vertical out, 600-1050 horizontal out (easeOutCubic).
-        if (t < 500) {
-          final k = 7 * (1 - Curves.easeInCubic.transform(seg(t, 0, 350)));
-          return _PlusPainter(h: k, v: k);
+  @override
+  Widget build(BuildContext context) => paint(() {
+        const m = CtaIconMotion;
+        final t = ms;
+        if (t < m.plusGrowV) {
+          final k = 7 * (1 - Curves.easeInCubic.transform(seg(t, 0, m.plusPullIn)));
+          return _PlusPainter(k, k);
         }
         return _PlusPainter(
-          v: 7 * Curves.easeOutCubic.transform(seg(t, 500, 950)),
-          h: 7 * Curves.easeOutCubic.transform(seg(t, 600, 1050)),
+          7 * Curves.easeOutCubic.transform(seg(t, m.plusGrowH, m.plusGrowH + m.plusGrow)),
+          7 * Curves.easeOutCubic.transform(seg(t, m.plusGrowV, m.plusGrowV + m.plusGrow)),
         );
-      case PlusMotion.pop:
-        // 0-300 shrink and fade away (easeInCubic), 300-400 empty,
-        // 400-700 scale 0 to 1.1 (easeOutCubic, fades in by 550), 700-950 settle to 1.
-        if (t < 400) {
-          final p = Curves.easeInCubic.transform(seg(t, 0, 300));
-          return _PlusPainter(scale: 1 - p, opacity: 1 - p);
-        }
-        final scale = t < 700
-            ? 1.1 * Curves.easeOutCubic.transform(seg(t, 400, 700))
-            : 1.1 - 0.1 * Curves.easeInOut.transform(seg(t, 700, 950));
-        return _PlusPainter(scale: scale, opacity: seg(t, 400, 550));
-      case PlusMotion.rise:
-        // 0-380 up and out (easeInCubic), 380-440 empty,
-        // 440-820 in from below to 1 unit high (easeOutCubic), 820-1060 settle.
-        final double y;
-        if (t < 380) {
-          y = -18 * Curves.easeInCubic.transform(seg(t, 0, 380));
-        } else if (t < 440) {
-          y = -18;
-        } else if (t < 820) {
-          y = 18 - 19 * Curves.easeOutCubic.transform(seg(t, 440, 820));
-        } else {
-          y = -1 * (1 - Curves.easeInOut.transform(seg(t, 820, 1060)));
-        }
-        return _PlusPainter(y: y);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) => paint(() => _state(ms));
+      });
 }
 
 class _PlusPainter extends CustomPainter {
-  _PlusPainter({this.h = 7, this.v = 7, this.scale = 1, this.opacity = 1, this.y = 0});
+  _PlusPainter(this.h, this.v);
 
   /// Half-lengths of the horizontal and vertical bars (7 = full), in grid units.
   final double h, v;
-  final double scale, opacity, y;
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (opacity <= 0 || scale <= 0) return;
     canvas.scale(size.width / 24);
-    canvas.clipRect(const Rect.fromLTRB(0, 2, 24, 22)); // for "rise"
-    canvas.translate(12, 12 + y);
-    canvas.scale(scale);
-    final p = _stroke()..color = _Cta.onFill.withValues(alpha: opacity);
+    canvas.translate(12, 12);
+    final p = _stroke();
     if (h > 0.05) canvas.drawLine(Offset(-h, 0), Offset(h, 0), p);
     if (v > 0.05) canvas.drawLine(Offset(0, -v), Offset(0, v), p);
   }
 
   @override
-  bool shouldRepaint(_PlusPainter old) =>
-      old.h != h || old.v != v || old.scale != scale || old.opacity != opacity || old.y != y;
+  bool shouldRepaint(_PlusPainter old) => old.h != h || old.v != v;
 }
 
 Paint _stroke() => Paint()
