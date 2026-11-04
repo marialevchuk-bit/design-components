@@ -7,11 +7,11 @@ Trigger: Shown on screen. Each icon starts its loop after a short delay
   moment; the loop never blocks input.
 
 All positions are in the icon's 24-unit grid (the icon renders at 20px).
-Every loop ends with about 3 seconds of stillness before it plays again.
+Each icon plays once a minute and is still for the rest of the minute.
 Time 0 = start of one loop.
 
 1. DOWNLOAD ARROW (Activate your eSIM)
-   Loop 4500ms. First loop starts 1000ms after the button appears.
+   Loop 60s (once a minute). First loop starts 1000ms after the button appears.
    The arrow (stem + head) is clipped to the area above the tray line
    (y 0.7 to 19.2); the tray line never moves.
    a. Drop out   0-380ms     translateY 0 to +22 (gone below the clip)
@@ -21,20 +21,20 @@ Time 0 = start of one loop.
                              Curves.easeOutCubic
    d. Settle     820-1060ms  translateY +1 to 0
                              Curves.easeInOut
-   e. Still      1060-4500ms
+   e. Still      1060ms-60s
 
 2. TOGGLE (Set up your eSIM)
-   Loop 5200ms. First loop starts 1000ms after the button appears.
+   Loop 60s (once a minute). First loop starts 1000ms after the button appears.
    Off: outlined track, white knob on the left (x 8).
    On:  white track, knob in the button colour #0D112E on the right (x 16).
    a. Switch on  0-400ms     knob x 8 to 16; track fill #0D112E to white;
                              knob white to #0D112E. Curves.fastOutSlowIn
    b. Hold on    400-1800ms
    c. Switch off 1800-2200ms the same move played backwards
-   d. Still      2200-5200ms
+   d. Still      2200ms-60s
 
 3. LIGHTNING (Connect eSIM)
-   Loop 5600ms. First loop starts 1000ms after the button appears.
+   Loop 60s (once a minute). First loop starts 1000ms after the button appears.
    The bolt is one stroke drawn from its top point:
    (13,2) > (3,14) > (12,14) > (11,22) > (21,10) > (12,10) > (13,2).
    a. Retract    0-400ms     the stroke disappears from its start forwards
@@ -47,7 +47,7 @@ Time 0 = start of one loop.
    d. Charge     1400-2000ms scale 1 to 1.04 (300ms easeOut) and back
                              (300ms easeInOut), around the icon centre
                  2050-2650ms the same pulse again
-   e. Still      2650-5600ms
+   e. Still      2650ms-60s
 
 Stagger / delays: per icon as above. When all three buttons are on one
   screen, they enter one after another, 170ms apart (fade in, 300ms), and
@@ -64,8 +64,8 @@ Suggested Flutter approach: One repeating AnimationController per icon,
 Assets: none (painted in code, no Lottie needed).
 
 Open question for design: the hubby-motion guidelines ask decorative loops
-  to stop eventually. Options: keep looping with the 3s pauses, or play 2 to
-  3 loops and stop at rest.
+  to stop eventually. Once a minute is being tested; alternatives are a
+  shorter loop (about every 5s) or 2 to 3 plays, then stop at rest.
 
 Button (from the video; typeface changed to GeneralSans, icon enlarged to 20px):
   Height 52, radius 10, fill #0D112E, shadow 0 4 14 rgba(13,17,46,.22)

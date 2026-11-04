@@ -34,23 +34,23 @@ class _Cta {
 
 /// Loop timings from the video, in milliseconds.
 class CtaIconMotion {
-  // Each loop ends with about 3 seconds of stillness.
-  // Download arrow: 4500ms loop, first run 1000ms after the button appears.
-  static const downloadPeriod = 4500;
+  // Each icon plays once a minute; the rest of the minute it is still.
+  // Download arrow: 60s loop, first run 1000ms after the button appears.
+  static const downloadPeriod = 60000;
   static const downloadDelay = 1000;
   static const downloadOut = 380; // arrow sinks into the tray (easeInCubic)
   static const downloadInStart = 440; // re-enters from above
   static const downloadInEnd = 820; // lands 1 unit low (easeOutCubic)
   static const downloadSettle = 1060; // settles back to rest (easeInOut)
 
-  // Toggle: 5200ms loop, first run 1000ms after the button appears.
-  static const togglePeriod = 5200;
+  // Toggle: 60s loop, first run 1000ms after the button appears.
+  static const togglePeriod = 60000;
   static const toggleDelay = 1000;
   static const toggleSwitch = 400; // on and off both take 400ms
   static const toggleHoldOn = 1400;
 
-  // Lightning: 5600ms loop, first run 1000ms after the button appears.
-  static const zapPeriod = 5600;
+  // Lightning: 60s loop, first run 1000ms after the button appears.
+  static const zapPeriod = 60000;
   static const zapDelay = 1000;
   static const zapErase = 400; // stroke retracts from its start
   static const zapDrawStart = 750; // empty for 350ms
