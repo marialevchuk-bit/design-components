@@ -49,16 +49,32 @@ Time 0 = start of one loop.
                  2050-2650ms the same pulse again
    e. Still      2650ms-30s
 
-4. PLUS (Top up)
+4. PLUS (Top up): three options, design picks one
    Loop 30s (every 30 seconds). First loop starts 1000ms after the button appears.
-   A plus turned 90 degrees looks the same, so the loop ends where it began.
-   a. Turn       0-500ms     rotate 0 to 96 degrees, around the icon centre
-                             Curves.easeOutCubic
-   b. Settle     500-700ms   rotate 96 to 90 degrees
-                             Curves.easeInOut
-      Scale, alongside:      1 to 1.12 (0-250ms, Curves.easeOut), then back
-                             to 1 (250-700ms, Curves.easeInOut)
-   c. Still      700ms-30s
+   The plus is two bars, each 14 units long (half-length 7), crossing at (12,12).
+   A. DRAW
+      a. Pull in    0-350ms     both bars shrink into the centre (half-length
+                                7 to 0). Curves.easeInCubic
+      b. Empty      350-500ms
+      c. Grow out   500-950ms   vertical bar grows back to full length
+                    600-1050ms  horizontal bar grows back to full length
+                                Curves.easeOutCubic
+      d. Still      1050ms-30s
+   B. POP
+      a. Shrink     0-300ms     scale 1 to 0 and opacity 1 to 0
+                                Curves.easeInCubic
+      b. Empty      300-400ms
+      c. Pop back   400-700ms   scale 0 to 1.1 (Curves.easeOutCubic);
+                                opacity 0 to 1 over 400-550ms
+      d. Settle     700-950ms   scale 1.1 to 1. Curves.easeInOut
+      e. Still      950ms-30s
+   C. RISE (the download arrow's movement, upwards)
+      Clipped to y 2 to 22.
+      a. Rise out   0-380ms     translateY 0 to -18. Curves.easeInCubic
+      b. Gap        380-440ms
+      c. Rise in    440-820ms   translateY +18 to -1. Curves.easeOutCubic
+      d. Settle     820-1060ms  translateY -1 to 0. Curves.easeInOut
+      e. Still      1060ms-30s
 
 Stagger / delays: per icon as above. When several buttons are on one
   screen, they enter one after another, 170ms apart (fade in, 300ms), and
@@ -67,7 +83,7 @@ Interruption: None needed; loops never block input. Pause the loops when
   the button scrolls off screen or the app goes to the background.
 Reduced motion (MediaQuery.disableAnimationsOf == true):
   No loops. Each icon shows its rest state: arrow in place, toggle off,
-  full bolt, plain plus.
+  full bolt, full plus.
 Suggested Flutter approach: One repeating AnimationController per icon,
   started after its delay, driving a CustomPainter. The lightning uses
   PathMetric.extractPath for the draw and retract. Reference code:

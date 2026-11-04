@@ -52,6 +52,7 @@ header p { font:var(--bodyS400); color:var(--ink-soft); max-width:64ch; margin:8
 .stack { display:flex; flex-direction:column; gap:20px }
 .stack .cta { width:284px }
 .cta:focus-visible, .ctl:focus-visible, .sc:focus-visible { outline:3px solid var(--ink); outline-offset:2px }
+.plus-label { font:var(--bodyXS500); color:var(--ink-soft) }
 .hint { font:var(--bodyXS400); color:var(--ink-soft); text-align:center; margin:24px 0 0 }
 /* ---- Controls ---- */
 .panel { display:flex; flex-direction:column; gap:24px; min-width:0 }
@@ -130,6 +131,12 @@ table.sc-t td { font-variant-numeric:tabular-nums }
           <button class="ctl" id="zoomBtn" type="button" aria-pressed="true">1.5× zoom</button>
           <button class="ctl" id="cadence" type="button" aria-pressed="true">Every 30 s</button>
         </div>
+        <div class="row" id="plusRow" style="margin-top:10px">
+          <span class="plus-label">Top up plus:</span>
+          <button class="ctl" data-plus="draw" type="button" aria-pressed="true">Draw</button>
+          <button class="ctl" data-plus="pop" type="button" aria-pressed="false">Pop</button>
+          <button class="ctl" data-plus="rise" type="button" aria-pressed="false">Rise</button>
+        </div>
         <div class="scrub" style="margin-top:14px">
           <input id="scrubber" type="range" min="0" max="3000" step="1" value="0" aria-label="Scrub the timeline">
           <output id="tout">0 ms</output>
@@ -153,7 +160,7 @@ table.sc-t td { font-variant-numeric:tabular-nums }
         <tr><td>Activate your eSIM</td><td>Arrow sinks through the tray, glides back in from above, lands a little low and settles. Then still until the next run.</td><td>30 s</td><td>after 1000 ms</td></tr>
         <tr><td>Set up your eSIM</td><td>Toggle switches on (400 ms), holds 1.4 s, switches off (400 ms). Then still until the next run.</td><td>30 s</td><td>after 1000 ms</td></tr>
         <tr><td>Connect eSIM</td><td>Bolt retracts, stays empty for 350 ms, redraws from the top point, then pulses gently twice. Then still until the next run.</td><td>30 s</td><td>after 1000 ms</td></tr>
-        <tr><td>Top up</td><td>Plus turns a quarter turn, just past it and back, growing slightly as it turns. Then still until the next run.</td><td>30 s</td><td>after 1000 ms</td></tr>
+        <tr><td>Top up</td><td>Three options to pick from: Draw (bars pull into the centre and grow back out), Pop (shrinks away and pops back) or Rise (slides up and out, a new one rises from below). Then still until the next run.</td><td>30 s</td><td>after 1000 ms</td></tr>
       </table>
     </div>
 
@@ -216,16 +223,32 @@ Time 0 = start of one loop.
                  2050-2650ms the same pulse again
    e. Still      2650ms-30s
 
-4. PLUS (Top up)
+4. PLUS (Top up): three options, design picks one
    Loop 30s (every 30 seconds). First loop starts 1000ms after the button appears.
-   A plus turned 90 degrees looks the same, so the loop ends where it began.
-   a. Turn       0-500ms     rotate 0 to 96 degrees, around the icon centre
-                             Curves.easeOutCubic
-   b. Settle     500-700ms   rotate 96 to 90 degrees
-                             Curves.easeInOut
-      Scale, alongside:      1 to 1.12 (0-250ms, Curves.easeOut), then back
-                             to 1 (250-700ms, Curves.easeInOut)
-   c. Still      700ms-30s
+   The plus is two bars, each 14 units long (half-length 7), crossing at (12,12).
+   A. DRAW
+      a. Pull in    0-350ms     both bars shrink into the centre (half-length
+                                7 to 0). Curves.easeInCubic
+      b. Empty      350-500ms
+      c. Grow out   500-950ms   vertical bar grows back to full length
+                    600-1050ms  horizontal bar grows back to full length
+                                Curves.easeOutCubic
+      d. Still      1050ms-30s
+   B. POP
+      a. Shrink     0-300ms     scale 1 to 0 and opacity 1 to 0
+                                Curves.easeInCubic
+      b. Empty      300-400ms
+      c. Pop back   400-700ms   scale 0 to 1.1 (Curves.easeOutCubic);
+                                opacity 0 to 1 over 400-550ms
+      d. Settle     700-950ms   scale 1.1 to 1. Curves.easeInOut
+      e. Still      950ms-30s
+   C. RISE (the download arrow&#x27;s movement, upwards)
+      Clipped to y 2 to 22.
+      a. Rise out   0-380ms     translateY 0 to -18. Curves.easeInCubic
+      b. Gap        380-440ms
+      c. Rise in    440-820ms   translateY +18 to -1. Curves.easeOutCubic
+      d. Settle     820-1060ms  translateY -1 to 0. Curves.easeInOut
+      e. Still      1060ms-30s
 
 Stagger / delays: per icon as above. When several buttons are on one
   screen, they enter one after another, 170ms apart (fade in, 300ms), and
@@ -234,7 +257,7 @@ Interruption: None needed; loops never block input. Pause the loops when
   the button scrolls off screen or the app goes to the background.
 Reduced motion (MediaQuery.disableAnimationsOf == true):
   No loops. Each icon shows its rest state: arrow in place, toggle off,
-  full bolt, plain plus.
+  full bolt, full plus.
 Suggested Flutter approach: One repeating AnimationController per icon,
   started after its delay, driving a CustomPainter. The lightning uses
   PathMetric.extractPath for the draw and retract. Reference code:
@@ -261,7 +284,7 @@ Button (from the video; typeface changed to GeneralSans, icon enlarged to 20px):
 //   Activate your eSIM  -&gt; download arrow drops into the tray and back into place
 //   Set up your eSIM    -&gt; toggle switches on, then off again
 //   Connect eSIM        -&gt; lightning bolt draws itself, charges and settles
-//   Top up              -&gt; plus turns a quarter turn and settles
+//   Top up              -&gt; plus: draw, pop or rise (design picks one, see PlusMotion)
 //
 // Button and motion values are 1:1 from the approved animation video; the only
 // change is the typeface, GeneralSans. Reference implementation for the
@@ -321,9 +344,6 @@ class CtaIconMotion {
   // Plus: 30s loop, first run 1000ms after the button appears.
   static const plusPeriod = 30000;
   static const plusDelay = 1000;
-  static const plusTurn = 500; // 0 to 96 degrees (easeOutCubic)
-  static const plusSettle = 700; // back to 90 degrees (easeInOut)
-  static const plusGrow = 250; // scale to 1.12 (easeOut), back to 1 by plusSettle
 }
 
 enum CtaIcon { download, toggle, zap, plus }
@@ -349,7 +369,7 @@ class EsimCtaButton extends StatelessWidget {
       CtaIcon.download =&gt; const DownloadDropIcon(),
       CtaIcon.toggle =&gt; const ToggleSwitchIcon(),
       CtaIcon.zap =&gt; const ZapChargeIcon(),
-      CtaIcon.plus =&gt; const PlusTurnIcon(),
+      CtaIcon.plus =&gt; const PlusIcon(),
     };
     return Container(
       width: width,
@@ -608,55 +628,94 @@ class _ZapPainter extends CustomPainter {
 }
 
 // ---------------------------------------------------------------------------
-// Plus: a quarter turn, slightly past and back, growing a little as it turns.
-// A plus turned 90 degrees looks the same, so the loop ends where it began.
+// Plus: three options, pick one with [PlusMotion].
+//   draw: the bars pull into the centre, then grow back out, vertical first
+//   pop:  the plus shrinks away, then pops back slightly too big and settles
+//   rise: the plus slides up out of the icon box, a new one rises from below
 // ---------------------------------------------------------------------------
 
-class PlusTurnIcon extends StatefulWidget {
-  const PlusTurnIcon({super.key});
+enum PlusMotion { draw, pop, rise }
+
+class PlusIcon extends StatefulWidget {
+  const PlusIcon({super.key, this.motion = PlusMotion.draw});
+  final PlusMotion motion;
   @override
-  State&lt;PlusTurnIcon&gt; createState() =&gt; _PlusTurnIconState();
+  State&lt;PlusIcon&gt; createState() =&gt; _PlusIconState();
 }
 
-class _PlusTurnIconState extends _LoopIconState&lt;PlusTurnIcon&gt; {
+class _PlusIconState extends _LoopIconState&lt;PlusIcon&gt; {
   @override
   int get period =&gt; CtaIconMotion.plusPeriod;
   @override
   int get delay =&gt; CtaIconMotion.plusDelay;
 
-  @override
-  Widget build(BuildContext context) =&gt; paint(() {
-        const m = CtaIconMotion;
-        final t = ms;
-        final deg = t &lt; m.plusTurn
-            ? 96 * Curves.easeOutCubic.transform(seg(t, 0, m.plusTurn))
-            : 96 - 6 * Curves.easeInOut.transform(seg(t, m.plusTurn, m.plusSettle));
-        final scale = 1 +
-            0.12 *
-                (Curves.easeOut.transform(seg(t, 0, m.plusGrow)) -
-                    Curves.easeInOut.transform(seg(t, m.plusGrow, m.plusSettle)));
-        return _PlusPainter(deg * math.pi / 180, scale);
-      });
-}
-
-class _PlusPainter extends CustomPainter {
-  _PlusPainter(this.angle, this.scale);
-  final double angle, scale;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.scale(size.width / 24);
-    canvas.translate(12, 12);
-    canvas.rotate(angle);
-    canvas.scale(scale);
-    canvas.translate(-12, -12);
-    final p = _stroke();
-    canvas.drawLine(const Offset(5, 12), const Offset(19, 12), p);
-    canvas.drawLine(const Offset(12, 5), const Offset(12, 19), p);
+  _PlusPainter _state(double t) {
+    switch (widget.motion) {
+      case PlusMotion.draw:
+        // 0-350 pull in (easeInCubic), 350-500 empty,
+        // 500-950 vertical out, 600-1050 horizontal out (easeOutCubic).
+        if (t &lt; 500) {
+          final k = 7 * (1 - Curves.easeInCubic.transform(seg(t, 0, 350)));
+          return _PlusPainter(h: k, v: k);
+        }
+        return _PlusPainter(
+          v: 7 * Curves.easeOutCubic.transform(seg(t, 500, 950)),
+          h: 7 * Curves.easeOutCubic.transform(seg(t, 600, 1050)),
+        );
+      case PlusMotion.pop:
+        // 0-300 shrink and fade away (easeInCubic), 300-400 empty,
+        // 400-700 scale 0 to 1.1 (easeOutCubic, fades in by 550), 700-950 settle to 1.
+        if (t &lt; 400) {
+          final p = Curves.easeInCubic.transform(seg(t, 0, 300));
+          return _PlusPainter(scale: 1 - p, opacity: 1 - p);
+        }
+        final scale = t &lt; 700
+            ? 1.1 * Curves.easeOutCubic.transform(seg(t, 400, 700))
+            : 1.1 - 0.1 * Curves.easeInOut.transform(seg(t, 700, 950));
+        return _PlusPainter(scale: scale, opacity: seg(t, 400, 550));
+      case PlusMotion.rise:
+        // 0-380 up and out (easeInCubic), 380-440 empty,
+        // 440-820 in from below to 1 unit high (easeOutCubic), 820-1060 settle.
+        final double y;
+        if (t &lt; 380) {
+          y = -18 * Curves.easeInCubic.transform(seg(t, 0, 380));
+        } else if (t &lt; 440) {
+          y = -18;
+        } else if (t &lt; 820) {
+          y = 18 - 19 * Curves.easeOutCubic.transform(seg(t, 440, 820));
+        } else {
+          y = -1 * (1 - Curves.easeInOut.transform(seg(t, 820, 1060)));
+        }
+        return _PlusPainter(y: y);
+    }
   }
 
   @override
-  bool shouldRepaint(_PlusPainter old) =&gt; old.angle != angle || old.scale != scale;
+  Widget build(BuildContext context) =&gt; paint(() =&gt; _state(ms));
+}
+
+class _PlusPainter extends CustomPainter {
+  _PlusPainter({this.h = 7, this.v = 7, this.scale = 1, this.opacity = 1, this.y = 0});
+
+  /// Half-lengths of the horizontal and vertical bars (7 = full), in grid units.
+  final double h, v;
+  final double scale, opacity, y;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (opacity &lt;= 0 || scale &lt;= 0) return;
+    canvas.scale(size.width / 24);
+    canvas.clipRect(const Rect.fromLTRB(0, 2, 24, 22)); // for &quot;rise&quot;
+    canvas.translate(12, 12 + y);
+    canvas.scale(scale);
+    final p = _stroke()..color = _Cta.onFill.withValues(alpha: opacity);
+    if (h &gt; 0.05) canvas.drawLine(Offset(-h, 0), Offset(h, 0), p);
+    if (v &gt; 0.05) canvas.drawLine(Offset(0, -v), Offset(0, v), p);
+  }
+
+  @override
+  bool shouldRepaint(_PlusPainter old) =&gt;
+      old.h != h || old.v != v || old.scale != scale || old.opacity != opacity || old.y != y;
 }
 
 Paint _stroke() =&gt; Paint()
@@ -684,7 +743,7 @@ Paint _stroke() =&gt; Paint()
     download: { period:30000, delay:1000, short:4500, active:1060 },
     toggle:   { period:30000, delay:1000, short:5200, active:2200 },
     zap:      { period:30000, delay:1000, short:5600, active:2650 },
-    plus:     { period:30000, delay:1000, short:4500, active:700 },
+    plus:     { period:30000, delay:1000, short:4500, active:1050 },
   };
   let longLoop = true;                                   // cadence: every 30 s, or the shorter loop
   const per = (m) => longLoop ? m.period : m.short;
@@ -693,7 +752,7 @@ Paint _stroke() =&gt; Paint()
     { id:'download', name:'Activate your eSIM', pill:'Ready to activate', note:'Download arrow drops into place.' },
     { id:'toggle',   name:'Set up your eSIM',   pill:'Setup pending',     note:'Toggle switches on, then off again.' },
     { id:'zap',      name:'Connect eSIM',       pill:'Ready to connect',  note:'Lightning draws, charges and settles.' },
-    { id:'plus',     name:'Top up',             pill:'',                  note:'Plus turns a quarter turn and settles.' },
+    { id:'plus',     name:'Top up',             pill:'',                  note:'Three plus animations to compare: Draw, Pop or Rise.' },
     { id:'all',      name:'All together',       pill:'',                  note:'All four buttons stacked, entering one after another.' },
   ];
   const $ = (id) => document.getElementById(id);
@@ -739,11 +798,39 @@ Paint _stroke() =&gt; Paint()
     const pulse = (at) => easeOut(seg(t, at, at + 300)) - inOut(seg(t, at + 300, at + 600));
     return { from, to, scale: 1 + 0.04 * Math.max(pulse(1400), pulse(2050)) };
   }
-  function plusState(t) {          // degrees + scale
-    const deg = t < 500 ? 96 * outCubic(seg(t, 0, 500)) : 96 - 6 * inOut(seg(t, 500, 700));
-    const scale = 1 + 0.12 * (easeOut(seg(t, 0, 250)) - inOut(seg(t, 250, 700)));
-    return { deg, scale };
-  }
+  // Plus: three options. Each returns half-lengths of the bars (h, v), scale, opacity and y offset.
+  let plusMotion = 'draw';
+  const PLUS = {
+    draw: {   // bars pull into the centre, then grow back out, vertical first
+      active: 1050,
+      phases: [['Pull in', 0, 350, 'easeInCubic'], ['Vertical out', 500, 450, 'easeOutCubic'], ['Horizontal out', 600, 450, 'easeOutCubic']],
+      state(t) {
+        if (t < 500) { const k = 7 * (1 - inCubic(seg(t, 0, 350))); return { h: k, v: k, scale: 1, op: 1, y: 0 }; }
+        return { v: 7 * outCubic(seg(t, 500, 950)), h: 7 * outCubic(seg(t, 600, 1050)), scale: 1, op: 1, y: 0 };
+      },
+    },
+    pop: {    // shrinks away, then pops back slightly too big and settles
+      active: 950,
+      phases: [['Shrink away', 0, 300, 'easeInCubic'], ['Pop back', 400, 300, 'to 1.1× · easeOutCubic'], ['Settle', 700, 250, 'easeInOut']],
+      state(t) {
+        if (t < 400) { const p = inCubic(seg(t, 0, 300)); return { h: 7, v: 7, scale: 1 - p, op: 1 - p, y: 0 }; }
+        const scale = t < 700 ? 1.1 * outCubic(seg(t, 400, 700)) : 1.1 - 0.1 * inOut(seg(t, 700, 950));
+        return { h: 7, v: 7, scale, op: seg(t, 400, 550), y: 0 };
+      },
+    },
+    rise: {   // slides up and out of the icon box, a new plus rises from below and settles
+      active: 1060,
+      phases: [['Rise out', 0, 380, 'easeInCubic'], ['Rise in', 440, 380, 'easeOutCubic'], ['Settle', 820, 240, 'easeInOut']],
+      state(t) {
+        let y;
+        if (t < 380) y = -18 * inCubic(seg(t, 0, 380));
+        else if (t < 440) y = -18;
+        else if (t < 820) y = 18 - 19 * outCubic(seg(t, 440, 820));
+        else y = -1 * (1 - inOut(seg(t, 820, 1060)));
+        return { h: 7, v: 7, scale: 1, op: 1, y };
+      },
+    },
+  };
 
   // ---- Markup ----
   let uid = 0;
@@ -752,7 +839,8 @@ Paint _stroke() =&gt; Paint()
     if (kind === 'download') return '<svg viewBox="0 0 24 24" aria-hidden="true" data-k="download"><defs><clipPath id="' + id + '"><rect x="0" y="0.7" width="24" height="18.5"/></clipPath></defs>' +
       '<line class="s" x1="5" y1="21" x2="19" y2="21"/><g clip-path="url(#' + id + ')"><g class="arrow"><path class="s" d="M12 3v14M6 11l6 6 6-6"/></g></g></svg>';
     if (kind === 'toggle') return '<svg viewBox="0 0 24 24" aria-hidden="true" data-k="toggle"><rect class="s track" x="2" y="6" width="20" height="12" rx="6"/><circle class="knob" cx="8" cy="12" r="3"/></svg>';
-    if (kind === 'plus') return '<svg viewBox="0 0 24 24" aria-hidden="true" data-k="plus"><g class="pg"><path class="s" d="M5 12h14M12 5v14"/></g></svg>';
+    if (kind === 'plus') return '<svg viewBox="0 0 24 24" aria-hidden="true" data-k="plus"><defs><clipPath id="' + id + '"><rect x="0" y="2" width="24" height="20"/></clipPath></defs>' +
+      '<g clip-path="url(#' + id + ')"><g class="pg"><line class="s ph" x1="5" y1="12" x2="19" y2="12"/><line class="s pv" x1="12" y1="5" x2="12" y2="19"/></g></g></svg>';
     return '<svg viewBox="0 0 24 24" aria-hidden="true" data-k="zap"><g class="zg"><path class="s bolt" d="M13 2L3 14L12 14L11 22L21 10L12 10L13 2"/></g></svg>';
   }
   function cta(s) { return '<button type="button" class="cta" data-k="' + s.id + '">' + iconSvg(s.id) + '<span>' + s.name + '</span></button>'; }
@@ -765,8 +853,13 @@ Paint _stroke() =&gt; Paint()
       svg.querySelector('.track').style.fill = mix(CTA, ON, p);
       const kn = svg.querySelector('.knob'); kn.setAttribute('cx', (8 + 8 * p).toFixed(3)); kn.style.fill = mix(ON, CTA, p);
     } else if (k === 'plus') {
-      const q = plusState(t);
-      svg.querySelector('.pg').setAttribute('transform', 'translate(12 12) rotate(' + q.deg.toFixed(3) + ') scale(' + q.scale.toFixed(4) + ') translate(-12 -12)');
+      const q = PLUS[plusMotion].state(t), g = svg.querySelector('.pg');
+      g.setAttribute('transform', 'translate(12 ' + (12 + q.y).toFixed(3) + ') scale(' + Math.max(q.scale, 0.0001).toFixed(4) + ') translate(-12 -12)');
+      g.style.opacity = q.op.toFixed(3);
+      const h = svg.querySelector('.ph'), v = svg.querySelector('.pv');
+      h.style.visibility = q.h > 0.05 ? 'visible' : 'hidden'; v.style.visibility = q.v > 0.05 ? 'visible' : 'hidden';
+      h.setAttribute('x1', (12 - q.h).toFixed(3)); h.setAttribute('x2', (12 + q.h).toFixed(3));
+      v.setAttribute('y1', (12 - q.v).toFixed(3)); v.setAttribute('y2', (12 + q.v).toFixed(3));
     } else {
       const z = zapState(t), b = svg.querySelector('.bolt'), L = b.getTotalLength();
       if (z.to <= z.from + 1e-4) b.style.strokeDasharray = '0 ' + (L + 1);
@@ -811,7 +904,6 @@ Paint _stroke() =&gt; Paint()
   const PH = {
     download: [['Drop out', 0, 380, 'easeInCubic'], ['Fall in', 440, 380, 'easeOutCubic'], ['Settle', 820, 240, 'easeInOut']],
     toggle: [['Switch on', 0, 400, 'fastOutSlowIn'], ['Hold on', 400, 1400, ''], ['Switch off', 1800, 400, 'reverse']],
-    plus: [['Turn', 0, 500, 'to 96° · easeOutCubic'], ['Settle', 500, 200, 'to 90° · easeInOut'], ['Grow', 0, 250, '1.12×'], ['Shrink', 250, 450, 'easeInOut']],
     zap: [['Retract', 0, 400, 'easeInOut'], ['Draw', 750, 550, 'easeOutCubic'], ['Charge', 1400, 600, '1.04×'], ['Charge', 2050, 600, '1.04×']],
   };
   function timeline() {
@@ -821,7 +913,7 @@ Paint _stroke() =&gt; Paint()
     const row = (label, a, d, txt) => rows.push('<div class="tl-row" style="top:' + (rows.length * 26) + 'px"><b>' + label + '</b><div class="tl-area"><div class="tl-bar" style="left:' + x(a) + ';width:' + x(d) + '"><em>' + txt + '</em></div></div></div>');
     kinds.forEach((k) => {
       const pre = kinds.length > 1 ? SCEN.find((s) => s.id === k).name.split(' ')[0] + ' · ' : '';
-      PH[k].forEach(([n, a, d, txt]) => row(pre + n, a, d, d + ' ms' + (txt ? ' · ' + txt : '')));
+      (k === 'plus' ? PLUS[plusMotion].phases : PH[k]).forEach(([n, a, d, txt]) => row(pre + n, a, d, d + ' ms' + (txt ? ' · ' + txt : '')));
       row(pre + 'Still', M[k].active, span - M[k].active, 'until ' + (per(M[k]) / 1000) + ' s');
     });
     $('tl').style.setProperty('--h', (rows.length * 26) + 'px');
@@ -837,6 +929,7 @@ Paint _stroke() =&gt; Paint()
 
   function choose(s) {
     sc = s; build(); timeline(); applyZoom();
+    $('plusRow').hidden = !(s.id === 'plus' || s.id === 'all');
     document.querySelectorAll('.sc').forEach((b) => b.setAttribute('aria-pressed', b.dataset.id === s.id));
     $('scrubber').max = maxT();
     play();
@@ -855,6 +948,11 @@ Paint _stroke() =&gt; Paint()
   $('slow').addEventListener('click', (e) => { speed = speed === 1 ? .25 : 1; e.currentTarget.setAttribute('aria-pressed', speed !== 1); });
   $('reduced').addEventListener('click', (e) => { reduced = !reduced; e.currentTarget.setAttribute('aria-pressed', reduced); render(); });
   $('reduced').setAttribute('aria-pressed', reduced);
+  document.querySelectorAll('[data-plus]').forEach((b) => b.addEventListener('click', () => {
+    plusMotion = b.dataset.plus; M.plus.active = PLUS[plusMotion].active;
+    document.querySelectorAll('[data-plus]').forEach((x) => x.setAttribute('aria-pressed', x === b));
+    timeline(); play();
+  }));
   $('cadence').addEventListener('click', (e) => { longLoop = !longLoop; e.currentTarget.textContent = longLoop ? 'Every 30 s' : 'Every ~5 s'; timeline(); play(); });
   $('zoomBtn').addEventListener('click', (e) => { zoom = zoom === 1.5 ? 1 : 1.5; e.currentTarget.setAttribute('aria-pressed', zoom > 1); applyZoom(); });
   $('scrubber').addEventListener('input', (e) => { playing = false; T = +e.target.value; render(); });
