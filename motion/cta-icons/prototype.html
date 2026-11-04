@@ -47,7 +47,7 @@ header p { font:var(--bodyS400); color:var(--ink-soft); max-width:64ch; margin:8
 .cta { display:flex; align-items:center; justify-content:center; gap:12px; width:328px; height:52px; border:none;
   border-radius:10px; background:var(--cta); color:var(--on-cta); font:500 18px/1.4 var(--font);
   box-shadow:0 4px 14px rgba(13,17,46,.22); cursor:pointer; padding:0 16px }
-.cta svg { width:18px; height:18px; flex:none; overflow:visible }
+.cta svg { width:20px; height:20px; flex:none; overflow:visible }
 .cta .s { fill:none; stroke:var(--on-cta); stroke-width:2; stroke-linecap:round; stroke-linejoin:round }
 .stack { display:flex; flex-direction:column; gap:20px }
 .stack .cta { width:284px }
@@ -107,7 +107,7 @@ table.sc-t td { font-variant-numeric:tabular-nums }
 <div class="wrap">
   <header>
     <h1>eSIM call-to-action icons</h1>
-    <p>Three looping icon animations for the eSIM buttons, rebuilt from the approved video and set in GeneralSans. Pick a button to review it on its own, or see all three together.</p>
+    <p>Three looping icon animations for the eSIM buttons, rebuilt from the approved video and set in GeneralSans, with calmer timing, a pause of about 3 seconds between loops and 20px icons. Pick a button to review it on its own, or see all three together.</p>
   </header>
 
   <div class="bench">
@@ -149,16 +149,16 @@ table.sc-t td { font-variant-numeric:tabular-nums }
     <div class="tscroll">
       <table class="sc-t">
         <tr><th>Button</th><th>Icon motion</th><th>Loop</th><th>First run</th></tr>
-        <tr><td>Activate your eSIM</td><td>Arrow drops through the tray, falls back in from above, lands slightly low and settles.</td><td>1800 ms</td><td>after 1080 ms</td></tr>
-        <tr><td>Set up your eSIM</td><td>Toggle switches on (250 ms), holds 920 ms, switches off, holds.</td><td>2400 ms</td><td>after 750 ms</td></tr>
-        <tr><td>Connect eSIM</td><td>Bolt retracts, stays empty for 280 ms, redraws from the top point, then pulses twice.</td><td>2600 ms</td><td>after 680 ms</td></tr>
+        <tr><td>Activate your eSIM</td><td>Arrow sinks through the tray, glides back in from above, lands a little low and settles. Then still for 3.4 s.</td><td>4500 ms</td><td>after 1000 ms</td></tr>
+        <tr><td>Set up your eSIM</td><td>Toggle switches on (400 ms), holds 1.4 s, switches off (400 ms). Then still for 3 s.</td><td>5200 ms</td><td>after 1000 ms</td></tr>
+        <tr><td>Connect eSIM</td><td>Bolt retracts, stays empty for 350 ms, redraws from the top point, then pulses gently twice. Then still for 2.9 s.</td><td>5600 ms</td><td>after 1000 ms</td></tr>
       </table>
     </div>
 
     <div class="cols">
       <div class="note"><h3>Interruption</h3><p>The loops never block input: the button can be tapped at any moment. Pause the loop when the button is off screen or the app is in the background.</p></div>
       <div class="note"><h3>Reduced motion</h3><p>When MediaQuery.disableAnimationsOf is true, nothing loops. Each icon shows its rest state: arrow in place, toggle off, full bolt.</p></div>
-      <div class="note"><h3>Open question</h3><p>Our motion guidelines ask decorative loops to stop after about 5 seconds. Keep looping as in the video, or play 2 to 3 loops and stop at rest?</p></div>
+      <div class="note"><h3>Open question</h3><p>Each loop now ends with about 3 seconds of stillness. Our motion guidelines still ask decorative loops to stop eventually: keep looping, or play 2 to 3 loops and stop at rest?</p></div>
     </div>
 
     <div>
@@ -171,47 +171,48 @@ Trigger: Shown on screen. Each icon starts its loop after a short delay
   and repeats while the button is visible. Tapping the button works at any
   moment; the loop never blocks input.
 
-All positions are in the icon&#x27;s 24-unit grid (the icon renders at 18px).
+All positions are in the icon&#x27;s 24-unit grid (the icon renders at 20px).
+Every loop ends with about 3 seconds of stillness before it plays again.
 Time 0 = start of one loop.
 
 1. DOWNLOAD ARROW (Activate your eSIM)
-   Loop 1800ms. First loop starts 1080ms after the button appears.
+   Loop 4500ms. First loop starts 1000ms after the button appears.
    The arrow (stem + head) is clipped to the area above the tray line
    (y 0.7 to 19.2); the tray line never moves.
-   a. Drop out   0-230ms    translateY 0 to +22 (gone below the clip)
-                            Curves.easeInCubic
-   b. Gap        230-250ms  nothing visible but the tray
-   c. Fall in    250-480ms  translateY -16 to +1.7 (slightly past rest)
-                            Curves.easeOutCubic
-   d. Settle     480-620ms  translateY +1.7 to 0
-                            Curves.easeInOut
-   e. Rest       620-1800ms
+   a. Drop out   0-380ms     translateY 0 to +22 (gone below the clip)
+                             Curves.easeInCubic
+   b. Gap        380-440ms   nothing visible but the tray
+   c. Fall in    440-820ms   translateY -16 to +1 (slightly past rest)
+                             Curves.easeOutCubic
+   d. Settle     820-1060ms  translateY +1 to 0
+                             Curves.easeInOut
+   e. Still      1060-4500ms
 
 2. TOGGLE (Set up your eSIM)
-   Loop 2400ms. First loop starts 750ms after the button appears.
+   Loop 5200ms. First loop starts 1000ms after the button appears.
    Off: outlined track, white knob on the left (x 8).
    On:  white track, knob in the button colour #0D112E on the right (x 16).
-   a. Switch on  0-250ms     knob x 8 to 16; track fill #0D112E to white;
+   a. Switch on  0-400ms     knob x 8 to 16; track fill #0D112E to white;
                              knob white to #0D112E. Curves.fastOutSlowIn
-   b. Hold on    250-1170ms
-   c. Switch off 1170-1420ms the same move played backwards
-   d. Hold off   1420-2400ms
+   b. Hold on    400-1800ms
+   c. Switch off 1800-2200ms the same move played backwards
+   d. Still      2200-5200ms
 
 3. LIGHTNING (Connect eSIM)
-   Loop 2600ms. First loop starts 680ms after the button appears.
+   Loop 5600ms. First loop starts 1000ms after the button appears.
    The bolt is one stroke drawn from its top point:
    (13,2) &gt; (3,14) &gt; (12,14) &gt; (11,22) &gt; (21,10) &gt; (12,10) &gt; (13,2).
-   a. Retract    0-250ms     the stroke disappears from its start forwards
+   a. Retract    0-400ms     the stroke disappears from its start forwards
                              (visible part = [p x length, length])
                              Curves.easeInOut
-   b. Empty      250-530ms
-   c. Draw       530-850ms   the stroke draws from the top point
+   b. Empty      400-750ms
+   c. Draw       750-1300ms  the stroke draws from the top point
                              (visible part = [0, p x length])
                              Curves.easeOutCubic
-   d. Charge     900-1300ms  scale 1 to 1.05 (200ms easeOut) and back
-                             (200ms easeInOut), around the icon centre
-                 1320-1720ms the same pulse again
-   e. Rest       1720-2600ms
+   d. Charge     1400-2000ms scale 1 to 1.04 (300ms easeOut) and back
+                             (300ms easeInOut), around the icon centre
+                 2050-2650ms the same pulse again
+   e. Still      2650-5600ms
 
 Stagger / delays: per icon as above. When all three buttons are on one
   screen, they enter one after another, 170ms apart (fade in, 300ms), and
@@ -228,12 +229,12 @@ Suggested Flutter approach: One repeating AnimationController per icon,
 Assets: none (painted in code, no Lottie needed).
 
 Open question for design: the hubby-motion guidelines ask decorative loops
-  to stop after about 5 seconds. Options: keep looping as in the video, or
-  play 2 to 3 loops and stop at rest.
+  to stop eventually. Options: keep looping with the 3s pauses, or play 2 to
+  3 loops and stop at rest.
 
-Button (from the video; only the typeface changed to GeneralSans):
+Button (from the video; typeface changed to GeneralSans, icon enlarged to 20px):
   Height 52, radius 10, fill #0D112E, shadow 0 4 14 rgba(13,17,46,.22)
-  Icon 18px, white, stroke 2 (24 grid), round caps and joins
+  Icon 20px, white, stroke 2 (24 grid), round caps and joins
   Label 18px GeneralSans 500, white, 12px after the icon
   Status pill above, 20px gap: 11px 500 text #9C5C0F, 1px border #FDBA74,
     fill #FDF8F3, 5px dot #FF8800, fully rounded
@@ -264,7 +265,7 @@ class _Cta {
   static const onFill = Color(0xFFFFFFFF);
   static const height = 52.0;
   static const radius = 10.0;
-  static const iconSize = 18.0;
+  static const iconSize = 20.0;
   static const iconGap = 12.0;
   static const shadow = [BoxShadow(color: Color(0x380D112E), offset: Offset(0, 4), blurRadius: 14)];
   static const label = TextStyle(
@@ -278,28 +279,30 @@ class _Cta {
 
 /// Loop timings from the video, in milliseconds.
 class CtaIconMotion {
-  // Download arrow: 1800ms loop, first run 1080ms after the button appears.
-  static const downloadPeriod = 1800;
-  static const downloadDelay = 1080;
-  static const downloadOut = 230; // arrow drops into the tray (easeInCubic)
-  static const downloadInStart = 250; // re-enters from above
-  static const downloadInEnd = 480; // lands 1.7 units low (easeOutCubic)
-  static const downloadSettle = 620; // settles back to rest (easeInOut)
+  // Each loop ends with about 3 seconds of stillness.
+  // Download arrow: 4500ms loop, first run 1000ms after the button appears.
+  static const downloadPeriod = 4500;
+  static const downloadDelay = 1000;
+  static const downloadOut = 380; // arrow sinks into the tray (easeInCubic)
+  static const downloadInStart = 440; // re-enters from above
+  static const downloadInEnd = 820; // lands 1 unit low (easeOutCubic)
+  static const downloadSettle = 1060; // settles back to rest (easeInOut)
 
-  // Toggle: 2400ms loop, first run 750ms after the button appears.
-  static const togglePeriod = 2400;
-  static const toggleDelay = 750;
-  static const toggleSwitch = 250; // on and off both take 250ms
-  static const toggleHoldOn = 920;
+  // Toggle: 5200ms loop, first run 1000ms after the button appears.
+  static const togglePeriod = 5200;
+  static const toggleDelay = 1000;
+  static const toggleSwitch = 400; // on and off both take 400ms
+  static const toggleHoldOn = 1400;
 
-  // Lightning: 2600ms loop, first run 680ms after the button appears.
-  static const zapPeriod = 2600;
-  static const zapDelay = 680;
-  static const zapErase = 250; // stroke retracts from its start
-  static const zapDrawStart = 530; // empty for 280ms
-  static const zapDraw = 320; // stroke draws from the top point
-  static const zapPulse1 = 900; // two &quot;charge&quot; pulses, scale to 1.05
-  static const zapPulse2 = 1320;
+  // Lightning: 5600ms loop, first run 1000ms after the button appears.
+  static const zapPeriod = 5600;
+  static const zapDelay = 1000;
+  static const zapErase = 400; // stroke retracts from its start
+  static const zapDrawStart = 750; // empty for 350ms
+  static const zapDraw = 550; // stroke draws from the top point
+  static const zapPulse1 = 1400; // two gentle &quot;charge&quot; pulses, scale to 1.04
+  static const zapPulse2 = 2050;
+  static const zapPulseHalf = 300; // up 300ms, down 300ms
 }
 
 enum CtaIcon { download, toggle, zap }
@@ -422,9 +425,9 @@ class _DownloadDropIconState extends _LoopIconState&lt;DownloadDropIcon&gt; {
     if (t &lt; m.downloadOut) return 22 * Curves.easeInCubic.transform(seg(t, 0, m.downloadOut));
     if (t &lt; m.downloadInStart) return 22;
     if (t &lt; m.downloadInEnd) {
-      return -16 + 17.7 * Curves.easeOutCubic.transform(seg(t, m.downloadInStart, m.downloadInEnd));
+      return -16 + 17 * Curves.easeOutCubic.transform(seg(t, m.downloadInStart, m.downloadInEnd));
     }
-    return 1.7 * (1 - Curves.easeInOut.transform(seg(t, m.downloadInEnd, m.downloadSettle)));
+    return 1 * (1 - Curves.easeInOut.transform(seg(t, m.downloadInEnd, m.downloadSettle)));
   }
 
   @override
@@ -541,12 +544,13 @@ class _ZapChargeIconState extends _LoopIconState&lt;ZapChargeIcon&gt; {
           to = Curves.easeOutCubic.transform(seg(t, m.zapDrawStart, m.zapDrawStart + m.zapDraw));
         }
         double pulse(int at) {
-          final up = Curves.easeOut.transform(seg(t, at, at + 200));
-          final down = Curves.easeInOut.transform(seg(t, at + 200, at + 400));
+          const h = m.zapPulseHalf;
+          final up = Curves.easeOut.transform(seg(t, at, at + h));
+          final down = Curves.easeInOut.transform(seg(t, at + h, at + 2 * h));
           return up - down;
         }
 
-        final scale = 1 + 0.05 * math.max(pulse(m.zapPulse1), pulse(m.zapPulse2));
+        final scale = 1 + 0.04 * math.max(pulse(m.zapPulse1), pulse(m.zapPulse2));
         return _ZapPainter(from, to, scale);
       });
 }
@@ -602,9 +606,9 @@ Paint _stroke() =&gt; Paint()
 (() => {
   // Timings from the video, ms. Same names as CtaIconMotion in the Dart file.
   const M = {
-    download: { period:1800, delay:1080 },
-    toggle:   { period:2400, delay:750 },
-    zap:      { period:2600, delay:680 },
+    download: { period:4500, delay:1000 },
+    toggle:   { period:5200, delay:1000 },
+    zap:      { period:5600, delay:1000 },
   };
   const ENTER_STAGGER = 170, ENTER = 300;
   const SCEN = [
@@ -639,22 +643,22 @@ Paint _stroke() =&gt; Paint()
 
   // ---- Icon states as pure functions of loop time (ms) ----
   function downloadOffset(t) {
-    if (t < 230) return 22 * inCubic(seg(t, 0, 230));
-    if (t < 250) return 22;
-    if (t < 480) return -16 + 17.7 * outCubic(seg(t, 250, 480));
-    return 1.7 * (1 - inOut(seg(t, 480, 620)));
+    if (t < 380) return 22 * inCubic(seg(t, 0, 380));
+    if (t < 440) return 22;
+    if (t < 820) return -16 + 17 * outCubic(seg(t, 440, 820));
+    return 1 * (1 - inOut(seg(t, 820, 1060)));
   }
   function toggleOn(t) {
-    if (t < 1170) return fastOutSlowIn(seg(t, 0, 250));
-    return fastOutSlowIn(1 - seg(t, 1170, 1420));
+    if (t < 1800) return fastOutSlowIn(seg(t, 0, 400));
+    return fastOutSlowIn(1 - seg(t, 1800, 2200));
   }
   function zapState(t) {
     let from = 0, to = 1;
-    if (t < 250) from = inOut(seg(t, 0, 250));
-    else if (t < 530) { from = 0; to = 0; }
-    else to = outCubic(seg(t, 530, 850));
-    const pulse = (at) => easeOut(seg(t, at, at + 200)) - inOut(seg(t, at + 200, at + 400));
-    return { from, to, scale: 1 + 0.05 * Math.max(pulse(900), pulse(1320)) };
+    if (t < 400) from = inOut(seg(t, 0, 400));
+    else if (t < 750) { from = 0; to = 0; }
+    else to = outCubic(seg(t, 750, 1300));
+    const pulse = (at) => easeOut(seg(t, at, at + 300)) - inOut(seg(t, at + 300, at + 600));
+    return { from, to, scale: 1 + 0.04 * Math.max(pulse(1400), pulse(2050)) };
   }
 
   // ---- Markup ----
@@ -691,7 +695,7 @@ Paint _stroke() =&gt; Paint()
     if (sc.id === 'all') $('view').innerHTML = '<div class="stack">' + SCEN.slice(0, 3).map(cta).join('') + '</div>';
     else $('view').innerHTML = '<span class="pill"><i></i>' + sc.pill + '</span>' + cta(sc);
   }
-  const maxT = () => sc.id === 'all' ? 6000 : M[sc.id].delay + M[sc.id].period;
+  const maxT = () => sc.id === 'all' ? 12000 : M[sc.id].delay + M[sc.id].period;
 
   function render() {
     $('tout').value = Math.round(T) + ' ms';
@@ -717,13 +721,13 @@ Paint _stroke() =&gt; Paint()
 
   // ---- Timeline (one loop of the selected icon; all three stacked for "All") ----
   const PH = {
-    download: [['Drop out', 0, 230, 'easeInCubic'], ['Fall in', 250, 230, 'easeOutCubic'], ['Settle', 480, 140, 'easeInOut']],
-    toggle: [['Switch on', 0, 250, 'fastOutSlowIn'], ['Hold on', 250, 920, ''], ['Switch off', 1170, 250, 'reverse'], ['Hold off', 1420, 980, '']],
-    zap: [['Retract', 0, 250, 'easeInOut'], ['Draw', 530, 320, 'easeOutCubic'], ['Charge', 900, 400, '1.05×'], ['Charge', 1320, 400, '1.05×']],
+    download: [['Drop out', 0, 380, 'easeInCubic'], ['Fall in', 440, 380, 'easeOutCubic'], ['Settle', 820, 240, 'easeInOut'], ['Still', 1060, 3440, '']],
+    toggle: [['Switch on', 0, 400, 'fastOutSlowIn'], ['Hold on', 400, 1400, ''], ['Switch off', 1800, 400, 'reverse'], ['Still', 2200, 3000, '']],
+    zap: [['Retract', 0, 400, 'easeInOut'], ['Draw', 750, 550, 'easeOutCubic'], ['Charge', 1400, 600, '1.04×'], ['Charge', 2050, 600, '1.04×'], ['Still', 2650, 2950, '']],
   };
   function timeline() {
     const kinds = sc.id === 'all' ? ['download', 'toggle', 'zap'] : [sc.id];
-    const span = 2600, rows = [];
+    const span = Math.max(...kinds.map((k) => M[k].period)), rows = [];
     const x = (ms) => (ms / span * 100).toFixed(2) + '%';
     kinds.forEach((k) => PH[k].forEach(([n, a, d, txt]) => rows.push('<div class="tl-row" style="top:' + (rows.length * 26) + 'px"><b>' + (kinds.length > 1 ? SCEN.find((s) => s.id === k).name.split(' ')[0] + ' · ' : '') + n + '</b><div class="tl-area"><div class="tl-bar" style="left:' + x(a) + ';width:' + x(d) + '"><em>' + d + ' ms' + (txt ? ' · ' + txt : '') + '</em></div></div></div>')));
     $('tl').style.setProperty('--h', (rows.length * 26) + 'px');
@@ -734,7 +738,7 @@ Paint _stroke() =&gt; Paint()
     h.hidden = sc.id === 'all';               // three loops of different lengths: no single playhead
     const k = sc.id === 'all' ? 'download' : sc.id, m = M[k];
     const local = T - m.delay, t = local < 0 ? 0 : local % m.period;
-    h.style.left = (t / 2600 * 100).toFixed(2) + '%';
+    h.style.left = (t / m.period * 100).toFixed(2) + '%';
   }
 
   function choose(s) {

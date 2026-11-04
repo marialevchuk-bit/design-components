@@ -2,7 +2,8 @@
 
 Looping icon animations for the three eSIM buttons, rebuilt from the approved
 video. Button, pill and motion are measured from the video frame by frame; the
-only change is the typeface, GeneralSans.
+typeface is GeneralSans. After review the motion was slowed down, each loop
+ends with about 3 seconds of stillness, and the icons are 20px instead of 18px.
 
 | File | For |
 |------|-----|
@@ -13,6 +14,6 @@ only change is the typeface, GeneralSans.
 
 | Button | Icon motion | Loop |
 |--------|-------------|------|
-| Activate your eSIM | Arrow drops through the tray and falls back into place | 1800 ms |
-| Set up your eSIM | Toggle switches on, holds, switches off | 2400 ms |
-| Connect eSIM | Bolt retracts, redraws from the top, pulses twice | 2600 ms |
+| Activate your eSIM | Arrow sinks through the tray and glides back into place, then still | 4500 ms |
+| Set up your eSIM | Toggle switches on, holds, switches off, then still | 5200 ms |
+| Connect eSIM | Bolt retracts, redraws from the top, pulses gently twice, then still | 5600 ms |

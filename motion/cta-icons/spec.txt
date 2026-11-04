@@ -6,47 +6,48 @@ Trigger: Shown on screen. Each icon starts its loop after a short delay
   and repeats while the button is visible. Tapping the button works at any
   moment; the loop never blocks input.
 
-All positions are in the icon's 24-unit grid (the icon renders at 18px).
+All positions are in the icon's 24-unit grid (the icon renders at 20px).
+Every loop ends with about 3 seconds of stillness before it plays again.
 Time 0 = start of one loop.
 
 1. DOWNLOAD ARROW (Activate your eSIM)
-   Loop 1800ms. First loop starts 1080ms after the button appears.
+   Loop 4500ms. First loop starts 1000ms after the button appears.
    The arrow (stem + head) is clipped to the area above the tray line
    (y 0.7 to 19.2); the tray line never moves.
-   a. Drop out   0-230ms    translateY 0 to +22 (gone below the clip)
-                            Curves.easeInCubic
-   b. Gap        230-250ms  nothing visible but the tray
-   c. Fall in    250-480ms  translateY -16 to +1.7 (slightly past rest)
-                            Curves.easeOutCubic
-   d. Settle     480-620ms  translateY +1.7 to 0
-                            Curves.easeInOut
-   e. Rest       620-1800ms
+   a. Drop out   0-380ms     translateY 0 to +22 (gone below the clip)
+                             Curves.easeInCubic
+   b. Gap        380-440ms   nothing visible but the tray
+   c. Fall in    440-820ms   translateY -16 to +1 (slightly past rest)
+                             Curves.easeOutCubic
+   d. Settle     820-1060ms  translateY +1 to 0
+                             Curves.easeInOut
+   e. Still      1060-4500ms
 
 2. TOGGLE (Set up your eSIM)
-   Loop 2400ms. First loop starts 750ms after the button appears.
+   Loop 5200ms. First loop starts 1000ms after the button appears.
    Off: outlined track, white knob on the left (x 8).
    On:  white track, knob in the button colour #0D112E on the right (x 16).
-   a. Switch on  0-250ms     knob x 8 to 16; track fill #0D112E to white;
+   a. Switch on  0-400ms     knob x 8 to 16; track fill #0D112E to white;
                              knob white to #0D112E. Curves.fastOutSlowIn
-   b. Hold on    250-1170ms
-   c. Switch off 1170-1420ms the same move played backwards
-   d. Hold off   1420-2400ms
+   b. Hold on    400-1800ms
+   c. Switch off 1800-2200ms the same move played backwards
+   d. Still      2200-5200ms
 
 3. LIGHTNING (Connect eSIM)
-   Loop 2600ms. First loop starts 680ms after the button appears.
+   Loop 5600ms. First loop starts 1000ms after the button appears.
    The bolt is one stroke drawn from its top point:
    (13,2) > (3,14) > (12,14) > (11,22) > (21,10) > (12,10) > (13,2).
-   a. Retract    0-250ms     the stroke disappears from its start forwards
+   a. Retract    0-400ms     the stroke disappears from its start forwards
                              (visible part = [p x length, length])
                              Curves.easeInOut
-   b. Empty      250-530ms
-   c. Draw       530-850ms   the stroke draws from the top point
+   b. Empty      400-750ms
+   c. Draw       750-1300ms  the stroke draws from the top point
                              (visible part = [0, p x length])
                              Curves.easeOutCubic
-   d. Charge     900-1300ms  scale 1 to 1.05 (200ms easeOut) and back
-                             (200ms easeInOut), around the icon centre
-                 1320-1720ms the same pulse again
-   e. Rest       1720-2600ms
+   d. Charge     1400-2000ms scale 1 to 1.04 (300ms easeOut) and back
+                             (300ms easeInOut), around the icon centre
+                 2050-2650ms the same pulse again
+   e. Still      2650-5600ms
 
 Stagger / delays: per icon as above. When all three buttons are on one
   screen, they enter one after another, 170ms apart (fade in, 300ms), and
@@ -63,12 +64,12 @@ Suggested Flutter approach: One repeating AnimationController per icon,
 Assets: none (painted in code, no Lottie needed).
 
 Open question for design: the hubby-motion guidelines ask decorative loops
-  to stop after about 5 seconds. Options: keep looping as in the video, or
-  play 2 to 3 loops and stop at rest.
+  to stop eventually. Options: keep looping with the 3s pauses, or play 2 to
+  3 loops and stop at rest.
 
-Button (from the video; only the typeface changed to GeneralSans):
+Button (from the video; typeface changed to GeneralSans, icon enlarged to 20px):
   Height 52, radius 10, fill #0D112E, shadow 0 4 14 rgba(13,17,46,.22)
-  Icon 18px, white, stroke 2 (24 grid), round caps and joins
+  Icon 20px, white, stroke 2 (24 grid), round caps and joins
   Label 18px GeneralSans 500, white, 12px after the icon
   Status pill above, 20px gap: 11px 500 text #9C5C0F, 1px border #FDBA74,
     fill #FDF8F3, 5px dot #FF8800, fully rounded

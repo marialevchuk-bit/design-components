@@ -20,7 +20,7 @@ class _Cta {
   static const onFill = Color(0xFFFFFFFF);
   static const height = 52.0;
   static const radius = 10.0;
-  static const iconSize = 18.0;
+  static const iconSize = 20.0;
   static const iconGap = 12.0;
   static const shadow = [BoxShadow(color: Color(0x380D112E), offset: Offset(0, 4), blurRadius: 14)];
   static const label = TextStyle(
@@ -34,28 +34,30 @@ class _Cta {
 
 /// Loop timings from the video, in milliseconds.
 class CtaIconMotion {
-  // Download arrow: 1800ms loop, first run 1080ms after the button appears.
-  static const downloadPeriod = 1800;
-  static const downloadDelay = 1080;
-  static const downloadOut = 230; // arrow drops into the tray (easeInCubic)
-  static const downloadInStart = 250; // re-enters from above
-  static const downloadInEnd = 480; // lands 1.7 units low (easeOutCubic)
-  static const downloadSettle = 620; // settles back to rest (easeInOut)
+  // Each loop ends with about 3 seconds of stillness.
+  // Download arrow: 4500ms loop, first run 1000ms after the button appears.
+  static const downloadPeriod = 4500;
+  static const downloadDelay = 1000;
+  static const downloadOut = 380; // arrow sinks into the tray (easeInCubic)
+  static const downloadInStart = 440; // re-enters from above
+  static const downloadInEnd = 820; // lands 1 unit low (easeOutCubic)
+  static const downloadSettle = 1060; // settles back to rest (easeInOut)
 
-  // Toggle: 2400ms loop, first run 750ms after the button appears.
-  static const togglePeriod = 2400;
-  static const toggleDelay = 750;
-  static const toggleSwitch = 250; // on and off both take 250ms
-  static const toggleHoldOn = 920;
+  // Toggle: 5200ms loop, first run 1000ms after the button appears.
+  static const togglePeriod = 5200;
+  static const toggleDelay = 1000;
+  static const toggleSwitch = 400; // on and off both take 400ms
+  static const toggleHoldOn = 1400;
 
-  // Lightning: 2600ms loop, first run 680ms after the button appears.
-  static const zapPeriod = 2600;
-  static const zapDelay = 680;
-  static const zapErase = 250; // stroke retracts from its start
-  static const zapDrawStart = 530; // empty for 280ms
-  static const zapDraw = 320; // stroke draws from the top point
-  static const zapPulse1 = 900; // two "charge" pulses, scale to 1.05
-  static const zapPulse2 = 1320;
+  // Lightning: 5600ms loop, first run 1000ms after the button appears.
+  static const zapPeriod = 5600;
+  static const zapDelay = 1000;
+  static const zapErase = 400; // stroke retracts from its start
+  static const zapDrawStart = 750; // empty for 350ms
+  static const zapDraw = 550; // stroke draws from the top point
+  static const zapPulse1 = 1400; // two gentle "charge" pulses, scale to 1.04
+  static const zapPulse2 = 2050;
+  static const zapPulseHalf = 300; // up 300ms, down 300ms
 }
 
 enum CtaIcon { download, toggle, zap }
@@ -178,9 +180,9 @@ class _DownloadDropIconState extends _LoopIconState<DownloadDropIcon> {
     if (t < m.downloadOut) return 22 * Curves.easeInCubic.transform(seg(t, 0, m.downloadOut));
     if (t < m.downloadInStart) return 22;
     if (t < m.downloadInEnd) {
-      return -16 + 17.7 * Curves.easeOutCubic.transform(seg(t, m.downloadInStart, m.downloadInEnd));
+      return -16 + 17 * Curves.easeOutCubic.transform(seg(t, m.downloadInStart, m.downloadInEnd));
     }
-    return 1.7 * (1 - Curves.easeInOut.transform(seg(t, m.downloadInEnd, m.downloadSettle)));
+    return 1 * (1 - Curves.easeInOut.transform(seg(t, m.downloadInEnd, m.downloadSettle)));
   }
 
   @override
@@ -297,12 +299,13 @@ class _ZapChargeIconState extends _LoopIconState<ZapChargeIcon> {
           to = Curves.easeOutCubic.transform(seg(t, m.zapDrawStart, m.zapDrawStart + m.zapDraw));
         }
         double pulse(int at) {
-          final up = Curves.easeOut.transform(seg(t, at, at + 200));
-          final down = Curves.easeInOut.transform(seg(t, at + 200, at + 400));
+          const h = m.zapPulseHalf;
+          final up = Curves.easeOut.transform(seg(t, at, at + h));
+          final down = Curves.easeInOut.transform(seg(t, at + h, at + 2 * h));
           return up - down;
         }
 
-        final scale = 1 + 0.05 * math.max(pulse(m.zapPulse1), pulse(m.zapPulse2));
+        final scale = 1 + 0.04 * math.max(pulse(m.zapPulse1), pulse(m.zapPulse2));
         return _ZapPainter(from, to, scale);
       });
 }
