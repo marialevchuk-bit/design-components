@@ -107,7 +107,7 @@ table.sc-t td { font-variant-numeric:tabular-nums }
 <div class="wrap">
   <header>
     <h1>eSIM call-to-action icons</h1>
-    <p>Three looping icon animations for the eSIM buttons, rebuilt from the approved video and set in GeneralSans, with calmer timing and 20px icons. Each icon now plays once a minute; switch the cadence below to compare with the shorter loop. Pick a button to review it on its own, or see all three together.</p>
+    <p>Three looping icon animations for the eSIM buttons, rebuilt from the approved video and set in GeneralSans, with calmer timing and 20px icons. Each icon now plays every 30 seconds; switch the cadence below to compare with the shorter loop. Pick a button to review it on its own, or see all three together.</p>
   </header>
 
   <div class="bench">
@@ -128,7 +128,7 @@ table.sc-t td { font-variant-numeric:tabular-nums }
           <button class="ctl" id="slow" type="button" aria-pressed="false">0.25× slow motion</button>
           <button class="ctl" id="reduced" type="button" aria-pressed="false">Reduced motion</button>
           <button class="ctl" id="zoomBtn" type="button" aria-pressed="true">1.5× zoom</button>
-          <button class="ctl" id="cadence" type="button" aria-pressed="true">Once a minute</button>
+          <button class="ctl" id="cadence" type="button" aria-pressed="true">Every 30 s</button>
         </div>
         <div class="scrub" style="margin-top:14px">
           <input id="scrubber" type="range" min="0" max="3000" step="1" value="0" aria-label="Scrub the timeline">
@@ -150,16 +150,16 @@ table.sc-t td { font-variant-numeric:tabular-nums }
     <div class="tscroll">
       <table class="sc-t">
         <tr><th>Button</th><th>Icon motion</th><th>Loop</th><th>First run</th></tr>
-        <tr><td>Activate your eSIM</td><td>Arrow sinks through the tray, glides back in from above, lands a little low and settles. Then still until the next minute.</td><td>60 s</td><td>after 1000 ms</td></tr>
-        <tr><td>Set up your eSIM</td><td>Toggle switches on (400 ms), holds 1.4 s, switches off (400 ms). Then still until the next minute.</td><td>60 s</td><td>after 1000 ms</td></tr>
-        <tr><td>Connect eSIM</td><td>Bolt retracts, stays empty for 350 ms, redraws from the top point, then pulses gently twice. Then still until the next minute.</td><td>60 s</td><td>after 1000 ms</td></tr>
+        <tr><td>Activate your eSIM</td><td>Arrow sinks through the tray, glides back in from above, lands a little low and settles. Then still until the next run.</td><td>30 s</td><td>after 1000 ms</td></tr>
+        <tr><td>Set up your eSIM</td><td>Toggle switches on (400 ms), holds 1.4 s, switches off (400 ms). Then still until the next run.</td><td>30 s</td><td>after 1000 ms</td></tr>
+        <tr><td>Connect eSIM</td><td>Bolt retracts, stays empty for 350 ms, redraws from the top point, then pulses gently twice. Then still until the next run.</td><td>30 s</td><td>after 1000 ms</td></tr>
       </table>
     </div>
 
     <div class="cols">
       <div class="note"><h3>Interruption</h3><p>The loops never block input: the button can be tapped at any moment. Pause the loop when the button is off screen or the app is in the background.</p></div>
       <div class="note"><h3>Reduced motion</h3><p>When MediaQuery.disableAnimationsOf is true, nothing loops. Each icon shows its rest state: arrow in place, toggle off, full bolt.</p></div>
-      <div class="note"><h3>Open question</h3><p>Once a minute, being tested. Alternatives: the shorter loop (about every 5 s), or play 2 to 3 times and stop at rest.</p></div>
+      <div class="note"><h3>Open question</h3><p>Every 30 seconds, being tested. Alternatives: the shorter loop (about every 5 s), or play 2 to 3 times and stop at rest.</p></div>
     </div>
 
     <div>
@@ -173,11 +173,11 @@ Trigger: Shown on screen. Each icon starts its loop after a short delay
   moment; the loop never blocks input.
 
 All positions are in the icon&#x27;s 24-unit grid (the icon renders at 20px).
-Each icon plays once a minute and is still for the rest of the minute.
+Each icon plays every 30 seconds and is still in between.
 Time 0 = start of one loop.
 
 1. DOWNLOAD ARROW (Activate your eSIM)
-   Loop 60s (once a minute). First loop starts 1000ms after the button appears.
+   Loop 30s (every 30 seconds). First loop starts 1000ms after the button appears.
    The arrow (stem + head) is clipped to the area above the tray line
    (y 0.7 to 19.2); the tray line never moves.
    a. Drop out   0-380ms     translateY 0 to +22 (gone below the clip)
@@ -187,20 +187,20 @@ Time 0 = start of one loop.
                              Curves.easeOutCubic
    d. Settle     820-1060ms  translateY +1 to 0
                              Curves.easeInOut
-   e. Still      1060ms-60s
+   e. Still      1060ms-30s
 
 2. TOGGLE (Set up your eSIM)
-   Loop 60s (once a minute). First loop starts 1000ms after the button appears.
+   Loop 30s (every 30 seconds). First loop starts 1000ms after the button appears.
    Off: outlined track, white knob on the left (x 8).
    On:  white track, knob in the button colour #0D112E on the right (x 16).
    a. Switch on  0-400ms     knob x 8 to 16; track fill #0D112E to white;
                              knob white to #0D112E. Curves.fastOutSlowIn
    b. Hold on    400-1800ms
    c. Switch off 1800-2200ms the same move played backwards
-   d. Still      2200ms-60s
+   d. Still      2200ms-30s
 
 3. LIGHTNING (Connect eSIM)
-   Loop 60s (once a minute). First loop starts 1000ms after the button appears.
+   Loop 30s (every 30 seconds). First loop starts 1000ms after the button appears.
    The bolt is one stroke drawn from its top point:
    (13,2) &gt; (3,14) &gt; (12,14) &gt; (11,22) &gt; (21,10) &gt; (12,10) &gt; (13,2).
    a. Retract    0-400ms     the stroke disappears from its start forwards
@@ -213,7 +213,7 @@ Time 0 = start of one loop.
    d. Charge     1400-2000ms scale 1 to 1.04 (300ms easeOut) and back
                              (300ms easeInOut), around the icon centre
                  2050-2650ms the same pulse again
-   e. Still      2650ms-60s
+   e. Still      2650ms-30s
 
 Stagger / delays: per icon as above. When all three buttons are on one
   screen, they enter one after another, 170ms apart (fade in, 300ms), and
@@ -230,7 +230,7 @@ Suggested Flutter approach: One repeating AnimationController per icon,
 Assets: none (painted in code, no Lottie needed).
 
 Open question for design: the hubby-motion guidelines ask decorative loops
-  to stop eventually. Once a minute is being tested; alternatives are a
+  to stop eventually. Every 30 seconds is being tested; alternatives are a
   shorter loop (about every 5s) or 2 to 3 plays, then stop at rest.
 
 Button (from the video; typeface changed to GeneralSans, icon enlarged to 20px):
@@ -280,23 +280,23 @@ class _Cta {
 
 /// Loop timings from the video, in milliseconds.
 class CtaIconMotion {
-  // Each icon plays once a minute; the rest of the minute it is still.
-  // Download arrow: 60s loop, first run 1000ms after the button appears.
-  static const downloadPeriod = 60000;
+  // Each icon plays every 30 seconds and is still in between.
+  // Download arrow: 30s loop, first run 1000ms after the button appears.
+  static const downloadPeriod = 30000;
   static const downloadDelay = 1000;
   static const downloadOut = 380; // arrow sinks into the tray (easeInCubic)
   static const downloadInStart = 440; // re-enters from above
   static const downloadInEnd = 820; // lands 1 unit low (easeOutCubic)
   static const downloadSettle = 1060; // settles back to rest (easeInOut)
 
-  // Toggle: 60s loop, first run 1000ms after the button appears.
-  static const togglePeriod = 60000;
+  // Toggle: 30s loop, first run 1000ms after the button appears.
+  static const togglePeriod = 30000;
   static const toggleDelay = 1000;
   static const toggleSwitch = 400; // on and off both take 400ms
   static const toggleHoldOn = 1400;
 
-  // Lightning: 60s loop, first run 1000ms after the button appears.
-  static const zapPeriod = 60000;
+  // Lightning: 30s loop, first run 1000ms after the button appears.
+  static const zapPeriod = 30000;
   static const zapDelay = 1000;
   static const zapErase = 400; // stroke retracts from its start
   static const zapDrawStart = 750; // empty for 350ms
@@ -607,12 +607,12 @@ Paint _stroke() =&gt; Paint()
 (() => {
   // Timings from the video, ms. Same names as CtaIconMotion in the Dart file.
   const M = {
-    download: { period:60000, delay:1000, short:4500, active:1060 },
-    toggle:   { period:60000, delay:1000, short:5200, active:2200 },
-    zap:      { period:60000, delay:1000, short:5600, active:2650 },
+    download: { period:30000, delay:1000, short:4500, active:1060 },
+    toggle:   { period:30000, delay:1000, short:5200, active:2200 },
+    zap:      { period:30000, delay:1000, short:5600, active:2650 },
   };
-  let minute = true;                                   // cadence: once a minute, or the shorter loop
-  const per = (m) => minute ? m.period : m.short;
+  let longLoop = true;                                   // cadence: every 30 s, or the shorter loop
+  const per = (m) => longLoop ? m.period : m.short;
   const ENTER_STAGGER = 170, ENTER = 300;
   const SCEN = [
     { id:'download', name:'Activate your eSIM', pill:'Ready to activate', note:'Download arrow drops into place.' },
@@ -768,7 +768,7 @@ Paint _stroke() =&gt; Paint()
   $('slow').addEventListener('click', (e) => { speed = speed === 1 ? .25 : 1; e.currentTarget.setAttribute('aria-pressed', speed !== 1); });
   $('reduced').addEventListener('click', (e) => { reduced = !reduced; e.currentTarget.setAttribute('aria-pressed', reduced); render(); });
   $('reduced').setAttribute('aria-pressed', reduced);
-  $('cadence').addEventListener('click', (e) => { minute = !minute; e.currentTarget.textContent = minute ? 'Once a minute' : 'Every ~5 s'; timeline(); play(); });
+  $('cadence').addEventListener('click', (e) => { longLoop = !longLoop; e.currentTarget.textContent = longLoop ? 'Every 30 s' : 'Every ~5 s'; timeline(); play(); });
   $('zoomBtn').addEventListener('click', (e) => { zoom = zoom === 1.5 ? 1 : 1.5; e.currentTarget.setAttribute('aria-pressed', zoom > 1); applyZoom(); });
   $('scrubber').addEventListener('input', (e) => { playing = false; T = +e.target.value; render(); });
   // Small screens: a zoomed 328px button does not fit; start at 1x.

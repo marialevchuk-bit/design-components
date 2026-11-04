@@ -57,7 +57,7 @@ header p { font:var(--bodyS400); color:var(--ink-soft); max-width:64ch; margin:8
 <div class="wrap">
   <header>
     <h1>eSIM call-to-action icons</h1>
-    <p>Three looping icon animations for the eSIM buttons, rebuilt from the approved video and set in GeneralSans, with calmer timing and 20px icons. Each icon now plays once a minute; switch the cadence below to compare with the shorter loop. Pick a button to review it on its own, or see all three together.</p>
+    <p>Three looping icon animations for the eSIM buttons, rebuilt from the approved video and set in GeneralSans, with calmer timing and 20px icons. Each icon now plays every 30 seconds; switch the cadence below to compare with the shorter loop. Pick a button to review it on its own, or see all three together.</p>
   </header>
 
   <div class="bench">
@@ -78,7 +78,7 @@ header p { font:var(--bodyS400); color:var(--ink-soft); max-width:64ch; margin:8
           <button class="ctl" id="slow" type="button" aria-pressed="false">0.25× slow motion</button>
           <button class="ctl" id="reduced" type="button" aria-pressed="false">Reduced motion</button>
           <button class="ctl" id="zoomBtn" type="button" aria-pressed="true">1.5× zoom</button>
-          <button class="ctl" id="cadence" type="button" aria-pressed="true">Once a minute</button>
+          <button class="ctl" id="cadence" type="button" aria-pressed="true">Every 30 s</button>
         </div>
         <div class="scrub" style="margin-top:14px">
           <input id="scrubber" type="range" min="0" max="3000" step="1" value="0" aria-label="Scrub the timeline">
@@ -100,16 +100,16 @@ header p { font:var(--bodyS400); color:var(--ink-soft); max-width:64ch; margin:8
     <div class="tscroll">
       <table class="sc-t">
         <tr><th>Button</th><th>Icon motion</th><th>Loop</th><th>First run</th></tr>
-        <tr><td>Activate your eSIM</td><td>Arrow sinks through the tray, glides back in from above, lands a little low and settles. Then still until the next minute.</td><td>60 s</td><td>after 1000 ms</td></tr>
-        <tr><td>Set up your eSIM</td><td>Toggle switches on (400 ms), holds 1.4 s, switches off (400 ms). Then still until the next minute.</td><td>60 s</td><td>after 1000 ms</td></tr>
-        <tr><td>Connect eSIM</td><td>Bolt retracts, stays empty for 350 ms, redraws from the top point, then pulses gently twice. Then still until the next minute.</td><td>60 s</td><td>after 1000 ms</td></tr>
+        <tr><td>Activate your eSIM</td><td>Arrow sinks through the tray, glides back in from above, lands a little low and settles. Then still until the next run.</td><td>30 s</td><td>after 1000 ms</td></tr>
+        <tr><td>Set up your eSIM</td><td>Toggle switches on (400 ms), holds 1.4 s, switches off (400 ms). Then still until the next run.</td><td>30 s</td><td>after 1000 ms</td></tr>
+        <tr><td>Connect eSIM</td><td>Bolt retracts, stays empty for 350 ms, redraws from the top point, then pulses gently twice. Then still until the next run.</td><td>30 s</td><td>after 1000 ms</td></tr>
       </table>
     </div>
 
     <div class="cols">
       <div class="note"><h3>Interruption</h3><p>The loops never block input: the button can be tapped at any moment. Pause the loop when the button is off screen or the app is in the background.</p></div>
       <div class="note"><h3>Reduced motion</h3><p>When MediaQuery.disableAnimationsOf is true, nothing loops. Each icon shows its rest state: arrow in place, toggle off, full bolt.</p></div>
-      <div class="note"><h3>Open question</h3><p>Once a minute, being tested. Alternatives: the shorter loop (about every 5 s), or play 2 to 3 times and stop at rest.</p></div>
+      <div class="note"><h3>Open question</h3><p>Every 30 seconds, being tested. Alternatives: the shorter loop (about every 5 s), or play 2 to 3 times and stop at rest.</p></div>
     </div>
 
     <div>
@@ -127,12 +127,12 @@ header p { font:var(--bodyS400); color:var(--ink-soft); max-width:64ch; margin:8
 (() => {
   // Timings from the video, ms. Same names as CtaIconMotion in the Dart file.
   const M = {
-    download: { period:60000, delay:1000, short:4500, active:1060 },
-    toggle:   { period:60000, delay:1000, short:5200, active:2200 },
-    zap:      { period:60000, delay:1000, short:5600, active:2650 },
+    download: { period:30000, delay:1000, short:4500, active:1060 },
+    toggle:   { period:30000, delay:1000, short:5200, active:2200 },
+    zap:      { period:30000, delay:1000, short:5600, active:2650 },
   };
-  let minute = true;                                   // cadence: once a minute, or the shorter loop
-  const per = (m) => minute ? m.period : m.short;
+  let longLoop = true;                                   // cadence: every 30 s, or the shorter loop
+  const per = (m) => longLoop ? m.period : m.short;
   const ENTER_STAGGER = 170, ENTER = 300;
   const SCEN = [
     { id:'download', name:'Activate your eSIM', pill:'Ready to activate', note:'Download arrow drops into place.' },
@@ -288,7 +288,7 @@ header p { font:var(--bodyS400); color:var(--ink-soft); max-width:64ch; margin:8
   $('slow').addEventListener('click', (e) => { speed = speed === 1 ? .25 : 1; e.currentTarget.setAttribute('aria-pressed', speed !== 1); });
   $('reduced').addEventListener('click', (e) => { reduced = !reduced; e.currentTarget.setAttribute('aria-pressed', reduced); render(); });
   $('reduced').setAttribute('aria-pressed', reduced);
-  $('cadence').addEventListener('click', (e) => { minute = !minute; e.currentTarget.textContent = minute ? 'Once a minute' : 'Every ~5 s'; timeline(); play(); });
+  $('cadence').addEventListener('click', (e) => { longLoop = !longLoop; e.currentTarget.textContent = longLoop ? 'Every 30 s' : 'Every ~5 s'; timeline(); play(); });
   $('zoomBtn').addEventListener('click', (e) => { zoom = zoom === 1.5 ? 1 : 1.5; e.currentTarget.setAttribute('aria-pressed', zoom > 1); applyZoom(); });
   $('scrubber').addEventListener('input', (e) => { playing = false; T = +e.target.value; render(); });
   // Small screens: a zoomed 328px button does not fit; start at 1x.
