@@ -35,23 +35,23 @@ class _Cta {
 
 /// Loop timings from the video, in milliseconds.
 class CtaIconMotion {
-  // Each icon plays every 30 seconds and is still in between.
-  // Download arrow: 30s loop, first run 1000ms after the button appears.
-  static const downloadPeriod = 30000;
+  // Each icon plays every 15 seconds and is still in between.
+  // Download arrow: 15s loop, first run 1000ms after the button appears.
+  static const downloadPeriod = 15000;
   static const downloadDelay = 1000;
   static const downloadOut = 380; // arrow sinks into the tray (easeInCubic)
   static const downloadInStart = 440; // re-enters from above
   static const downloadInEnd = 820; // lands 1 unit low (easeOutCubic)
   static const downloadSettle = 1060; // settles back to rest (easeInOut)
 
-  // Toggle: 30s loop, first run 1000ms after the button appears.
-  static const togglePeriod = 30000;
+  // Toggle: 15s loop, first run 1000ms after the button appears.
+  static const togglePeriod = 15000;
   static const toggleDelay = 1000;
   static const toggleSwitch = 400; // on and off both take 400ms
   static const toggleHoldOn = 1400;
 
-  // Lightning: 30s loop, first run 1000ms after the button appears.
-  static const zapPeriod = 30000;
+  // Lightning: 15s loop, first run 1000ms after the button appears.
+  static const zapPeriod = 15000;
   static const zapDelay = 1000;
   static const zapErase = 400; // stroke retracts from its start
   static const zapDrawStart = 750; // empty for 350ms
@@ -60,8 +60,8 @@ class CtaIconMotion {
   static const zapPulse2 = 2050;
   static const zapPulseHalf = 300; // up 300ms, down 300ms
 
-  // Plus: 30s loop, first run 1000ms after the button appears.
-  static const plusPeriod = 30000;
+  // Plus: 15s loop, first run 1000ms after the button appears.
+  static const plusPeriod = 15000;
   static const plusDelay = 1000;
   static const plusPullIn = 350; // both bars shrink into the centre (easeInCubic)
   static const plusGrowV = 500; // vertical bar starts growing back (empty 350-500)
